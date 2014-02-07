@@ -1,0 +1,159 @@
+#!/bin/bash
+#
+# Description: Cut virtual slides into tiles
+# Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
+#
+################################################################################
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# 
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+################################################################################
+# Respect the Google Shell style guide.
+# http://google-styleguide.googlecode.com/svn/trunk/shell.xml
+
+
+
+
+
+
+
+
+# Settings
+SLOTS=4
+MEMORYLIMIT="$((15 * $SLOTS))GB" # 15 GB per slot
+
+# output log
+echo "$(date) Running $0"
+
+# create tiles
+if [ -f $1 ]; then    
+    # set and get variables
+    S="$1" # input scan
+    INPUTFILENAME="${S%.*}"             # full path without extension
+    INPUTSCANEXT="${S##*.}"             # input scan extension only
+    M="${INPUTFILENAME}.mask.png"       # input mask
+    FILENAMESCAN="${S##*/}"
+    SHORTNAME="$(basename $INPUTFILENAME)"
+    FILENAMEMASK="${M##*/}"
+    FOLDERINPUT=$(dirname "$S")         # input folder
+    FOLDERWORK="$TMPDIR"  # CAREFUL THIS FOLDER GETS DELETED! # CAREFUL WITH THIS MOTHERFUCKER
+    FOLDEROUTPUT=$(dirname "$S")        # output directory
+    LAYER=3                             # layer 3 is 20x (for Roche scanner)
+    TILESWIDTH=2000
+    TILESHEIGHT=2000
+    buffer="${FOLDERWORK}/${SHORTNAME}.mpc"
+    STARTDATE=$(date)
+    
+    # all complete? Lets go
+    if [[ -f "$S" && -f "$M" && "tif" == $INPUTSCANEXT ]] ; then
+        width=$(identify -format "%w" "${S}[${LAYER}]")
+        height=$(identify -format "%h" "${S}[${LAYER}]")
+        dimensions=${width}x${height}
+        echo "dimensions $dimensions"
+        
+        # empty FOLDERWORK
+        rm -rf ${FOLDERWORK}/* # CAREFUL WITH THIS MOTHERFUCKER
+        mkdir -p ${FOLDERWORK}
+        echo "$(date)"
+        echo "Start convert and create big buffer file..."
+        convert -limit area ${MEMORYLIMIT} ${S}[${LAYER}] \( ${M} -fuzz 99% -transparent white -scale ${dimensions} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage ${buffer}
+        echo "$(date)"
+        echo "Ended convert..."
+        echo "Start convert to create bufferexample..."
+        # output for user so we know what was in the hpc file (contrain proportions within 2000x2000 pixels)
+        convert -limit area ${MEMORYLIMIT} ${buffer} -scale 2000x2000 ${INPUTFILENAME}.bufferexample.png
+        echo "$(date)"
+        echo "Ended convert..."# create output directory with similar name as input file
+        mkdir -v -p "$INPUTFILENAME" # create output directory
+        # create tiles per row, measure dimentions of newly create image
+        width=$(identify -format "%w" ${buffer})
+        height=$(identify -format "%h" ${buffer})
+        dimensions=${width}x${height}
+        limit_w=$((($width / $TILESWIDTH)-1))
+        limit_h=$((($height / $TILESHEIGHT)-1))
+        echo "$(date)"
+        echo "Start creating tiles..."
+        echo "width      $width"
+        echo "height     $height"
+        echo "dimensions $dimensions"
+        echo "limit_w    $limit_w"
+        echo "limit_h    $limit_h"
+        echo "buffer    $buffer"
+         for y in $(seq 0 $limit_h); do
+             for x in $(seq 0 $limit_w); do
+                # one tile
+                tile=${SHORTNAME}.X${y}.Y${x}.tile.png
+                w=$((x * $TILESWIDTH))
+                h=$((y * $TILESHEIGHT))
+                FILE="${INPUTFILENAME}/${tile}"
+                convert -limit area ${MEMORYLIMIT} ${buffer} -crop ${TILESWIDTH}x${TILESHEIGHT}+$w+$h +repage ${FILE}
+                # check for empty tiles
+                filenameext=$(basename "$FILE")
+                extension="${filenameext##*.}"
+                filename="${FILE%.*}" # full path without extension
+
+                # tile checked before?
+                CHECKED=${filename##*.} # tissue, empty or something else
+                if [ "tissue" == "$CHECKED" ] || [ "empty" == "$CHECKED" ];
+                then
+                    echo "Already checked: $filenameext"
+                    exit
+                fi
+                
+                # find tissue
+	            if [ $(wc -c < $FILE ) -ge 100000 ]; then
+                    # more than 100000 bytes...
+                    VERBOSE=$( convert $FILE -colorspace HSL -verbose info: );
+                    RGBO=$( echo "$VERBOSE" | grep mean | awk '{print $2}' )
+                    RED=$( echo $RGBO | awk '{print $1}'  | cut -d. -f1 ); 
+                    GREEN=$( echo $RGBO | awk '{print $2}'| cut -d. -f1 ); 
+                    BLUE=$( echo $RGBO | awk '{print $3}' | cut -d. -f1 );
+                    BLUESD=$( echo "$VERBOSE" | grep 'standard deviation' | awk '{print $3}' | sed -n 3p | cut -d. -f1 )
+                    if [ $RED -ge 51 ] && [ $GREEN -ge 12 ];
+                    then 
+                        TISSUE="tissue";
+                    elif [ $BLUESD -ge 6 ];
+                    then  
+                        TISSUE="tissue"; 
+                    else
+                        TISSUE="empty"; 
+                    fi; 
+                else 
+                    TISSUE="empty"; 
+                fi;
+                # rename file
+                mv -v "$FILE" "${filename}.${TISSUE}.png"
+                
+             done
+         done
+        echo "$(date)"
+        echo "Ended creating tiles..."        
+        # $TMPDIR get automatically deleted after each job.
+    else
+        echo "No such scan: $S"
+        echo "No such mask: $M"
+    fi
+    STOPDATE=$(date)
+    #  message user that slide is done
+    # /home/dhl_ec/bnelissen/bin/pushover.sh "${SHORTNAME} finished. Start ${STARTDATE}. Stop ${STOPDATE}"
+fi
+exit
