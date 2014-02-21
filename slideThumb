@@ -35,6 +35,10 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
+DEPENDENCIES=("convert parallel perl")
+
+# DEBUG setting, remove before going live
+# set -o verbose
 
 # usage message
 usage() {
@@ -52,13 +56,18 @@ $(usage)
 
 options:
   -f, --file[=FILE]         extract the thumbnail from this virtual slide
-  -l, --layer[=INT]         force specific layer extraction by layer id
+  -l, --layer[=INT]         force specific layer by layer id
 
   --help                    display this help and exit
 
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
+
+multiple files at once:
+  find -L ./  -name '*.tif' | parallel $SCRIPTNAME {}
+
+dependencies: $DEPENDENCIES
 
 Most virtual slides contain a an overview image from each slide, aka
 thumbnail. This script does a good job of extracting the correct layer,
@@ -68,6 +77,7 @@ Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }
+
 # Menu
 # Empty variables
 FILE=""
@@ -130,8 +140,8 @@ checkRequirements() {
     usage
     exit 1
   fi
-  regex='^[0-9]+$'
-  if ! [[ $LAYER =~ $regex ]] ; then
+  regexnumeric='^[0-9]+$'
+  if ! [[ $LAYER =~ $regexnumeric ]] ; then
     echo "Layer is not an integer: $LAYER">&2;
     usage
     exit 1
@@ -139,17 +149,17 @@ checkRequirements() {
 }
 
 # Dependencies
-function checkDependencies(){
-  DEPENDENCIES=("convert")
+checkDependencies(){
+  DEPENDENCIES="$DEPENDENCIES"
   DEPS=""
   for DEP in $DEPENDENCIES; do
     if [[ 0 != $(command -v "$DEP" >/dev/null ;echo $?) ]]; then
-      DEPS=$(echo "$DEPS \"$DEP\"") # create `array` with unknown dependencies
+      DEPS=$(echo "$DEPS $DEP") # create `array` with unknown dependencies
     fi
   done
-  if [[ 0 != ${#DEPS[@]} ]]; then
+  if [[ "" != $(echo "$DEPS" | perl -p -e 's/ //g') ]]; then
     for d in $DEPS; do
-      echo "Missing dependency: $d"
+      echo "Missing dependency: \"$d\""
     done
     exit 1
   fi
@@ -165,7 +175,7 @@ programOutput(){
   FILENAME="${BASENAME%.*}"           # filename, no extension"
 	
 	# get the thumb
-	convert "$FILEFULL"[$LAYER] "$FILEPATH"."$LAYER".thumb.png;
+	convert "$FILEFULL"[$LAYER] "$FILEPATH"."$LAYER".thumb.png
 }
 
 # all check?

@@ -35,7 +35,7 @@ SCRIPTNAME="$(basename $0)"
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@ See --help" >&2
+  echo "ERROR: $@" >&2
 }
 # Create absolute 'real' paths (to be shure were to output is)
 absolutepath () {

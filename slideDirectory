@@ -34,9 +34,18 @@
 # to keep the things organized and to make future updates easier
 #
 # Variables
-SCRIPTNAME=$(basename $0)
+SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Move file into a similar named directory"
 
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
+# Create absolute 'real' paths (to be shure were to output is)
+absolutepath () {
+  p="$(echo $(cd $(dirname $1); pwd)/$(basename $1))"
+  echo "$p"
+}
 # usage message
 usage() {
 cat <<- EOF
@@ -111,7 +120,8 @@ fi
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    echo "No such file: $FILE" >&2;
+    err "No such file: $FILE"
+    usage
     exit 1
   fi
 }
@@ -127,11 +137,8 @@ programOutput(){
   mv "$FILE" "$FILEPATH"/
 }
 
-
-
 # all check?
 checkRequirements
 
 # lets go!
 programOutput
-

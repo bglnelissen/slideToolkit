@@ -34,6 +34,10 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create macro and mask from virtual slide"
 
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
 # usage message
 usage() {
 cat <<- EOF
@@ -56,6 +60,8 @@ options:
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
+  find [path/] -name '*.tif' | parallel [path/]slideMask {} 
+  find [path/] -name '*.tif' -exec qsub [path/]slideMask {} \; 
 
 Sometimes not all tissue on your virtual slide needs processing. You can
 mask parts of your image that you do not wat to process. This program
@@ -63,6 +69,7 @@ will automatically create a mask for you which you can later edit if
 needed. The slideToolkit only excludes real black (color #000000). Two
 new files will be created, one file.macro.png and one file.mask.png.
 Existing files will be overwritten.
+
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
@@ -112,14 +119,14 @@ fi
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    echo "No such file: $FILE">&2;
+    err "No such file: $FILE"
     usage
     exit 1
   fi
 }
 
 # Dependencies
-function checkDependencies(){
+checkDependencies(){
   DEPENDENCIES=("convert")
   DEPS=""
   for DEP in $DEPENDENCIES; do
@@ -127,9 +134,9 @@ function checkDependencies(){
       DEPS=$(echo "$DEPS \"$DEP\"") # create `array` with unknown dependencies
     fi
   done
-  if [[ 0 != ${#DEPS[@]} ]]; then
-    for d in $DEPS; do
-      echo "Missing dependency: $d"
+  if [[ "" != "$DEPS" ]]; then
+    for d in "$DEPS"; do
+      err "Missing dependency: $d"
     done
     exit 1
   fi
@@ -138,38 +145,38 @@ function checkDependencies(){
 # actual program
 programOutput(){
   # set variables
-	LAYER=8
+  LAYER=8
   FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
   BASENAME=$(basename "$FILEFULL")    # basename
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
-	MASK="$FILEPATH.mask.png"
-	MACRO="$FILEPATH.macro.png"
-	
-	# create macro
-	convert $FILEFULL[$LAYER] -fuzz 1% -transparent "#ECECEC"  $MACRO
-	# create mask
-	# a fuzz of 3% works well, but fails on very light slides
-	# a fuzz of 2% is mightby to easy on the selection
-	# a fuzz of 2.5% is possible (but still to stringend on some slides)
-	#	 - add a border so blur works on the whole image
+  MASK="$FILEPATH.mask.png"
+  MACRO="$FILEPATH.macro.png"
+
+  # create macro
+  convert $FILEFULL[$LAYER] -fuzz 1% -transparent "#ECECEC"  $MACRO
+  # create mask
+  # a fuzz of 3% works well, but fails on very light slides
+  # a fuzz of 2% is mightby to easy on the selection
+  # a fuzz of 2.5% is possible (but still to stringend on some slides)
+  #	 - add a border so blur works on the whole image
   #	 - blur the image to fill small holes (blur is slow, but necessary)
   #	 - make all white transparent (background)
   #	 - remove the border
   #	 - create alpha and save file
-	convert $MACRO \( $MACRO \
-			-bordercolor white -border 100x100 \
-			-blur 40x40 \
-			-fuzz 2% -transparent white \
-			-crop +100+100 -crop -100-100 +repage \
-			-alpha extract -transparent white \) \
-		-flatten $MASK
+  convert $MACRO \( $MACRO \
+    -bordercolor white -border 100x100 \
+    -blur 40x40 \
+    -fuzz 2% -transparent white \
+    -crop +100+100 -crop -100-100 +repage \
+    -alpha extract -transparent white \) \
+    -flatten $MASK
 }
-
 # all check?
 checkRequirements
 checkDependencies 
 
 # lets go!
+# actual program
 programOutput
