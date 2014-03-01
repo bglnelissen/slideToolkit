@@ -34,6 +34,7 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Short description"
 DEPENDENCIES=("convert")
+PREVIEWDIMENSIONS="512x1024"
 
 # Errors go to stderr
 err() {
@@ -154,17 +155,15 @@ programOutput(){
   FILENAME="${BASENAME%.*}"           # basename, no extension"
   EXTENSION="${BASENAME##*.}"         # extension
   # create tmp working file
-  tempfoo=`basename $0`
-  TMPFILE=`mktemp -q /tmp/${tempfoo}.XXXXXX`
+  TMPFILE="$(mktemp -q /tmp/${SCRIPTNAME}.XXXXXX)".png
   if [ $? -ne 0 ]; then
        err "$0: Can't create temp file, exiting..."
        exit 1
   fi
   # extract thumb layer (filter box does not average pixels)
-  echo "$TMPFILE"
-  convert -verbose "$FILE[0]" -filter box -resize 512x1024 "$FILE.BAS.png"
+  convert "$FILE[0]" -filter box -resize "$PREVIEWDIMENSIONS" "$TMPFILE"
+  open -g -a Preview "$TMPFILE"
 }
-open -g -a Preview "$FILE.BAS.png"
 
 cleanUp(){
   # remove temp files
