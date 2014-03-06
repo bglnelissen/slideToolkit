@@ -34,7 +34,7 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut virtual slides into tiles"
 DEPENDENCIES=("convert" "parallel")
-DEFAULTLAYER=0 # 3
+DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000
 DEFAULTWIDTH=2000
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
