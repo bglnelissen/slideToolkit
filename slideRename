@@ -32,19 +32,29 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
-DEPENDENCIES=("convert" "parallel" "perl")
-DEFAULT_OUTPUT_SUFFIX=".thumb"
-DEFAULT_OUTPUT_EXTENSION="png"
-WIDTH="512"
+DESCRIPTIONSHORT="Rename virtual slide using the thumbnail"
+DEPENDENCIES=("convert" "identify" "parallel" "perl" "/Applications/Preview.app/Contents/MacOS/Preview")
+PREVIEWDIMENSIONS="512x1024"
 
 # DEBUG setting, remove before going live
 # set -o verbose
+
+# Cleanup stage
+set -e
+function cleanup {
+  # quit Preview
+  osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+  # remove temp files
+  rm -rf "$PREVIEW_TMPFILE"
+  echo
+}
+trap cleanup EXIT
 
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
 }
+
 # usage message
 usage() {
 cat <<- EOF
@@ -61,26 +71,25 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         extract the thumbnail from this virtual slide
+  -f, --file[=FILE]         virtual slide to rename
   -l, --layer[=INT]         force specific layer by layer id
-  --suffix[=TEXT]           suffix to filename (default: $DEFAULT_OUTPUT_SUFFIX)
-  --extension[=TEXT]        thumbnail output extension (default: $DEFAULT_OUTPUT_EXTENSION)
+  --prefix[=TEXT]           filename prefix
   
   --help                    display this help and exit
 
 examples:
   $SCRIPTNAME "file.svs"
-  $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
+  $SCRIPTNAME  --layer=5 --prefix="AAA" --extension="jpg" "file.tif"
 
 multiple files at once:
-  find -L ./ -name "*svs" -o -name "*tif" | parallel $SCRIPTNAME {}
+  for i in \$(find -L ./ -name "*svs" -o -name "*tif"); do $SCRIPTNAME --prefix="AE" \$i; done
 
 dependencies: ${DEPENDENCIES[@]}
 
 A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
-these layers. This script extracts the correct layers and resizes,
-rotates and concatenates when necessary. 
+these layers. This script displays the correct layers and resizes,
+rotates and concatenates when necessary and asks for a new name.
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
@@ -90,8 +99,7 @@ EOF
 # Empty variables
 FILE=""
 LAYER=""
-OUTPUT_SUFFIX=""
-OUTPUT_EXTENSION=""
+
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -119,8 +127,8 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    --suffix=*)
-      OUTPUT_SUFFIX=${1#*=}
+    --prefix=*)
+      OUTPUT_PREFIX=${1#*=}
       shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
@@ -142,17 +150,11 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
-# set OUTPUT_SUFFIX default
-if [ "$OUTPUT_SUFFIX" != "" ]; then
-  OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
+# set OUTPUT_PREFIX default
+if [ "$OUTPUT_PREFIX" != "" ]; then
+  OUTPUT_PREFIX="$OUTPUT_PREFIX"
 else
-  OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
-fi
-# set OUTPUT_EXTENSION default
-if [ "$OUTPUT_EXTENSION" != "" ]; then
-  OUTPUT_EXTENSION="$OUTPUT_EXTENSION"
-else
-  OUTPUT_EXTENSION="$DEFAULT_OUTPUT_EXTENSION"
+  OUTPUT_PREFIX="$1"
 fi
 
 # requirements
@@ -181,7 +183,7 @@ checkDependencies(){
   fi
 }
 
-# get thumbs per scanner
+# show thumbs per scanner type
 getThumbiScanHT(){
   if [ "$LAYER" != "" ]; then
     LAYER="$LAYER"
@@ -189,32 +191,39 @@ getThumbiScanHT(){
     LAYER=0
   fi
 	# get the thumb
-	convert "$FILEFULL[$LAYER]" "$OUTPUTFILENAME"
+	convert "$FILEFULL[$LAYER]" -filter box -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
 }
 getThumbAperio(){
   if [ "$LAYER" != "" ]; then
-    convert "$FILEFULL"[$LAYER] "$OUTPUTFILENAME"
+    convert "$FILEFULL"[$LAYER] "$PREVIEW_TMPFILE"
   else
     # the last 2 layers contain thumb and the tissue (couning starts at 0)
     NR_LAYERS=`identify "$FILE" | wc -l`
     N_LABEL="$(($NR_LAYERS - 2))"
     N_TISSUE="$(($NR_LAYERS - 1))"
     # get label, get tissue, rotate and resize both, then concatenate 
-    convert "$FILEFULL[$N_LABEL]" -resize "$WIDTH"x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize "$WIDTH"x \) -append "$OUTPUTFILENAME"
+    convert "$FILEFULL[$N_LABEL]" -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
   fi
 }
 
 programOutput(){
+  echo "Rename your slide. [ctrl-c to cancel]"
+  
   # set variables
   FILE="$FILE"
   # path variables
   FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
   BASENAME="$(basename "$FILEFULL")"    # basename
-  DIRNAME="$(dirname "$FILE")"          # dirname
+  DIRNAME="$(dirname "$FILEFULL")"          # dirname
   EXTENSION="${BASENAME##*.}"           # extension
   FILEPATH="${FILEFULL%.*}"             # full path, no extension
   FILENAME="${BASENAME%.*}"             # filename, no extension"
-  OUTPUTFILENAME="${FILEPATH}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
+  # create tmp working file
+  PREVIEW_TMPFILE="$(mktemp -q /tmp/${SCRIPTNAME}.XXXXXX)".png
+  if [ $? -ne 0 ]; then
+       err "$0: Can't create temp file, exiting..."
+       exit 1
+  fi  
   
   # check metadata for scanner data
   if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l)" ]]; then
@@ -225,6 +234,29 @@ programOutput(){
     err "Unknown virtual slide format: $FILE"
     usage
     exit 1
+  fi
+
+  open -g -a Preview "$PREVIEW_TMPFILE"
+  
+  OUTPUT_PREFIX="AAA"
+  read -p "Enter slide name: $OUTPUT_PREFIX" SLIDENAME_UNSAVE
+  # SLIDENAME_UNSAVE="$(echo $SLIDENAME_UNSAVE | sed 's/^.*\(AE.*\)/\1/g')" # remove invisible characters [bug?]
+  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
+  OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
+  
+  #   rename the file
+  if [[ -n "$SLIDENAME" ]]; then
+    if [[ ! -a "$OUTPUTFILE" ]]; then
+      mv -v "$FILEFULL" "$OUTPUTFILE"
+    else
+      err "Filename exists: $OUTPUTFILE"
+      usage
+      exit 1
+    fi
+  else
+      err "No new filename given."
+      usage
+      exit 1
   fi
 }
 
