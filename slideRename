@@ -33,8 +33,9 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Rename virtual slide using the thumbnail"
-DEPENDENCIES=("convert" "identify" "parallel" "perl" "/Applications/Preview.app/Contents/MacOS/Preview")
+DEPENDENCIES=("convert" "identify" "parallel" "perl")
 PREVIEWDIMENSIONS="512x1024"
+DEFAULT_OUTPUT_PREFIX="" # empty by default
 
 # DEBUG setting, remove before going live
 # set -o verbose
@@ -154,7 +155,7 @@ fi
 if [ "$OUTPUT_PREFIX" != "" ]; then
   OUTPUT_PREFIX="$OUTPUT_PREFIX"
 else
-  OUTPUT_PREFIX="$1"
+  OUTPUT_PREFIX="$DEFAULT_OUTPUT_PREFIX"
 fi
 
 # requirements
@@ -207,8 +208,6 @@ getThumbAperio(){
 }
 
 programOutput(){
-  echo "Rename your slide. [ctrl-c to cancel]"
-  
   # set variables
   FILE="$FILE"
   # path variables
@@ -235,28 +234,34 @@ programOutput(){
     usage
     exit 1
   fi
-
+  # show file
   open -g -a Preview "$PREVIEW_TMPFILE"
-  
-  OUTPUT_PREFIX="AAA"
+
+  echo "Current name: $FILENAME"
+  echo "Rename your slide. [n-enter to cancel this slide] [ctrl-c to quit]"
   read -p "Enter slide name: $OUTPUT_PREFIX" SLIDENAME_UNSAVE
   # SLIDENAME_UNSAVE="$(echo $SLIDENAME_UNSAVE | sed 's/^.*\(AE.*\)/\1/g')" # remove invisible characters [bug?]
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
   
   #   rename the file
-  if [[ -n "$SLIDENAME" ]]; then
-    if [[ ! -a "$OUTPUTFILE" ]]; then
-      mv -v "$FILEFULL" "$OUTPUTFILE"
-    else
-      err "Filename exists: $OUTPUTFILE"
-      usage
-      exit 1
-    fi
+  if [[ "n" == "$SLIDENAME" ]]; then
+    echo "Cancel slide..."
+    exit 1
   else
+    if [[ -n "$SLIDENAME" ]]; then
+      if [[ ! -a "$OUTPUTFILE" ]]; then
+        mv -v "$FILEFULL" "$OUTPUTFILE"
+      else
+        err "Filename exists: $OUTPUTFILE"
+        usage
+        exit 1
+      fi
+    else
       err "No new filename given."
       usage
       exit 1
+    fi
   fi
 }
 
