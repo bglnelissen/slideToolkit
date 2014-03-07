@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Create thumb from virtual slide
+# Description: Rename virtual slide using thumbnail
 # Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
 #
 ################################################################################
@@ -30,15 +30,16 @@
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
 
-# ToDo automatically find the right layer
-
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
-DEPENDENCIES=("convert parallel perl")
+DESCRIPTIONSHORT="Rename virtual slide using thumbnail"
+DEPENDENCIES=("display") # imageMagick needs to be compiled with x11 support for OSX
+DEFAULTLAYER=0 # 0 = thumbnail
 
-# DEBUG setting, remove before going live
-# set -o verbose
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
 
 # usage message
 usage() {
@@ -47,6 +48,7 @@ usage:  $SCRIPTNAME [options] [path/]file
         [--help]
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -55,33 +57,30 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         extract the thumbnail from this virtual slide
-  -l, --layer[=INT]         force specific layer by layer id
+  -f, --file[=FILE]         virtual slide to create mask from
 
   --help                    display this help and exit
 
 examples:
-  $SCRIPTNAME "file.tif"
+  $SCRIPTNAME file.tif
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find -L ./  -name '*.tif' | parallel $SCRIPTNAME {}
+  find -L ./  -name '*.tif' -exec $SCRIPTNAME {}
 
 dependencies: $DEPENDENCIES
 
-Most virtual slides contain a an overview image from each slide, aka
-thumbnail. This script does a good job of extracting the correct layer,
-but you can always force an extraction using the --layer flag followed
-by an integer representing that layer.
+Type in the name and press [enter] to rename the file. You can use a
+regular barcode scanner.
+
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }
 
-# Menu
+# MENU
 # Empty variables
 FILE=""
-LAYER=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -103,12 +102,6 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    -l | --layer)
-      LAYER=$2
-      shift 2 ;;
-    --layer=*)
-      LAYER=${1#*=}
-      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -120,29 +113,17 @@ do
   esac
 done
 # DEFAULTS
-# set FILE default
+# set FILE
 if [ "$FILE" != "" ]; then
   FILE="$FILE"
 else
   FILE="$1"
 fi
-# set LAYER default
-if [ "$LAYER" != "" ]; then
-  LAYER="$LAYER"
-else
-  LAYER=0
-fi
 
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    echo "No such file: $FILE">&2;
-    usage
-    exit 1
-  fi
-  regexnumeric='^[0-9]+$'
-  if ! [[ $LAYER =~ $regexnumeric ]] ; then
-    echo "Layer is not an integer: $LAYER">&2;
+    err "No such file: $FILE"
     usage
     exit 1
   fi
@@ -154,7 +135,7 @@ checkDependencies(){
   DEPS=""
   for DEP in $DEPENDENCIES; do
     if [[ 0 != $(command -v "$DEP" >/dev/null ;echo $?) ]]; then
-      DEPS=$(echo "$DEPS $DEP") # create `array` with unknown dependencies
+      DEPS=$(echo "$DEPS \"$DEP\"") # create `array` with unknown dependencies
     fi
   done
   if [[ "" != $(echo "$DEPS" | perl -p -e 's/ //g') ]]; then
@@ -173,17 +154,53 @@ programOutput(){
 	LAYER="$LAYER"
   FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
   BASENAME=$(basename "$FILEFULL")    # basename
+	DIRNAME=$(dirname "$FILE")          # dirname
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
 	
-	# get the thumb
-	convert "$FILEFULL"[$LAYER] "$FILEPATH"."$LAYER".thumb.png
+	# let's roll
+#	clear
+
+	# kill all running preview windows
+	# kill $(ps -ax | grep -i [p]review | awk '{print $1}') > /dev/null 2>&1
+
+    #   show file to rename using osx open
+	# display -a App -g stay in background "${FILE}"
+# 	open -a Preview -g "$FILE" &
+# 	if [ $? -ne 0 ]; then
+# 	    err "Can not start Preview app."
+# 	    exit 1
+# 	fi
+	# start x11
+	open -a XQuartz
+  osascript -e 'tell application "Terminal" to activate'
+	
+	# show image
+  display "$FILE[0]" &
+	
+  osascript -e 'tell application "Terminal" to activate'
+  #   ask for a named
+  echo "Keep this window in focus (quit: ctrl c)"
+  echo "Scan/Type barcode... [ AE1234.STAIN enter ]"
+  read NEWNAME
+  NEWNAME="$(echo $NEWNAME | sed 's/^.*\(AE.*\)/\1/g')" # remove invisible characters [bug?]
+  #   rename the file
+  if [ -n "$NEWNAME" ]; then
+      # Move files
+      echo "$FILE" "${DIRNAME}/${NEWNAME}.${EXTENSION}"
+  else
+      echo "No new filename given."
+      echo "exit 1"
+      exit 1
+  fi
+  sleep 1
 }
 
 # all check?
 checkRequirements
-checkDependencies
+checkDependencies 
 
 # lets go!
+# actual program
 programOutput

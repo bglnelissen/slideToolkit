@@ -34,8 +34,10 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
-DEPENDENCIES=("convert parallel perl")
+DESCRIPTIONSHORT="Extract thumbnail from virtual Aperio slide"
+DEPENDENCIES=("convert parallel")
+OUTPUT_EXTENSION="png"
+WIDTH="512"
 
 # DEBUG setting, remove before going live
 # set -o verbose
@@ -56,23 +58,22 @@ $(usage)
 
 options:
   -f, --file[=FILE]         extract the thumbnail from this virtual slide
-  -l, --layer[=INT]         force specific layer by layer id
 
   --help                    display this help and exit
 
 examples:
-  $SCRIPTNAME "file.tif"
-  $SCRIPTNAME  --file="file.tif"
+  $SCRIPTNAME "file.svs"
+  $SCRIPTNAME  --file="file.svs"
 
 multiple files at once:
-  find -L ./  -name '*.tif' | parallel $SCRIPTNAME {}
+  find -L ./  -name '*.svs' | parallel $SCRIPTNAME {}
 
 dependencies: $DEPENDENCIES
 
-Most virtual slides contain a an overview image from each slide, aka
-thumbnail. This script does a good job of extracting the correct layer,
-but you can always force an extraction using the --layer flag followed
-by an integer representing that layer.
+Aperio slides are a variant of a multilayered/pyramid TIFF file. The
+last 2 layers contain an image of the label and the scanned area
+respectively. This script extract these two layers, resizes and rotates
+them acordingly and concatenates them into one file.
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
@@ -81,7 +82,6 @@ EOF
 # Menu
 # Empty variables
 FILE=""
-LAYER=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -103,12 +103,6 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    -l | --layer)
-      LAYER=$2
-      shift 2 ;;
-    --layer=*)
-      LAYER=${1#*=}
-      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -126,23 +120,11 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
-# set LAYER default
-if [ "$LAYER" != "" ]; then
-  LAYER="$LAYER"
-else
-  LAYER=0
-fi
 
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     echo "No such file: $FILE">&2;
-    usage
-    exit 1
-  fi
-  regexnumeric='^[0-9]+$'
-  if ! [[ $LAYER =~ $regexnumeric ]] ; then
-    echo "Layer is not an integer: $LAYER">&2;
     usage
     exit 1
   fi
@@ -170,15 +152,23 @@ programOutput(){
   # set variables
   FILE="$FILE"
   # path variables
-	LAYER="$LAYER"
   FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
-  BASENAME=$(basename "$FILEFULL")    # basename
-  EXTENSION="${BASENAME##*.}"         # extension
-  FILEPATH="${FILEFULL%.*}"           # full path, no extension
-  FILENAME="${BASENAME%.*}"           # filename, no extension"
-	
-	# get the thumb
-	convert "$FILEFULL"[$LAYER] "$FILEPATH"."$LAYER".thumb.png
+  BASENAME="$(basename "$FILEFULL")"    # basename
+  DIRNAME="$(dirname "$FILE")"          # dirname
+  EXTENSION="${BASENAME##*.}"           # extension
+  FILEPATH="${FILEFULL%.*}"             # full path, no extension
+  FILENAME="${BASENAME%.*}"             # filename, no extension"
+  
+  # the last 2 layers contain thumb and the tissue (couning starts at 0)
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  N_LABEL="$(($NR_LAYERS - 2))"
+  N_TISSUE="$(($NR_LAYERS - 1))"
+  # echo "N_LABEL $N_LABEL"
+  # echo "N_TISSUE $N_TISSUE"
+  # echo  "${FILEPATH}.${OUTPUT_EXTENSION}"
+  
+  # get label, get tissue, rotate and resize both, then concatenate 
+  convert "$FILEFULL[$N_LABEL]" -resize "$WIDTH"x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize "$WIDTH"x \) -append "${FILEPATH}.${OUTPUT_EXTENSION}"
 }
 
 # all check?
