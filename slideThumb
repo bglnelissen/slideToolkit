@@ -181,14 +181,14 @@ checkDependencies(){
   fi
 }
 
-# get thumbs per scanner
+# get thumb for each scanner type
 getThumbiScanHT(){
   if [ "$LAYER" != "" ]; then
     LAYER="$LAYER"
   else
+    # layer 0 contains the thumb
     LAYER=0
   fi
-	# get the thumb
 	convert "$FILEFULL[$LAYER]" "$OUTPUTFILENAME"
 }
 getThumbAperio(){
@@ -199,7 +199,7 @@ getThumbAperio(){
     NR_LAYERS=`identify "$FILE" | wc -l`
     N_LABEL="$(($NR_LAYERS - 2))"
     N_TISSUE="$(($NR_LAYERS - 1))"
-    # get label, get tissue, rotate and resize both, then concatenate 
+    # get label, get tissue, rotate one and resize both, then append 
     convert "$FILEFULL[$N_LABEL]" -resize "$WIDTH"x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize "$WIDTH"x \) -append "$OUTPUTFILENAME"
   fi
 }
