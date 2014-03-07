@@ -35,11 +35,18 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
-DEPENDENCIES=("convert parallel perl")
+DEPENDENCIES=("convert" "parallel" "perl")
+DEFAULT_OUTPUT_SUFFIX=".thumb"
+DEFAULT_OUTPUT_EXTENSION="png"
+WIDTH="512"
 
 # DEBUG setting, remove before going live
 # set -o verbose
 
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
 # usage message
 usage() {
 cat <<- EOF
@@ -47,6 +54,7 @@ usage:  $SCRIPTNAME [options] [path/]file
         [--help]
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -57,22 +65,24 @@ $(usage)
 options:
   -f, --file[=FILE]         extract the thumbnail from this virtual slide
   -l, --layer[=INT]         force specific layer by layer id
-
+  --suffix[=TEXT]           suffix to filename (default: $DEFAULT_OUTPUT_SUFFIX)
+  --extension[=TEXT]        thumbnail output extension (default: $DEFAULT_OUTPUT_EXTENSION)
+  
   --help                    display this help and exit
 
 examples:
-  $SCRIPTNAME "file.tif"
-  $SCRIPTNAME  --file="file.tif"
+  $SCRIPTNAME "file.svs"
+  $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 multiple files at once:
-  find -L ./  -name '*.tif' | parallel $SCRIPTNAME {}
+  find -L ./ -name "*svs" -o -name "*tif" | parallel $SCRIPTNAME {}
 
-dependencies: $DEPENDENCIES
+dependencies: ${DEPENDENCIES[@]}
 
-Most virtual slides contain a an overview image from each slide, aka
-thumbnail. This script does a good job of extracting the correct layer,
-but you can always force an extraction using the --layer flag followed
-by an integer representing that layer.
+A virtual slide is usually variant of a multilayered/pyramid TIFF file.
+Different vendors store an overview of each slide in one (or more) of
+these layers. This script extracts the correct layers and resizes,
+rotates and concatenates when necessary. 
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
@@ -82,6 +92,8 @@ EOF
 # Empty variables
 FILE=""
 LAYER=""
+OUTPUT_SUFFIX=""
+OUTPUT_EXTENSION=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -100,14 +112,20 @@ do
     -f | --file)
       FILE=$2
       shift 2 ;;
-    --file=*)
-      FILE=${1#*=}
-      shift ;;
     -l | --layer)
       LAYER=$2
       shift 2 ;;
     --layer=*)
       LAYER=${1#*=}
+      shift ;;
+    --file=*)
+      FILE=${1#*=}
+      shift ;;
+    --suffix=*)
+      OUTPUT_SUFFIX=${1#*=}
+      shift ;;
+    --extension=*)
+      OUTPUT_EXTENSION=${1#*=}
       shift ;;
     --) # End of all options
       shift
@@ -126,23 +144,23 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
-# set LAYER default
-if [ "$LAYER" != "" ]; then
-  LAYER="$LAYER"
+# set OUTPUT_SUFFIX default
+if [ "$OUTPUT_SUFFIX" != "" ]; then
+  OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
 else
-  LAYER=0
+  OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
+fi
+# set OUTPUT_EXTENSION default
+if [ "$OUTPUT_EXTENSION" != "" ]; then
+  OUTPUT_EXTENSION="$OUTPUT_EXTENSION"
+else
+  OUTPUT_EXTENSION="$DEFAULT_OUTPUT_EXTENSION"
 fi
 
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    echo "No such file: $FILE">&2;
-    usage
-    exit 1
-  fi
-  regexnumeric='^[0-9]+$'
-  if ! [[ $LAYER =~ $regexnumeric ]] ; then
-    echo "Layer is not an integer: $LAYER">&2;
+    err "No such file: $FILE"
     usage
     exit 1
   fi
@@ -150,35 +168,70 @@ checkRequirements() {
 
 # Dependencies
 checkDependencies(){
-  DEPENDENCIES="$DEPENDENCIES"
   DEPS=""
-  for DEP in $DEPENDENCIES; do
-    if [[ 0 != $(command -v "$DEP" >/dev/null ;echo $?) ]]; then
-      DEPS=$(echo "$DEPS $DEP") # create `array` with unknown dependencies
+  DEPS_FAIL="0"
+  for DEP in "${DEPENDENCIES[@]}"; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
     fi
   done
-  if [[ "" != $(echo "$DEPS" | perl -p -e 's/ //g') ]]; then
-    for d in $DEPS; do
-      echo "Missing dependency: \"$d\""
-    done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
     exit 1
   fi
 }
 
 # actual program
+getThumbiScanHT(){
+  # set LAYER default
+  if [ "$LAYER" != "" ]; then
+    LAYER="$LAYER"
+  else
+    LAYER=0
+  fi
+	# get the thumb
+	convert "$FILEFULL[$LAYER]" "$OUTPUTFILENAME"
+}
+
+getThumbAperio(){
+  # set LAYER default
+  if [ "$LAYER" != "" ]; then
+    convert "$FILEFULL"[$LAYER] "$OUTPUTFILENAME"
+  else
+    # the last 2 layers contain thumb and the tissue (couning starts at 0)
+    NR_LAYERS=`identify "$FILE" | wc -l`
+    N_LABEL="$(($NR_LAYERS - 2))"
+    N_TISSUE="$(($NR_LAYERS - 1))"
+
+    # get label, get tissue, rotate and resize both, then concatenate 
+    convert "$FILEFULL[$N_LABEL]" -resize "$WIDTH"x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize "$WIDTH"x \) -append "$OUTPUTFILENAME"
+  fi
+}
+
 programOutput(){
   # set variables
   FILE="$FILE"
   # path variables
-	LAYER="$LAYER"
-  FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
-  BASENAME=$(basename "$FILEFULL")    # basename
-  EXTENSION="${BASENAME##*.}"         # extension
-  FILEPATH="${FILEFULL%.*}"           # full path, no extension
-  FILENAME="${BASENAME%.*}"           # filename, no extension"
-	
-	# get the thumb
-	convert "$FILEFULL"[$LAYER] "$FILEPATH"."$LAYER".thumb.png
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
+  DIRNAME="$(dirname "$FILE")"          # dirname
+  EXTENSION="${BASENAME##*.}"           # extension
+  FILEPATH="${FILEFULL%.*}"             # full path, no extension
+  FILENAME="${BASENAME%.*}"             # filename, no extension"
+  OUTPUTFILENAME="${FILEPATH}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
+  
+  # check metadata for scanner data
+  if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l)" ]]; then
+    getThumbiScanHT # iScanHT found
+  elif [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "Aperio" | wc -l)" ]]; then
+    getThumbAperio  # Aperio found
+  else
+    err "Unknown virtual slide format: $FILE"
+    usage
+    exit 1
+  fi
 }
 
 # all check?
