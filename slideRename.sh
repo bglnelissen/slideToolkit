@@ -33,7 +33,7 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Short description"
-DEPENDENCIES=("convert")
+DEPENDENCIES=("convert" "perl" "identify")
 PREVIEWDIMENSIONS="512x1024"
 
 # Errors go to stderr
@@ -57,9 +57,10 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         virtual slide to create mask from
+  -f, --file[=FILE]           virtual slide to create mask from
+      --random-suffix[=NUM]   random number of characters as suffix
 
-  --help                    display this help and exit
+  --help                      display this help and exit
 
 examples:
   $SCRIPTNAME "file.tif"
@@ -67,8 +68,8 @@ examples:
   find [path/] -name '*.tif' | parallel [path/]slideMask {} 
   find [path/] -name '*.tif' -exec qsub [path/]slideMask {} \; 
 
-Some information on this script. It might be a bit informal, but keep it
-plain and simple
+$SCRIPTNAME opens the slidethumbnail and asks the user for a new name.
+The thumbnail is determined by the smallest layer in the virtual slide.
 
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
@@ -78,6 +79,7 @@ EOF
 # MENU
 # Empty variables
 FILE=""
+RANDOM_SUFFIX=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -98,6 +100,9 @@ do
       shift 2 ;;
     --file=*)
       FILE=${1#*=}
+      shift ;;
+    --random-suffix=*)
+      RANDOM_SUFFIX=${1#*=}
       shift ;;
     --) # End of all options
       shift
@@ -143,12 +148,19 @@ checkDependencies(){
   fi
 }
 
+# Dependencies
+checkLayer(){
+  LAYER="0"
+# use identify to get the smallest layer
+}
+
+
 # actual program
 programOutput(){
   # set variables
   FILE="$FILE"
   # path variables
-  FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
+  FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))"# full path
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FOLDERPATH=$(dirname "$FILEFULL")   # folder path
   BASENAME=$(basename "$FILEFULL")    # basename
@@ -160,9 +172,16 @@ programOutput(){
        err "$0: Can't create temp file, exiting..."
        exit 1
   fi
-  # extract thumb layer (filter box does not average pixels)
-  convert "$FILE[0]" -filter box -resize "$PREVIEWDIMENSIONS" "$TMPFILE"
+  # extract thumb layer (filter box does not average pixels and keeps it sharp)
+  convert "$FILEFULL"[$LAYER] -filter box -resize "$PREVIEWDIMENSIONS" "$TMPFILE"
   open -g -a Preview "$TMPFILE"
+  
+  # read input
+  echo  "Enter slide name:  (AE1234.CD3)"
+  read SLIDENAME_UNSAVE
+  # check input for valid characters
+  SLIDENAME=$(echo "$SLIDENAME_UNSAVE" | perl -p -e 's/[^A-Za-z0-9._-]/_/g')
+  echo "$FILEFULL" "$FOLDERPATH"/"$SLIDENAME"."$EXTENSION"
 }
 
 cleanUp(){
@@ -172,10 +191,11 @@ cleanUp(){
 # all check?
 checkRequirements
 checkDependencies 
+checkLayer
 
 # lets go!
 # actual program
 programOutput
 
 # cleanup
-# cleanup
+cleanup
