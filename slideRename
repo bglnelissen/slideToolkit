@@ -271,7 +271,7 @@ programOutput(){
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
   
   #   rename the file
-  if [[ "n" == "$SLIDENAME" ]]; then
+  if [[ "n" == "$SLIDENAME_UNSAVE" ]]; then
     echo "Cancel slide..."
     exit 1
   else
