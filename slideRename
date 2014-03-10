@@ -33,9 +33,10 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Rename virtual slide using the thumbnail"
-DEPENDENCIES=("convert" "identify" "parallel" "perl")
+DEPENDENCIES=("convert" "identify" "parallel" "perl" "tiffinfo")
 PREVIEWDIMENSIONS="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
+DEFAULT_OUTPUT_SUFFIX="" # empty by default
 DEFAULT_IM_ARGS="" # imagemagick arguments
 
 # DEBUG setting, remove before going live
@@ -83,7 +84,8 @@ options:
 
 examples:
   $SCRIPTNAME "file.tif"
-  $SCRIPTNAME  --layer=5  --prefix="AE" --suffix="CD68" --suffix="CD68" --extension="jpg" --args="-threshold 90%" "file.tif"
+  $SCRIPTNAME --prefix="AE" --suffix=".CD68" "file.tif"
+  $SCRIPTNAME  --layer=5 --args="-threshold 90%" "file.tif"
 
 multiple files at once:
   for i in \$(find -L ./ -name "*svs" -o -name "*tif"); do $SCRIPTNAME --prefix="AE" --suffix="CD68" \$i; done
@@ -249,9 +251,9 @@ programOutput(){
   fi  
   
   # check metadata for scanner data
-  if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l)" ]]; then
+  if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
     getThumbiScanHT # iScanHT found
-  elif [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "Aperio" | wc -l)" ]]; then
+  elif [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "Aperio" | wc -l | awk '{print $1}')" ]]; then
     getThumbAperio  # Aperio found
   else
     err "Unknown virtual slide format: $FILE"
