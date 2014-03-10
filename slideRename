@@ -36,6 +36,7 @@ DESCRIPTIONSHORT="Rename virtual slide using the thumbnail"
 DEPENDENCIES=("convert" "identify" "parallel" "perl")
 PREVIEWDIMENSIONS="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
+DEFAULT_IM_ARGS="" # imagemagick arguments
 
 # DEBUG setting, remove before going live
 # set -o verbose
@@ -75,22 +76,26 @@ options:
   -f, --file[=FILE]         virtual slide to rename
   -l, --layer[=INT]         force specific layer by layer id
   --prefix[=TEXT]           filename prefix
+  --suffix[=TEXT]           filename suffix
+  --args[=ARGUMENTS]        convert (imageMagick) arguments for extra enhancement
   
   --help                    display this help and exit
 
 examples:
-  $SCRIPTNAME "file.svs"
-  $SCRIPTNAME  --layer=5 --prefix="AAA" --extension="jpg" "file.tif"
+  $SCRIPTNAME "file.tif"
+  $SCRIPTNAME  --layer=5  --prefix="AE" --suffix="CD68" --suffix="CD68" --extension="jpg" --args="-threshold 90%" "file.tif"
 
 multiple files at once:
-  for i in \$(find -L ./ -name "*svs" -o -name "*tif"); do $SCRIPTNAME --prefix="AE" \$i; done
+  for i in \$(find -L ./ -name "*svs" -o -name "*tif"); do $SCRIPTNAME --prefix="AE" --suffix="CD68" \$i; done
 
 dependencies: ${DEPENDENCIES[@]}
 
 A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
 these layers. This script displays the correct layers and resizes,
-rotates and concatenates when necessary and asks for a new name.
+rotates and concatenates when necessary and asks for a new name. The
+image theshold can be used to increase the contrast and make unreadable
+barcodes readable again, you can use --args="-threshold 90%" for example.
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
@@ -131,6 +136,12 @@ do
     --prefix=*)
       OUTPUT_PREFIX=${1#*=}
       shift ;;
+    --suffix=*)
+      OUTPUT_SUFFIX=${1#*=}
+      shift ;;
+    --args=*)
+      IM_ARGS=${1#*=}
+      shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
@@ -156,6 +167,19 @@ if [ "$OUTPUT_PREFIX" != "" ]; then
   OUTPUT_PREFIX="$OUTPUT_PREFIX"
 else
   OUTPUT_PREFIX="$DEFAULT_OUTPUT_PREFIX"
+fi
+# set OUTPUT_SUFFIX default
+if [ "$OUTPUT_SUFFIX" != "" ]; then
+  OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
+else
+  OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
+fi
+
+# set IM_ARGS default
+if [ "$IM_ARGS" != "" ]; then
+  IM_ARGS="$IM_ARGS"
+else
+  IM_ARGS="$DEFAULT_IM_ARGS"
 fi
 
 # requirements
@@ -192,18 +216,18 @@ getThumbiScanHT(){
     LAYER=0
   fi
 	# get the thumb
-	convert "$FILEFULL[$LAYER]" -filter box -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
+	convert "$FILEFULL[$LAYER]"  $IM_ARGS -filter box -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
 }
 getThumbAperio(){
   if [ "$LAYER" != "" ]; then
-    convert "$FILEFULL"[$LAYER] "$PREVIEW_TMPFILE"
+    convert "$FILEFULL"[$LAYER]  $IM_ARGS -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
   else
     # the last 2 layers contain thumb and the tissue (couning starts at 0)
     NR_LAYERS=`identify "$FILE" | wc -l`
     N_LABEL="$(($NR_LAYERS - 2))"
     N_TISSUE="$(($NR_LAYERS - 1))"
     # get label, get tissue, rotate and resize both, then concatenate 
-    convert "$FILEFULL[$N_LABEL]" -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
+    convert "$FILEFULL[$N_LABEL]" $IM_ARGS -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
   fi
 }
 
@@ -239,9 +263,11 @@ programOutput(){
 
   echo "Current name: $FILENAME"
   echo "Rename your slide. [n-enter to cancel this slide] [ctrl-c to quit]"
-  read -p "Enter slide name: $OUTPUT_PREFIX" SLIDENAME_UNSAVE
-  # SLIDENAME_UNSAVE="$(echo $SLIDENAME_UNSAVE | sed 's/^.*\(AE.*\)/\1/g')" # remove invisible characters [bug?]
-  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
+  if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
+    echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
+  fi
+  read -p "Enter slide name:" SLIDENAME_UNSAVE
+  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
   
   #   rename the file
@@ -251,6 +277,7 @@ programOutput(){
   else
     if [[ -n "$SLIDENAME" ]]; then
       if [[ ! -a "$OUTPUTFILE" ]]; then
+        echo "$FILEFULL" "$OUTPUTFILE"
         mv -v "$FILEFULL" "$OUTPUTFILE"
       else
         err "Filename exists: $OUTPUTFILE"
