@@ -1,0 +1,233 @@
+#!/bin/bash
+#
+# Description: #INSERTION#
+# Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   Redistributions of source code must retain the above copyright notice, this 
+#   list of conditions and the following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above copyright notice, 
+#   this list of conditions and the following disclaimer in the documentation 
+#   and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Respect the Google Shell style guide.
+# http://google-styleguide.googlecode.com/svn/trunk/shell.xml
+
+# TODO FIX FUNCTION VARIABLES
+# FIX ERR
+
+# Set variables
+SCRIPTNAME="$(basename $0)"
+
+# usage message
+usage() {
+cat <<- EOF
+usage:  $SCRIPTNAME [options]
+        [--help]
+EOF
+}
+
+# Errors go to stderr
+err() {
+  echo "ERROR: $@ " >&2
+}
+# Create absolute 'real' paths (to be shure were to output is)
+absolutepath () {
+  p="$(echo $(cd $(dirname $1); pwd)/$(basename $1))"
+  echo "$p"
+}
+
+# help message
+help() {
+cat <<- EOF
+slideToolkit $SCRIPTNAME creates a joblist for a parallel job submission.
+
+usage:  $SCRIPTNAME  -p program -i file -o file [-a options]
+        [--version] [--help]
+
+options:
+  -a, --args[=VALUE]        arguments for the joblist que manager (like qsub)
+  -i, --input               input file for program (--program)
+  -o, --output[=VALUE]      write joblist to file
+  -p, --program[=VALUE]     program or script to run
+
+  --help                    display this help and exit
+  --version                 output version information and exit
+
+examples:
+  $SCRIPTNAME  --progam="bin" --input="file" --output="out.txt"
+  $SCRIPTNAME  -p "bin" -i "file" -o "out.txt" -a "-pe threaded 3"
+
+Setting the program, input file and output file is mandatory. Program and input
+file must exist and have the correct permissions. Arguments for the joblist
+interpreter (e.g. qsub, parallel) must be enclosed in quotation marks.
+Jobs are echoed to stdout but can be saved into a file.
+Report bugs to <b.g.l.nelissen@gmail.com>
+EOF
+}
+
+# usage message
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+usage:  $SCRIPTNAME  -p program -i file -o file [-a options]
+      [--version] [--help]
+EOF
+
+exit 1
+}
+
+# version message
+version() {
+cat <<- EOF
+slideToolkit $SCRIPTNAME
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice, this 
+  list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright notice, 
+  this list of conditions and the following disclaimer in the documentation 
+  and/or other materials provided with the distribution.
+  
+Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
+EOF
+}
+
+# requirements
+checkRequirements() {
+  # required PROGRAM
+  if [[ "" == "$PROGRAM" ]]; then
+    err "option '--program PROGRAM' not given."
+    usage
+    exit 1
+  elif [[ 0 != $(command -v "$PROGRAM" >/dev/null ;echo $?) ]]; then
+    err "program \"$PROGRAM\" not found."
+    usage
+    exit 1
+  fi
+  # require INPUT
+  if [[ "" == "$INPUT" ]]; then
+    err "option '--input INPUT' not given."
+    usage
+    exit 1
+  elif [[ ! -r "$INPUT" ]]; then
+    err "input \"$INPUT\" can not be read."
+    usage
+    exit 1
+  fi
+  # require OUTPUT
+  if [[ "" == "$OUTPUT" ]]; then
+    err "option '--output OUTPUTFILE' not given."
+    usage
+    exit 1
+  fi
+}
+
+# actual program
+programOutput(){
+  # ARGUMENTS
+  # -l deb=1    # Personal 150 slots list
+  # -pe threaded 3  # 3 cores with a total of 15*3 gigabytes of RAM
+  # -q veryshort  # get in the short que
+  # Set variables
+  BIN=$(command -v "$PROGRAM") # find path to executable
+  FILE=$(absolutepath "$INPUT ")   # recodes relative path into absolute path
+  JOBFILE="$OUTPUT"
+  QSUBARGS=" $JOBARGS "
+  FILENAMEEXT=$(basename "$FILE") # filename and extension, no path
+  NAME="${FILENAMEEXT%.*}"  # filename only, no extension, no path
+  EXTENSION="${FILENAMEEXT##*.}"  # extension only
+  FILENAME="${FILE%.*}"     # full path, no extension
+
+  # Create job for qsub
+  JOB="qsub -N \"${NAME}_$(basename ${BIN%.*})\"\
+  ${QSUBARGS}\
+  -e \"${FILENAME}.$(basename ${BIN%.*}).e.txt\"\
+  -o \"${FILENAME}.$(basename ${BIN%.*}).o.txt\"\
+  \"$BIN\" \"$FILE\"" 
+
+  # When set, add this job to the jobfile
+  if [ ! -z "$JOBFILE" ]; then  
+  # Create joblist, make joblist excecutable, add job to joblist
+  touch "${JOBFILE}"
+  chmod 755 "${JOBFILE}"
+  echo "$JOB" >> "$JOBFILE"
+  fi
+}
+
+
+# parse options (http://mywiki.wooledge.org/BashFAQ/035)
+# Reset all variables that might be set
+# Alphabetic order
+JOBARGS=""
+INPUT=""
+OUTPUT=""
+PROGRAM=""
+
+# loop through options
+while :
+do
+  case $1 in
+    -a | --args)
+      JOBARGS=$2
+      shift 2 ;;
+    --args=*)
+      JOBARGS=${1#*=}
+      shift ;;
+    --help | -\?)
+      help
+      exit 0 ;;
+    -i | --input)
+      INPUT=$2
+      shift 2 ;;
+    --input=*)
+      INPUT=${1#*=}
+      shift ;;
+    --version )
+      version
+      exit 0 ;;
+    -o | --output)
+      OUTPUT=$2
+      shift 2 ;;
+    --output=*)
+      OUTPUT=${1#*=}
+      shift ;;
+    -p | --program)
+      PROGRAM=$2
+      shift 2 ;;
+    --program=*)
+      PROGRAM=${1#*=}
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+
+# all set?
+checkRequirements
+
+# lets go!
+programOutput
