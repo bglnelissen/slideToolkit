@@ -22,7 +22,7 @@ DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000
 DEFAULTWIDTH=2000
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
-SLOTS=4
+SLOTS=3
 MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot
 
 # Errors go to stderr
@@ -51,7 +51,7 @@ $(usage)
 
 options:
   -f, --file[=FILE]         virtual slide to create tiles from
-  -m, --mask[=FILE]         virtual slide to create tiles from
+  -m, --mask[=FILE]         black mask for excluding parts of the virtual slide 
   --layer[=INT]             force specific layer [$DEFAULTLAYER]
   --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
@@ -64,7 +64,13 @@ examples:
 
 multiple files at once:
   find -L ./ -name "*tif" | parallel $SCRIPTNAME --mask="{.}.mask.png" --file="{}"
-  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" --mask="{.}.mask.png" --file="{}" 
+
+HPC qsub job submission: (fetch full path [=j])
+  for i in \$(find -L ./ -name "*tif"); do
+    j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
+    echo "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}" |\\
+    qsub -N "\$(basename \"\${j%.*}\")" -pe threaded $SLOTS -q short -e "\${j%.*}.e.log" -o "\${j%.*}.e.log"
+  done
 
 dependencies: $DEPENDENCIES
 
@@ -100,6 +106,12 @@ do
       shift 2 ;;
     --file=*)
       FILE=${1#*=}
+      shift ;;
+    -m | --mask)
+      MASK=$2
+      shift 2 ;;
+    --mask=*)
+      MASK=${1#*=}
       shift ;;
     --layer=*)
       LAYER=${1#*=}
@@ -155,6 +167,11 @@ checkRequirements() {
     usage
     exit 1
   fi
+  if ! [[ -f "$MASK" ]] ; then
+    echo "No such mask: $MASK">&2;
+    usage
+    exit 1
+  fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
     echo "Layer is not an integer: $LAYER">&2;
@@ -171,11 +188,12 @@ checkRequirements() {
     usage
     exit 1
   fi
+
   # check input files
-  S="$FILE" # input scan
+  S="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FILE
   INPUTFILENAME="${S%.*}"             # full path without extension
   INPUTSCANEXT="${S##*.}"             # input scan extension only
-  M="${INPUTFILENAME}.mask.png"       # input mask
+  M="${MASK}"       # input mask
   FILENAMESCAN="${S##*/}"
   SHORTNAME="$(basename $INPUTFILENAME)"
   FILENAMEMASK="${M##*/}"
@@ -240,7 +258,7 @@ programOutput(){
   convert -limit area "${MEMORYLIMIT}" "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
-  debug "Preview created; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
+  debug "bufferexample.png created; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
 
   mkdir -p "$INPUTFILENAME" # create output directory
   # create tiles per row, measure dimensions of newly create image
