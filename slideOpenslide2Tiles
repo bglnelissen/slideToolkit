@@ -6,6 +6,14 @@
 #
 # License here.
 #
+<<<<<<< HEAD
+=======
+#
+# License here
+#
+# Respect the Google Shell style guide.
+# http://google-styleguide.googlecode.com/svn/trunk/shell.xml
+>>>>>>> FETCH_HEAD
 
 # aperio magnifications: tiffinfo aperio.svs |grep -w AppMag| sed 's/.*\(AppMag\ =\ [0-9]\{1,2\}\).*/\1/'
 

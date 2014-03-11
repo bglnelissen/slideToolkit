@@ -6,6 +6,12 @@
 #
 # License here.
 #
+<<<<<<< HEAD
+=======
+#
+# License here
+#
+>>>>>>> FETCH_HEAD
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
 

@@ -6,12 +6,19 @@
 #
 # License here.
 #
+<<<<<<< HEAD
+=======
+#
+# License here
+#
+>>>>>>> FETCH_HEAD
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
 
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create macro and mask from virtual slide"
+DEPENDENCIES=("convert" "parallel")
 
 # Errors go to stderr
 err() {
@@ -39,8 +46,12 @@ options:
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
-  find [path/] -name '*.tif' | parallel [path/]slideMask {} 
-  find [path/] -name '*.tif' -exec qsub [path/]slideMask {} \; 
+
+multiple files at once:
+  find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
+  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" 
+
+dependencies: ${DEPENDENCIES[@]}
 
 Sometimes not all tissue on your virtual slide needs processing. You can
 mask parts of your image that you do not wat to process. This program
@@ -106,16 +117,16 @@ checkRequirements() {
 
 # Dependencies
 checkDependencies(){
-  DEPENDENCIES=("convert")
+  DEPENDENCIES="$DEPENDENCIES"
   DEPS=""
   for DEP in $DEPENDENCIES; do
     if [[ 0 != $(command -v "$DEP" >/dev/null ;echo $?) ]]; then
-      DEPS=$(echo "$DEPS \"$DEP\"") # create `array` with unknown dependencies
+      DEPS=$(echo "$DEPS $DEP") # create `array` with unknown dependencies
     fi
   done
-  if [[ "" != "$DEPS" ]]; then
-    for d in "$DEPS"; do
-      err "Missing dependency: $d"
+  if [[ "" != $(echo "$DEPS" | perl -p -e 's/ //g') ]]; then
+    for d in $DEPS; do
+      echo "Missing dependency: \"$d\""
     done
     exit 1
   fi

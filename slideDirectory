@@ -2,9 +2,15 @@
 #
 # Description: Move file into a similar named directory
 # Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
+<<<<<<< HEAD
 # Last edit: 8 march 2014
 #
 # License here.
+=======
+# 
+#
+# License here
+>>>>>>> FETCH_HEAD
 #
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
@@ -15,16 +21,13 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Move file into a similar named directory"
+DEPENDENCIES=("convert" "parallel")
 
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
 }
-# Create absolute 'real' paths (to be shure were to output is)
-absolutepath () {
-  p="$(echo $(cd $(dirname $1); pwd)/$(basename $1))"
-  echo "$p"
-}
+
 # usage message
 usage() {
 cat <<- EOF
@@ -32,6 +35,7 @@ usage:  $SCRIPTNAME file
         [--help]
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -48,8 +52,12 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-Move file into a similar named directory. Only the first argument is
-used.
+multiple files at once:
+  find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
+
+dependencies: ${DEPENDENCIES[@]}
+
+Move file into a similar named directory.
 Report bugs to <b.g.l.nelissen@gmail.com>
 EOF
 }
@@ -105,10 +113,26 @@ checkRequirements() {
   fi
 }
 
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in "${DEPENDENCIES[@]}"; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
+    exit 1
+  fi
+}
 # actual program
 programOutput(){
-  FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
-  BASENAME=$(basename "$FILEFULL")    # basename
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
@@ -118,6 +142,7 @@ programOutput(){
 
 # all check?
 checkRequirements
+checkDependencies
 
 # lets go!
 programOutput

@@ -51,6 +51,7 @@ $(usage)
 
 options:
   -f, --file[=FILE]         virtual slide to create tiles from
+  -m, --mask[=FILE]         virtual slide to create tiles from
   --layer[=INT]             force specific layer [$DEFAULTLAYER]
   --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
@@ -62,8 +63,13 @@ examples:
   $SCRIPTNAME  --mask="file.mask.png" --file="file.tif"
 
 multiple files at once:
+<<<<<<< HEAD
 # to test
   find ./ -name '*.tif' | parallel ${SCRIPTNAME} --mask="{.}.mask.png" --file="{}"
+=======
+  find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
+  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" 
+>>>>>>> FETCH_HEAD
 
 dependencies: $DEPENDENCIES
 

@@ -6,6 +6,12 @@
 #
 # License here.
 #
+<<<<<<< HEAD
+=======
+#
+# License here
+#
+>>>>>>> FETCH_HEAD
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
 
@@ -60,7 +66,7 @@ examples:
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 multiple files at once:
-  find -L ./ -name "*svs" -o -name "*tif" | parallel $SCRIPTNAME {}
+    find -L ./ -name "*tif" | parallel ${SCRIPTNAME} "{}"
 
 dependencies: ${DEPENDENCIES[@]}
 
