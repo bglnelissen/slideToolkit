@@ -67,7 +67,7 @@ examples:
   $SCRIPTNAME  --layer=5 --args="-threshold 90%" "file.tif"
 
 multiple files at once:
-  for i in \$(find -L ./ -name "*svs" -o -name "*tif"); do $SCRIPTNAME --prefix="AE" --suffix="CD68" \$i; done
+     find -L ./ -name "*tif" -exec "\$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -243,7 +243,7 @@ programOutput(){
   open -g -a Preview "$PREVIEW_TMPFILE"
 
   echo "Current name: $FILENAME"
-  echo "Rename your slide. [n-enter to cancel this slide] [ctrl-c to quit]"
+  echo "Rename your slide. [n-enter next slide] [ctrl-c to quit]"
   if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi

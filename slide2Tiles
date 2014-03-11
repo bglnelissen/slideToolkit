@@ -63,8 +63,8 @@ examples:
   $SCRIPTNAME  --mask="file.mask.png" --file="file.tif"
 
 multiple files at once:
-# to test
-  find ./ -name '*.tif' | parallel ${SCRIPTNAME} --mask="{.}.mask.png" --file="{}"
+  find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
+  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" 
 
 dependencies: $DEPENDENCIES
 
