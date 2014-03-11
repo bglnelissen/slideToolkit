@@ -3,30 +3,9 @@
 # Move file into a similar named directory
 # Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
 # 
-################################################################################
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-# 
-#   Redistributions of source code must retain the above copyright notice,
-#   this list of conditions and the following disclaimer.
-# 
-#   Redistributions in binary form must reproduce the above copyright
-#   notice, this list of conditions and the following disclaimer in the
-#   documentation and/or other materials provided with the distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-################################################################################
+#
+# License here
+#
 # Respect the Google Shell style guide.
 # http://google-styleguide.googlecode.com/svn/trunk/shell.xml
 #
@@ -36,16 +15,13 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Move file into a similar named directory"
+DEPENDENCIES=("convert" "parallel")
 
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
 }
-# Create absolute 'real' paths (to be shure were to output is)
-absolutepath () {
-  p="$(echo $(cd $(dirname $1); pwd)/$(basename $1))"
-  echo "$p"
-}
+
 # usage message
 usage() {
 cat <<- EOF
@@ -53,6 +29,7 @@ usage:  $SCRIPTNAME file
         [--help]
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -69,8 +46,12 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-Move file into a similar named directory. Only the first argument is
-used.
+multiple files at once:
+  find -L ./ -name "*svs" -o -name "*tif" -exec $SCRIPTNAME "{}" \;
+
+dependencies: ${DEPENDENCIES[@]}
+
+Move file into a similar named directory.
 Report bugs to <b.g.l.nelissen@gmail.com>
 EOF
 }
@@ -126,10 +107,26 @@ checkRequirements() {
   fi
 }
 
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in "${DEPENDENCIES[@]}"; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
+    exit 1
+  fi
+}
 # actual program
 programOutput(){
-  FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
-  BASENAME=$(basename "$FILEFULL")    # basename
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
@@ -139,6 +136,7 @@ programOutput(){
 
 # all check?
 checkRequirements
+checkDependencies
 
 # lets go!
 programOutput
