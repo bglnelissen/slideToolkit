@@ -65,8 +65,8 @@ multiple files at once:
 HPC qsub job submission: (fetch full path [=j])
   for i in \$(find -L ./ -name "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}" |\\
-    qsub -N "\$(basename \"\${j%.*}\")" -pe threaded $SLOTS -q short -e "\${j%.*}.e.log" -o "\${j%.*}.e.log"
+    qsub -N "\$(basename \"\${j%.*}\")" -pe threaded $SLOTS -q short -e "\${j%.*}.e.log" -o "\${j%.*}.e.log" \\
+    "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
 dependencies: $DEPENDENCIES
