@@ -73,7 +73,7 @@ HPC qsub job submission: (fetch full path [=j])
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
-dependencies: $DEPENDENCIES
+dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
 2000 by 2000 pixels (default).

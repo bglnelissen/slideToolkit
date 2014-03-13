@@ -1,0 +1,212 @@
+#!/bin/bash
+#
+# Description: Create joblist with multiple pipelines
+# Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
+# Last edit: 8 march 2014
+#
+# License here.
+#
+# Respect the Google Shell style guide.
+# http://google-styleguide.googlecode.com/svn/trunk/shell.xml
+#
+# ToDo:
+# add openslide for non masked slides
+# make memory as an option and dynamically change qsub -pe threated flag
+# delete empty tiles
+# improve tissue detection for tiles
+
+# Variables
+SCRIPTNAME="$(basename $0)"
+DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
+CPBIN="cellprofiler" # command to run CellProfiler
+DEPENDENCIES=("convert" "parallel" "$CPBIN")
+OUTPUTDIR="output" # relative to input dir
+QSUBERR="error.txt"
+QSUBOUT="stdout.txt"
+QSUBOPT="-pe threated 3 -q short"
+
+# Cleanup stage
+set -e
+function cleanup {
+  # things to do on exit
+  printf ""
+}
+trap cleanup EXIT
+
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
+
+# Debug go to stdout
+debug() {
+  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # or >/dev/null
+}
+
+# usage message
+usage() {
+cat <<- EOF
+usage:  $SCRIPTNAME [options] [path/]file
+        [--help]
+EOF
+}
+# help message
+helpMessage() {
+cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
+$(usage)
+
+options:
+  -i, --inputdir[=DIR]      Input directory with tiles to analyse
+  -p, --pipeline            CellProfiler pipeline to use on images located in '--inputdir'
+  -N, --name                Name of this job
+  
+  --help                    display this help and exit
+
+examples:
+  $SCRIPTNAME -i "./" -p "pipeline.cp"
+
+multiple folders at once:
+  find -L ./ -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" -p "pipeline.cp" \;
+
+redicect output to file using '>'
+  $SCRIPTNAME --options > file
+
+dependencies: ${DEPENDENCIES[@]}
+
+Create a joblist that analyses multiple folders containing tiles using
+CellProfiler. You can redirect the output of this program to a file using:
+
+
+Report bugs to <b.g.l.nelissen@gmail.com>
+slideToolkit (C) 2014, B.G.L. Nelissen
+EOF
+}
+
+# Menu
+# Empty variables
+INPUTDIR=""
+PIPELINE=""
+NAME=""
+# illegal option
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+$(usage)
+EOF
+exit 1
+}
+# loop through options
+while :
+do
+  case $1 in
+    --help | -\?)
+      helpMessage
+      exit 0 ;;
+    -i | --inputdir)
+      INPUTDIR=$2
+      shift 2 ;;
+    --inputdir=*)
+      INPUTDIR=${1#*=}
+      shift ;;
+    -p | --pipeline)
+      PIPELINE=$2
+      shift 2 ;;
+    --pipeline=*)
+      PIPELINE=${1#*=}
+      shift ;;
+    -N | --name)
+      QSUBNAME=$2
+      shift 2 ;;
+    --name=*)
+      QSUBNAME=${1#*=}
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+
+# DEFAULTS
+# set FILE default
+if [ "$INPUTDIR" != "" ]; then
+  INPUTDIR="$INPUTDIR"
+fi
+# set LAYER default
+if [ "$PIPELINE" != "" ]; then
+  PIPELINE="$PIPELINE"
+fi
+# set QSUBNAME default
+if [ "$QSUBNAME" != "" ]; then
+  QSUBNAME="$QSUBNAME"
+else
+  QSUBNAME="$SCRIPTNAME"
+fi
+
+# requirements
+checkRequirements() {
+  if ! [[ -d "$INPUTDIR" ]] ; then
+    echo "No such inputdir: $INPUTDIR">&2;
+    usage
+    exit 1
+  fi
+  if ! [[ -f "$PIPELINE" ]] ; then
+    echo "No such pipeline: $PIPELINE">&2;
+    usage
+    exit 1
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in "${DEPENDENCIES[@]}"; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
+    exit 1
+  fi
+}
+
+# actual program
+programOutput(){
+  # set variables
+  CPBINFULL="$(command -v "$CPBIN" )" # full path
+  PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path
+  INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path
+  OUTPUTDIRFULL="$INPUTDIRFULL"/"$OUTPUTDIR""/" # full path
+  QSUBNAME="$QSUBNAME"
+  QERR="$OUTPUTDIRFULL""$QSUBERR"
+  QOUT="$OUTPUTDIRFULL""$QSUBOUT"
+  
+  # create output directory
+  mkdir -p "$OUTPUTDIR" # outputdir must exist
+  if [ $? -ne 0 ]; then
+    echo "Can not create output direcotry: $OUTPUTDIR">&2;
+    usage
+    exit 1
+  fi
+
+  # create job command for qsub
+  JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT -e \"${QERR}\" -o \"${QOUT}\" $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+  echo "$JOB"
+}
+
+# all check?
+checkRequirements
+checkDependencies
+
+# lets go!
+programOutput
