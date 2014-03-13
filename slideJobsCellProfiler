@@ -23,7 +23,7 @@ DEPENDENCIES=("convert" "parallel" "$CPBIN")
 OUTPUTDIR="output" # relative to input dir
 QSUBERR="error.txt"
 QSUBOUT="stdout.txt"
-QSUBOPT="-pe threated 3 -q short"
+QSUBOPT="-pe threaded 3 -q short"
 
 # Cleanup stage
 set -e
@@ -68,7 +68,7 @@ examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find -L ./ -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" -p "pipeline.cp" \;
+  find -L ./ -mindepth 2 -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -p "pipeline.cp" \;
 
 redicect output to file using '>'
   $SCRIPTNAME --options > file
@@ -76,7 +76,8 @@ redicect output to file using '>'
 dependencies: ${DEPENDENCIES[@]}
 
 Create a joblist that analyses multiple folders containing tiles using
-CellProfiler. You can redirect the output of this program to a file using:
+CellProfiler. You can redirect the output of this program into a file.
+Remember to always manually check your output.
 
 
 Report bugs to <b.g.l.nelissen@gmail.com>
@@ -186,15 +187,15 @@ programOutput(){
   CPBINFULL="$(command -v "$CPBIN" )" # full path
   PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path
   INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path
-  OUTPUTDIRFULL="$INPUTDIRFULL"/"$OUTPUTDIR""/" # full path
+  OUTPUTDIRFULL="$INPUTDIRFULL"/../"$OUTPUTDIR""/" # full path
   QSUBNAME="$QSUBNAME"
   QERR="$OUTPUTDIRFULL""$QSUBERR"
   QOUT="$OUTPUTDIRFULL""$QSUBOUT"
   
   # create output directory
-  mkdir -p "$OUTPUTDIR" # outputdir must exist
+  mkdir -p "$OUTPUTDIRFULL" # outputdir must exist
   if [ $? -ne 0 ]; then
-    echo "Can not create output direcotry: $OUTPUTDIR">&2;
+    echo "Can not create output direcotry: $OUTPUTDIRFULL">&2;
     usage
     exit 1
   fi
