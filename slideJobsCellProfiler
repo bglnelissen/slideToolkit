@@ -20,9 +20,9 @@ SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
 CPBIN="cellprofiler" # command to run CellProfiler
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
-OUTPUTDIR="output" # relative to input dir
-QSUBERR="error.txt"
-QSUBOUT="stdout.txt"
+OUTPUTDIR="CellProfiler.output" # relative to input dir
+QSUBERR="$SCRIPTNAME.e.log"
+QSUBOUT="$SCRIPTNAME.o.log"
 QSUBOPT="-pe threaded 3 -q short"
 
 # Cleanup stage
@@ -76,8 +76,7 @@ redicect output to file using '>'
 dependencies: ${DEPENDENCIES[@]}
 
 Create a joblist that analyses multiple folders containing tiles using
-CellProfiler. You can redirect the output of this program into a file.
-Remember to always manually check your output.
+CellProfiler. You can redirect the output of this program to a file using:
 
 
 Report bugs to <b.g.l.nelissen@gmail.com>
@@ -185,12 +184,12 @@ checkDependencies(){
 programOutput(){
   # set variables
   CPBINFULL="$(command -v "$CPBIN" )" # full path
-  PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path
-  INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path
-  OUTPUTDIRFULL="$INPUTDIRFULL"/../"$OUTPUTDIR""/" # full path
+  PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path to pipeline
+  INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path to dir with Tiles
+  OUTPUTDIRFULL="$INPUTDIRFULL""$OUTPUTDIR""/" # full path to output dir
   QSUBNAME="$QSUBNAME"
-  QERR="$OUTPUTDIRFULL""$QSUBERR"
-  QOUT="$OUTPUTDIRFULL""$QSUBOUT"
+  QERR="$OUTPUTDIRFULL"../"$QSUBERR"
+  QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
   # create output directory
   mkdir -p "$OUTPUTDIRFULL" # outputdir must exist
