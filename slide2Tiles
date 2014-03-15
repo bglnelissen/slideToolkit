@@ -24,7 +24,7 @@ DEFAULTHEIGHT=2000
 DEFAULTWIDTH=2000
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
 SLOTS=3
-MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot
+MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
 OUTPUTDIRSUFFIX=".tiles"
 
 # Errors go to stderr
@@ -70,8 +70,7 @@ multiple files at once:
 HPC qsub job submission: (fetch full path [=j])
   for i in \$(find -L ./ -name "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    qsub -N "$(basename \"\${j%.*}\")" -pe threaded $SLOTS -q veryshort \\
-    -e "\${j%.*}\$SCRIPTNAME.e.log" -o "\${j%.*}\$SCRIPTNAME.o.log" \\
+    echo "qsub" -pe threaded "$SLOTS" -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
