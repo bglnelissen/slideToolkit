@@ -67,7 +67,7 @@ examples:
   $SCRIPTNAME  --layer=5 --args="-threshold 90%" "file.tif"
 
 multiple files at once:
-     find -L ./ -name "*tif" -exec "\$(command -v "$SCRIPTNAME")" "{}" \;
+     find -L ./ -name "*tif" -exec "$(command -v "slideRename")" --file="{}" --prefix="AE" --suffix=".CD68.\${RANDOM}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -86,6 +86,8 @@ EOF
 # Empty variables
 FILE=""
 LAYER=""
+OUTPUT_PREFIX=""
+OUTPUT_SUFFIX=""
 
 # illegal option
 illegalOption() {
@@ -155,7 +157,6 @@ if [ "$OUTPUT_SUFFIX" != "" ]; then
 else
   OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
 fi
-
 # set IM_ARGS default
 if [ "$IM_ARGS" != "" ]; then
   IM_ARGS="$IM_ARGS"
@@ -171,6 +172,7 @@ checkRequirements() {
     exit 1
   fi
 }
+
 
 # Dependencies
 checkDependencies(){
@@ -218,7 +220,7 @@ programOutput(){
   # path variables
   FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
   BASENAME="$(basename "$FILEFULL")"    # basename
-  DIRNAME="$(dirname "$FILEFULL")"          # dirname
+  DIRNAME="$(dirname "$FILEFULL")"      # dirname
   EXTENSION="${BASENAME##*.}"           # extension
   FILEPATH="${FILEFULL%.*}"             # full path, no extension
   FILENAME="${BASENAME%.*}"             # filename, no extension"
@@ -250,8 +252,7 @@ programOutput(){
   read -p "Enter slide name:" SLIDENAME_UNSAVE
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
-  
-  #   rename the file
+   #   rename the file
   if [[ "n" == "$SLIDENAME_UNSAVE" ]]; then
     echo "Cancel slide..."
     exit 1
