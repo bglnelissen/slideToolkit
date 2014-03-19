@@ -37,9 +37,9 @@ $(usage)
 
 options:
   -f, --file[=FILE]         virtual slide to create mask from
-  --masksuffix[=TEXT]       mask suffix [DEFAULT=mask]
-  --macrosuffix[=TEXT]      macro suffix [DEFAULT=macro]
-  -l, --layer[=INT]         force specific layer by layer id
+  --masksuffix[=TEXT]       mask suffix [DEFAULT="$MASKSUFFIX_DEFAULT"]
+  --macrosuffix[=TEXT]      macro suffix [DEFAULT="$MACROSUFFIX_DEFAULT"]
+  -l, --layer[=INT]         force specific layer by layer id [DEFAULT="$LAYER_DEFAULT"]
 
   --help                    display this help and exit
 
@@ -187,11 +187,11 @@ programOutput(){
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
-  MASK="${FILEPATH}.${MASKSUFFIX}.png"
-  MACRO="${FILEPATH}.${MACROSUFFIX}.png"
+  MASK="${FILEPATH}${MASKSUFFIX}.png"
+  MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
   # create macro
-  convert $FILEFULL[$LAYER] -fuzz 1% -transparent "#ECECEC"  $MACRO
+  convert "$FILEFULL[$LAYER]" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
   # create mask
   # a fuzz of 3% works well, but fails on very light slides
   # a fuzz of 2% is mightby to easy on the selection
@@ -201,13 +201,13 @@ programOutput(){
   #	 - make all white transparent (background)
   #	 - remove the border
   #	 - create alpha and save file
-  convert $MACRO \( $MACRO \
+  convert "$MACRO" \( "$MACRO" \
     -bordercolor white -border 100x100 \
     -blur 40x40 \
     -fuzz 2% -transparent white \
     -crop +100+100 -crop -100-100 +repage \
     -alpha extract -transparent white \) \
-    -flatten $MASK
+    -flatten "$MASK"
 }
 # all check?
 checkRequirements
