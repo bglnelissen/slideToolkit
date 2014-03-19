@@ -43,7 +43,7 @@ examples:
 
 multiple files at once:
   find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
-  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" 
+  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
