@@ -13,6 +13,9 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create macro and mask from virtual slide"
 DEPENDENCIES=("convert" "parallel")
+MASKSUFFIX_DEFAULT=".mask"
+MACROSUFFIX_DEFAULT=".macro"
+LAYER_DEFAULT=8
 
 # Errors go to stderr
 err() {
@@ -34,6 +37,9 @@ $(usage)
 
 options:
   -f, --file[=FILE]         virtual slide to create mask from
+  --masksuffix[=TEXT]       mask suffix [DEFAULT=mask]
+  --macrosuffix[=TEXT]      macro suffix [DEFAULT=macro]
+  -l, --layer[=INT]         force specific layer by layer id
 
   --help                    display this help and exit
 
@@ -43,7 +49,13 @@ examples:
 
 multiple files at once:
   find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
-  find -L ./ -name "*tif" -exec qsub "$(command -v "$SCRIPTNAME")" "{}" \;
+
+HPC qsub job submission: (fetch full path [=j])
+  for i in \$(find -L ./ -name "*tif"); do
+    j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
+    echo "qsub" -pe threaded 1 -q veryshort \\
+    "$(command -v "$SCRIPTNAME")" --file="\${j}"
+  done
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -61,6 +73,10 @@ EOF
 # Menu
 # Empty variables
 FILE=""
+LAYER=""
+MASKSUFFIX=""
+MACROSUFFIX=""
+
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -82,6 +98,24 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
+    -l | --layer)
+      LAYER=$2
+      shift 2 ;;
+    --layer=*)
+      LAYER=${1#*=}
+      shift ;;
+    --masksuffix)
+      MASKSUFFIX=$2
+      shift 2 ;;
+    --masksuffix=*)
+      MASKSUFFIX=${1#*=}
+      shift ;;
+    --macrosuffix)
+      MACROSUFFIX=$2
+      shift 2 ;;
+    --macrosuffix=*)
+      MACROSUFFIX=${1#*=}
+      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -98,6 +132,24 @@ if [ "$FILE" != "" ]; then
   FILE="$FILE"
 else
   FILE="$1"
+fi
+# set MASKSUFFIX default
+if [ "$MASKSUFFIX" != "" ]; then
+  LAYER="$MASKSUFFIX"
+else
+  LAYER="$MASKSUFFIX_DEFAULT"
+fi
+# set MACROSUFFIX default
+if [ "$MACROSUFFIX" != "" ]; then
+  LAYER="$MACROSUFFIX"
+else
+  LAYER="$MACROSUFFIX_DEFAULT"
+fi
+# set LAYER default
+if [ "$LAYER" != "" ]; then
+  LAYER="$LAYER"
+else
+  LAYER="$LAYER_DEFAULT"
 fi
 
 # requirements
@@ -129,14 +181,14 @@ checkDependencies(){
 # actual program
 programOutput(){
   # set variables
-  LAYER=8
+  LAYER="$LAYER"
   FILEFULL="$(echo $(cd $(dirname $FILE); pwd)/$(basename $FILE))" # full path $FULL
   BASENAME=$(basename "$FILEFULL")    # basename
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
-  MASK="$FILEPATH.mask.png"
-  MACRO="$FILEPATH.macro.png"
+  MASK="${FILEPATH}.${MASKSUFFIX}.png"
+  MACRO="${FILEPATH}.${MACROSUFFIX}.png"
 
   # create macro
   convert $FILEFULL[$LAYER] -fuzz 1% -transparent "#ECECEC"  $MACRO
