@@ -135,15 +135,15 @@ else
 fi
 # set MASKSUFFIX default
 if [ "$MASKSUFFIX" != "" ]; then
-  LAYER="$MASKSUFFIX"
+  MASKSUFFIX="$MASKSUFFIX"
 else
-  LAYER="$MASKSUFFIX_DEFAULT"
+  MASKSUFFIX="$MASKSUFFIX_DEFAULT"
 fi
 # set MACROSUFFIX default
 if [ "$MACROSUFFIX" != "" ]; then
-  LAYER="$MACROSUFFIX"
+  MACROSUFFIX="$MACROSUFFIX"
 else
-  LAYER="$MACROSUFFIX_DEFAULT"
+  MACROSUFFIX="$MACROSUFFIX_DEFAULT"
 fi
 # set LAYER default
 if [ "$LAYER" != "" ]; then
@@ -191,7 +191,7 @@ programOutput(){
   MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
   # create macro
-  echo convert "$FILEFULL[$LAYER]" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert "$FILEFULL[$LAYER]" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
   # create mask
   # a fuzz of 3% works well, but fails on very light slides
   # a fuzz of 2% is mightby to easy on the selection
