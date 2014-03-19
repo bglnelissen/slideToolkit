@@ -50,7 +50,7 @@ examples:
 multiple files at once:
   find -L ./ -name "*tif" | parallel $SCRIPTNAME "{}"
 
-HPC qsub job submission: (fetch full path [=j])
+HPC qsub job submission:
   for i in \$(find -L ./ -name "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
