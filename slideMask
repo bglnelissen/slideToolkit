@@ -15,8 +15,7 @@ DESCRIPTIONSHORT="Create macro and mask from virtual slide"
 DEPENDENCIES=("convert" "parallel")
 MASKSUFFIX_DEFAULT=".mask"
 MACROSUFFIX_DEFAULT=".macro"
-LAYER_DEFAULT=8
-
+MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
@@ -178,6 +177,27 @@ checkDependencies(){
   fi
 }
 
+# get mask function for each type of scanner
+getThumbiScanHT(){
+  if [ "$LAYER" != "" ]; then
+    LAYER="$LAYER"
+  else
+    # layer 8 contains the macro
+    LAYER=8
+  fi
+	convert "$FILEFULL[$LAYER]" -resize "${MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+macroOlympusDP71(){
+  if [ "$LAYER" != "" ]; then
+    LAYER="$LAYER"
+  else
+    # layer 0 contains the macro
+    LAYER=0
+  fi
+	convert "$FILEFULL[$LAYER]" -resize "${MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+
+
 # actual program
 programOutput(){
   # set variables
@@ -191,7 +211,17 @@ programOutput(){
   MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
   # create macro
-  convert "$FILEFULL[$LAYER]" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  # check metadata for scanner data
+  if [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "iScanHT" | wc -l)" ]]; then
+    macroiScanHT # iScanHT found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "DP71" | wc -l)" ]]; then
+    macroOlympusDP71  # Aperio found
+  else
+    err "Unknown virtual slide format: $FILEFULL"
+    usage
+    exit 1
+  fi
+  
   # create mask
   # a fuzz of 3% works well, but fails on very light slides
   # a fuzz of 2% is mightby to easy on the selection
