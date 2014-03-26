@@ -19,13 +19,22 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut virtual slides into tiles"
 DEPENDENCIES=("convert" "parallel")
+DEFAULTMASKSUFFIX=".mask.png" # 3
 DEFAULTLAYER=3 # 3
-DEFAULTHEIGHT=2000
-DEFAULTWIDTH=2000
+DEFAULTHEIGHT=2000  # 2000
+DEFAULTWIDTH=2000   # 2000
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
 SLOTS=3
 MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
 OUTPUTDIRSUFFIX=".tiles"
+
+# Exit and cleanup
+set -e
+function cleanup {
+  # remove temp files
+  rm -rf "$TMPSTORAGE"
+}
+trap cleanup EXIT
 
 # Errors go to stderr
 err() {
@@ -34,7 +43,7 @@ err() {
 
 # Debug go to stdout
 debug() {
-  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # or >/dev/null
+  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
 }
 
 # usage message
@@ -57,12 +66,13 @@ options:
   --layer[=INT]             force specific layer [$DEFAULTLAYER]
   --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
+  --keepEmtpy[=TRUE]        keep empty tiles when found
   
   --help                    display this help and exit
 
 examples:
   $SCRIPTNAME "file.tif"
-  $SCRIPTNAME  --mask="file.mask.png" --file="file.tif"
+  $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
 
 multiple files at once:
   find -L ./ -name "*tif" | parallel $SCRIPTNAME --mask="{.}.mask.png" --file="{}"
@@ -78,7 +88,8 @@ dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
 2000 by 2000 pixels (default). Tiles are stored in a folder with suffix
-'$OUTPUTDIRSUFFIX' at the same location as the input file.
+'$OUTPUTDIRSUFFIX' at the same location as the input file. By default
+all empty tiles are deleted.
 
 Report bugs to <b.g.l.nelissen@gmail.com>
 slideToolkit (C) 2014, B.G.L. Nelissen
@@ -88,7 +99,9 @@ EOF
 # Menu
 # Empty variables
 FILE=""
+MASK=""
 LAYER=""
+KEEPEMPTYTILES=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -109,6 +122,9 @@ do
       shift 2 ;;
     --file=*)
       FILE=${1#*=}
+      shift ;;
+    --keepEmpty=*)
+      KEEPEMPTYTILES=${1#*=}
       shift ;;
     -m | --mask)
       MASK=$2
@@ -137,31 +153,43 @@ do
 done
 
 # DEFAULTS
-# set FILE default
+# set FILE 
 if [ "$FILE" != "" ]; then
   FILE="$FILE"
 else
   FILE="$1"
 fi
-# set LAYER default
+# set MASK 
+if [ "$MASK" != "" ]; then
+  MASK="$MASK"
+else
+  # Same as file, using DEFAULTMASKSUFFIX as suffix (including extension)
+  MASK=${FILE%.*}${DEFAULTMASKSUFFIX}
+fi
+# set LAYER 
 if [ "$LAYER" != "" ]; then
   LAYER="$LAYER"
 else
   LAYER="$DEFAULTLAYER"
 fi
-# set HEIGHT default
+# set HEIGHT 
 if [ "$HEIGHT" != "" ]; then
   HEIGHT="$HEIGHT"
 else
   HEIGHT="$DEFAULTHEIGHT"
 fi
-# set WIDTH default
+# set WIDTH 
 if [ "$WIDTH" != "" ]; then
   WIDTH="$WIDTH"
 else
   WIDTH="$DEFAULTWIDTH"
 fi
-
+# set KEEPEMPTYTILES 
+if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
+  KEEPEMPTYTILES=true
+else
+  KEEPEMPTYTILES=false
+fi
 
 # requirements
 checkRequirements() {
@@ -285,7 +313,9 @@ programOutput(){
       # find tissue, needs improvement
       if [[ "$(wc -c < $FILE )" -ge 100000 ]]; then
         # more than 100000 bytes...
-        TISSUE="tissue"; 
+        TISSUE="tissue";
+        # rename file
+        mv "$FILE" "${filename}.${TISSUE}.png"
 #         VERBOSE=$( convert $FILE -colorspace HSL -verbose info: );
 #         RGBO=$( echo "$VERBOSE" | grep mean | awk '{print $2}' )
 #         RED=$( echo $RGBO | awk '{print $1}'  | cut -d. -f1 ); 
@@ -302,10 +332,13 @@ programOutput(){
 #           TISSUE="empty"; 
 #         fi; 
       else 
-          TISSUE="empty"; 
+          TISSUE="empty";
+          if [ "$KEEPEMPTYTILES" == "true" ]; then
+             mv "$FILE" "${filename}.${TISSUE}.png"
+          else
+            rm -rf "$FILE"
+          fi
       fi;
-        # rename file
-      mv "$FILE" "${filename}.${TISSUE}.png"
     done
   done
   date2="$(date +'%s')"

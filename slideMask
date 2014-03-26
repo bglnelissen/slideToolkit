@@ -213,7 +213,7 @@ programOutput(){
   # create macro
   # check metadata for scanner data
   if [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "iScanHT" | wc -l)" ]]; then
-    macroiScanHT # iScanHT found
+    getThumbiScanHT # iScanHT found
   elif [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "DP71" | wc -l)" ]]; then
     macroOlympusDP71  # Aperio found
   else
