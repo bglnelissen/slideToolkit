@@ -23,10 +23,12 @@ DEFAULTMASKSUFFIX=".mask.png" # 3
 DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
 DEFAULTWIDTH=2000   # 2000
+DEFAULTOUTPUTDIRSUFFIX=".tiles"
+MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+# automate this:
 SLOTS=3
 MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
-DEFAULTOUTPUTDIRSUFFIX=".tiles"
 
 # Exit and cleanup
 set -e
@@ -319,35 +321,21 @@ programOutput(){
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
       convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
-    
+
       # find tissue, needs improvement
-      if [[ "$(wc -c < $FILE )" -ge 100000 ]]; then
-        # more than 100000 bytes...
+      if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
+        # more than MINBYTESIZE bytes... tissue found
+        # fit within width and height
         TISSUE="tissue";
-        # rename file
         mv "$FILE" "${filename}.${TISSUE}.png"
-#         VERBOSE=$( convert $FILE -colorspace HSL -verbose info: );
-#         RGBO=$( echo "$VERBOSE" | grep mean | awk '{print $2}' )
-#         RED=$( echo $RGBO | awk '{print $1}'  | cut -d. -f1 ); 
-#         GREEN=$( echo $RGBO | awk '{print $2}'| cut -d. -f1 ); 
-#         BLUE=$( echo $RGBO | awk '{print $3}' | cut -d. -f1 );
-#         BLUESD=$( echo "$VERBOSE" | grep 'standard deviation' | awk '{print $3}' | sed -n 3p | cut -d. -f1 )
-#         if [ $RED -ge 51 ] && [ $GREEN -ge 12 ];
-#         then 
-#           TISSUE="tissue";
-#         elif [ $BLUESD -ge 6 ];
-#         then  
-#           TISSUE="tissue"; 
-#         else
-#           TISSUE="empty"; 
-#         fi; 
       else 
-          TISSUE="empty";
-          if [ "$KEEPEMPTYTILES" == "true" ]; then
-             mv "$FILE" "${filename}.${TISSUE}.png"
-          else
-            rm -rf "$FILE"
-          fi
+        # no tissue found
+        TISSUE="empty";
+        if [ "$KEEPEMPTYTILES" == "true" ]; then
+           mv "$FILE" "${filename}.${TISSUE}.png"
+        else
+          rm -rf "$FILE"
+        fi
       fi;
     done
   done
