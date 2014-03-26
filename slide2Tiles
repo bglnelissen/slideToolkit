@@ -26,7 +26,7 @@ DEFAULTWIDTH=2000   # 2000
 TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
 SLOTS=3
 MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
-OUTPUTDIRSUFFIX=".tiles"
+DEFAULTOUTPUTDIRSUFFIX=".tiles"
 
 # Exit and cleanup
 set -e
@@ -67,6 +67,7 @@ options:
   --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
   --keepEmtpy[=TRUE]        keep empty tiles when found
+  --outputsuffix[=TEXT]     output directory suffix
   
   --help                    display this help and exit
 
@@ -88,7 +89,7 @@ dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
 2000 by 2000 pixels (default). Tiles are stored in a folder with suffix
-'$OUTPUTDIRSUFFIX' at the same location as the input file. By default
+'$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
 all empty tiles are deleted.
 
 Report bugs to <b.g.l.nelissen@gmail.com>
@@ -135,6 +136,9 @@ do
     --layer=*)
       LAYER=${1#*=}
       shift ;;
+    --outputsuffix=*)
+      OUTPUTDIRSUFFIX=${1#*=}
+      shift ;;
     --height=*)
       HEIGHT=${1#*=}
       shift ;;
@@ -171,6 +175,12 @@ if [ "$LAYER" != "" ]; then
   LAYER="$LAYER"
 else
   LAYER="$DEFAULTLAYER"
+fi
+# set OUTPUTDIRSUFFIX 
+if [ "$OUTPUTDIRSUFFIX" != "" ]; then
+  OUTPUTDIRSUFFIX="$OUTPUTDIRSUFFIX"
+else
+  OUTPUTDIRSUFFIX="$DEFAULTOUTPUTDIRSUFFIX"
 fi
 # set HEIGHT 
 if [ "$HEIGHT" != "" ]; then
