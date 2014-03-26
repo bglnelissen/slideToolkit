@@ -178,7 +178,7 @@ checkRequirements() {
 checkDependencies(){
   DEPS=""
   DEPS_FAIL="0"
-  for DEP in "${DEPENDENCIES[@]}"; do
+  for DEP in ${DEPENDENCIES[@]}; do
     if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
        err "Missing dependency: $DEP"
        DEPS_FAIL=$(($DEPS_FAIL + 1))

@@ -14,8 +14,8 @@
 #
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Move file into a similar named directory"
-DEPENDENCIES=("convert" "parallel")
+DESCRIPTIONSHORT="Show virtual slide information"
+DEPENDENCIES=("identify tiffinfo")
 
 # Errors go to stderr
 err() {
@@ -38,7 +38,7 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=VALUE]        Move file into a similar named directory 
+  -f, --file[=VALUE]        Virtual slide 
 
   --help                    display this help and exit
 
@@ -46,12 +46,9 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-multiple files at once:
-  find -L ./ -name "*tif" -exec "$SCRIPTNAME" "{}" \;
-
 dependencies: ${DEPENDENCIES[@]}
 
-Move file into a similar named directory.
+Show virtual slide information: color depth, layers, etc.
 Report bugs to <b.g.l.nelissen@gmail.com>
 EOF
 }
@@ -123,15 +120,22 @@ checkDependencies(){
     exit 1
   fi
 }
+
 # actual program
 programOutput(){
+  # set variables
+  FILE="$FILE"
+  # path variables
   FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
   BASENAME="$(basename "$FILEFULL")"    # basename
-  EXTENSION="${BASENAME##*.}"         # extension
-  FILEPATH="${FILEFULL%.*}"           # full path, no extension
-  FILENAME="${BASENAME%.*}"           # filename, no extension"
-  mkdir -p "$FILEPATH"
-  mv "$FILE" "$FILEPATH"/
+  DIRNAME="$(dirname "$FILEFULL")"      # dirname
+  EXTENSION="${BASENAME##*.}"           # extension
+  FILEPATH="${FILEFULL%.*}"             # full path, no extension
+  FILENAME="${BASENAME%.*}"             # filename, no extension
+  
+  # remove lines with these tags to make the file more readable (awk 'NF' removes blank lines)
+  tiffinfo "$FILEFULL" | perl -p -e 's/^<.?AOI.*//g;s/^<.?AnchorPoint.*//g;s/^<.?Metadata.*//g;s/^<.?PrescanData.*//g;s/^\s*XML.*//g' | awk 'NF'
+  identify "$FILEFULL"
 }
 
 # all check?
