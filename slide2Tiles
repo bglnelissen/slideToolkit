@@ -78,10 +78,10 @@ examples:
   $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
 
 multiple files at once:
-  find -L ./ -name "*tif" | parallel $SCRIPTNAME --mask="{.}.mask.png" --file="{}"
+  find ./ -name "*tif" | parallel $SCRIPTNAME --mask="{.}.mask.png" --file="{}"
 
 HPC qsub job submission: (fetch full path [=j])
-  for i in \$(find -L ./ -name "*tif"); do
+  for i in \$(find ./ -name "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded "$SLOTS" -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"

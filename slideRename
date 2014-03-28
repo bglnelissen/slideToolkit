@@ -67,7 +67,7 @@ examples:
   $SCRIPTNAME  --layer=5 --args="-threshold 90%" "file.tif"
 
 multiple files at once:
-     find -L ./ -name "*tif" -exec "$(command -v "slideRename")" --file="{}" --prefix="AE" --suffix=".CD68.\${RANDOM}" \;
+     find ./ -name "*tif" -exec "$(command -v "slideRename")" --file="{}" --prefix="AE" --suffix=".CD68.\${RANDOM}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 

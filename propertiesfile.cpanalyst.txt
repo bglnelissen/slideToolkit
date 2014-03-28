@@ -1,0 +1,29 @@
+# CPAnalyst properties file
+db_type     = sqlite
+db_sql_file = example_SETUP.SQL
+# ==== Table info ====
+image_table  = per_image
+object_table = per_object
+# ==== Column info ====
+image_id   = ImageNumber
+object_id  = ObjectNumber
+plate_id   = plate
+well_id    = well
+cell_x_loc = Nuclei_Location_CenterX
+cell_y_loc = Nuclei_Location_CenterY
+# ==== Image access info ====
+image_url_prepend =
+# ==== Image Path and Filename Columns ====
+image_path_cols = Image_Pathnames_Path_Origdna, Image_Pathnames_Path_Origdna,
+   Image_Pathnames_Path_Origdna
+image_file_cols = Image_Filenames_Filename_origActin,
+Image_Filenames_Filename_origpH3, Image_Filenames_Filename_origdna image_names = Actin, pH3, DNA
+image_channel_colors = red, green, blue
+# ==== Global Meta data ====
+object_name = cell, cells
+plate_type  = 96
+# ==== Classify ====
+5
+classifier_ignore_columns = Nuclei_Location.*, Meta.*,
+# ==== Other ====
+image_tile_size   = 40

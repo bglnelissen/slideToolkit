@@ -14,16 +14,19 @@
 # make memory as an option and dynamically change qsub -pe threated flag
 # delete empty tiles
 # improve tissue detection for tiles
+# add --bibtex
 
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
 CPBIN="cellprofiler" # command to run CellProfiler
+DEFAULTHANDLER="" # default is empty, options are parallel and qsub
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
-OUTPUTDIR="CellProfiler.output" # relative to input dir
+OUTPUTDIR="cp.out" # relative to input dir
 QSUBERR="$SCRIPTNAME.e.log"
 QSUBOUT="$SCRIPTNAME.o.log"
 QSUBOPT="-pe threaded 3 -q short"
+PARALLELOPT="-j+0"
 
 # Cleanup stage
 set -e
@@ -58,20 +61,20 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -i, --inputdir[=DIR]      Input directory with tiles to analyse
-  -p, --pipeline            CellProfiler pipeline to use on images located in '--inputdir'
-  -N, --name                Name of this job
-  
-  --help                    display this help and exit
+  -i, --inputdir[=DIR]        directory with tiles to analyse
+  -p, --pipeline              CellProfiler pipeline to use on images located in '--inputdir'
+  --handler[=qsub]            specify the job handler
+
+qsub:
+  -N, --name                  qsub job name
+
+  --help                      display this help and exit
 
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find -L ./ -mindepth 2 -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -p "pipeline.cp" \;
-
-redicect output to file using '>'
-  $SCRIPTNAME --options > file
+  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -p "pipeline.cp" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -104,6 +107,9 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    --handler=*)
+      HANDLER=${1#*=}
+      shift ;;
     -i | --inputdir)
       INPUTDIR=$2
       shift 2 ;;
@@ -148,16 +154,32 @@ if [ "$QSUBNAME" != "" ]; then
 else
   QSUBNAME="$SCRIPTNAME"
 fi
+# set HANDLER
+if [ "$HANDLER" != "" ]; then
+  HANDLER="$HANDLER"
+else
+  HANDLER="$DEFAULTHANDLER"
+fi
+
+
 
 # requirements
 checkRequirements() {
+  # input dir must exist
   if ! [[ -d "$INPUTDIR" ]] ; then
-    echo "No such inputdir: $INPUTDIR">&2;
+    err "No such inputdir: $INPUTDIR"
     usage
     exit 1
   fi
+  # pipeline must exist
   if ! [[ -f "$PIPELINE" ]] ; then
-    echo "No such pipeline: $PIPELINE">&2;
+    err "No such pipeline: $PIPELINE"
+    usage
+    exit 1
+  fi
+  # set HANDLER (parallel|qsub|etc)
+  if ! [[ "$HANDLER" =~ (qsub) || "$HANDLER" == "" ]] ; then
+    err "No such job handler: $HANDLER"
     usage
     exit 1
   fi
@@ -194,13 +216,21 @@ programOutput(){
   # create output directory
   mkdir -p "$OUTPUTDIRFULL" # outputdir must exist
   if [ $? -ne 0 ]; then
-    echo "Can not create output direcotry: $OUTPUTDIRFULL">&2;
+    err "Can not create output direcotry: $OUTPUTDIRFULL"
     usage
     exit 1
   fi
-
-  # create job command for qsub
-  JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT -e \"${QERR}\" -o \"${QOUT}\" $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+  if [[  "$HANDLER" == ""  ]]; then
+    # create job command for qsub
+    JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+  elif [[  "$HANDLER" == "qsub"  ]]; then
+    # create job command for qsub
+    JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT -e \"${QERR}\" -o \"${QOUT}\" $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+  else
+    err "No such job handler: $HANDLER"
+    usage
+    exit 1
+  fi
   echo "$JOB"
 }
 
