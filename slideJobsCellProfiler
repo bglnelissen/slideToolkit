@@ -20,7 +20,7 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
 CPBIN="cellprofiler" # command to run CellProfiler
-DEFAULTHANDLER="" # default is empty, options are parallel and qsub
+DEFAULTHANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
 OUTPUTDIR=".cp.out" # relative to input dir
 QSUBERR="$SCRIPTNAME.e.log"
@@ -74,7 +74,7 @@ examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -p "pipeline.cp" \;
+  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "\$(basename {}) -p "pipeline.cp" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -92,6 +92,8 @@ EOF
 INPUTDIR=""
 PIPELINE=""
 NAME=""
+QSUBNAME=""
+HANDLER=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -214,7 +216,7 @@ programOutput(){
   QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
     # create output directory
-  MKDIR="mkdir -p $OUTPUTDIRFULL"
+  MKDIR="mkdir -p \"$OUTPUTDIRFULL\""
   if [[  "$HANDLER" == ""  ]]; then
     # create job command for qsub
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
