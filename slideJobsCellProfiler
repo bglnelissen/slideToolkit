@@ -22,7 +22,7 @@ DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULTHANDLER="" # default is empty, options are parallel and qsub
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
-OUTPUTDIR="cp.out" # relative to input dir
+OUTPUTDIR=".cp.out" # relative to input dir
 QSUBERR="$SCRIPTNAME.e.log"
 QSUBOUT="$SCRIPTNAME.o.log"
 QSUBOPT="-pe threaded 3 -q short"
@@ -213,13 +213,8 @@ programOutput(){
   QERR="$OUTPUTDIRFULL"../"$QSUBERR"
   QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
-  # create output directory
-  mkdir -p "$OUTPUTDIRFULL" # outputdir must exist
-  if [ $? -ne 0 ]; then
-    err "Can not create output direcotry: $OUTPUTDIRFULL"
-    usage
-    exit 1
-  fi
+    # create output directory
+  MKDIR="mkdir -p $OUTPUTDIRFULL"
   if [[  "$HANDLER" == ""  ]]; then
     # create job command for qsub
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
@@ -231,7 +226,7 @@ programOutput(){
     usage
     exit 1
   fi
-  echo "$JOB"
+  echo "$MKDIR"";" "$JOB"
 }
 
 # all check?
