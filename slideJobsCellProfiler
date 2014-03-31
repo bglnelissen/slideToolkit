@@ -74,7 +74,7 @@ examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "\$(basename "{}")" -p "pipeline.cp" \;
+  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" --handler=qsub -p "pipeline.cp" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -211,7 +211,7 @@ programOutput(){
   PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path to pipeline
   INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path to dir with Tiles
   OUTPUTDIRFULL="$INPUTDIRFULL""$OUTPUTDIR""/" # full path to output dir
-  QSUBNAME="$QSUBNAME"
+  QSUBNAME=$(echo "$QSUBNAME" | perl -p -e 's/.*\/(.+)/\1/g' | perl -p -e 's/[^0-9a-zA-Z]*//g') # [a-zA-Z0-9] only
   QERR="$OUTPUTDIRFULL"../"$QSUBERR"
   QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
