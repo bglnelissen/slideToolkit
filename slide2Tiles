@@ -13,7 +13,7 @@
 # add openslide for non masked slides
 # make memory as an option and dynamically change qsub -pe threated flag
 # delete empty tiles
-# improve tissue detection for tiles
+# improve tissue detection for tiles: use this: http://www.multipole.org/discourse-server/viewtopic.php?f=1&t=11297
 
 # Variables
 SCRIPTNAME="$(basename $0)"
