@@ -63,11 +63,11 @@ options:
 
 examples:
   $SCRIPTNAME "file.tif"
-  $SCRIPTNAME --prefix="AE" --suffix=".CD68" "file.tif"
-  $SCRIPTNAME  --layer=5 --args="-threshold 90%" "file.tif"
+  $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
+  $SCRIPTNAME  --layer=5 --args="-threshold 90%" -f "file.tif"
 
 multiple files at once:
-     find ./ -name "*tif" -exec "$(command -v "slideRename")" --file="{}" --prefix="AE" --suffix=".CD68.\${RANDOM}" \;
+     find ./ -name "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
@@ -250,6 +250,7 @@ programOutput(){
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi
   read -p "Enter slide name:" SLIDENAME_UNSAVE
+  SLIDENAME_UNSAVE=$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')  # fix barcodescanner output 
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
    #   rename the file
@@ -257,7 +258,7 @@ programOutput(){
     echo "Cancel slide..."
     exit 1
   else
-    if [[ -n "$SLIDENAME" ]]; then
+    if [[ -n "$OUTPUTFILE" ]]; then
       if [[ ! -a "$OUTPUTFILE" ]]; then
         echo "$FILEFULL" "$OUTPUTFILE"
         mv -v "$FILEFULL" "$OUTPUTFILE"
