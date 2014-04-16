@@ -245,33 +245,32 @@ programOutput(){
   open -g -a Preview "$PREVIEW_TMPFILE"
 
   echo "Current name: $FILENAME"
-  echo "Rename your slide. [n-enter next slide] [ctrl-c to quit]"
+  echo "Rename your slide. [c to cancel] [ctrl-c to quit]"
   if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi
   read -p "Enter slide name:" SLIDENAME_UNSAVE
+  if [[ "c" == "$SLIDENAME_UNSAVE" ]]; then
+    echo "Cancel slide..."
+    exit 1
+  fi
   SLIDENAME_UNSAVE=$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')  # fix barcodescanner output 
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   OUTPUTFILE="${DIRNAME}/${SLIDENAME}.${EXTENSION}"
-   #   rename the file
-  if [[ "n" == "$SLIDENAME_UNSAVE" ]]; then
-    echo "Cancel slide..."
-    exit 1
-  else
-    if [[ -n "$OUTPUTFILE" ]]; then
-      if [[ ! -a "$OUTPUTFILE" ]]; then
-        echo "$FILEFULL" "$OUTPUTFILE"
-        mv -v "$FILEFULL" "$OUTPUTFILE"
-      else
-        err "Filename exists: $OUTPUTFILE"
-        usage
-        exit 1
-      fi
+  #   rename the file
+  if [[ -n "$OUTPUTFILE" ]]; then
+    if [[ ! -a "$OUTPUTFILE" ]]; then
+      echo "$FILEFULL" "$OUTPUTFILE"
+      mv -v "$FILEFULL" "$OUTPUTFILE"
     else
-      err "No new filename given."
+      err "Filename exists: $OUTPUTFILE"
       usage
       exit 1
     fi
+  else
+    err "No new filename given."
+    usage
+    exit 1
   fi
 }
 
