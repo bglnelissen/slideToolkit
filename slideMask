@@ -47,7 +47,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -name "*tif" | parallel $SCRIPTNAME "{}"
+  find ./ -name "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
 HPC qsub job submission:
   for i in \$(find ./ -name "*tif"); do
