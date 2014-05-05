@@ -47,7 +47,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -name "*tif" -exec "$(command -v "$SCRIPTNAME")" "{}" \;
+  find ./ -iname "*tif" -exec "$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 

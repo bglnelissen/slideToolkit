@@ -74,7 +74,7 @@ examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find ./ -name "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" --handler=qsub -p "pipeline.cp" \;
+  find ./ -iname "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" --handler=qsub -p "pipeline.cp" \;
 
 dependencies: ${DEPENDENCIES[@]}
 

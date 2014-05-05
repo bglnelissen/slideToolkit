@@ -47,10 +47,10 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -name "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
+  find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
 HPC qsub job submission:
-  for i in \$(find ./ -name "*tif"); do
+  for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --file="\${j}"
