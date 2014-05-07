@@ -62,7 +62,7 @@ examples:
 dependencies: ${DEPENDENCIES[@]}
 
 Show virtual slide information: color depth, layers, etc.
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 EOF
 }
 

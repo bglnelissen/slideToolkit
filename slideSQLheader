@@ -70,7 +70,7 @@ examples:
 Extract SQL-file column names created by cellprofiler. These headers
 can be added to a .csv file using the --add-head option, a copy
 (.head.csv) will be created
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }

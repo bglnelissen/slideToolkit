@@ -105,7 +105,7 @@ Cut slides into tiles for further processing. Reasonable tile size is
 '$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
 all empty tiles are deleted.
 
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }

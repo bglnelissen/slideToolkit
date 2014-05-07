@@ -65,7 +65,7 @@ multiple files at once:
 dependencies: ${DEPENDENCIES[@]}
 
 Move file into a similar named directory.
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 EOF
 }
 

@@ -95,7 +95,7 @@ This script displays a miniture of the whole slide and asks for a  new
 name. The image theshold can be used to increase the contrast and make
 unreadable barcodes readable again, you can use --args="-threshold 90%"
 for example.
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }

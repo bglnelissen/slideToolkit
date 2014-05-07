@@ -76,7 +76,7 @@ A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
 these layers. This script extracts the correct layers and resizes,
 rotates and concatenates when necessary. 
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }

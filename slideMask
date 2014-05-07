@@ -81,7 +81,7 @@ needed. The slideToolkit only excludes real black (color #000000). Two
 new files will be created, one file.macro.png and one file.mask.png.
 Existing files will be overwritten.
 
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }

@@ -91,7 +91,7 @@ Create a joblist that analyses multiple folders containing tiles using
 CellProfiler. You can redirect the output of this program to a file using:
 
 
-Report bugs to <b.g.l.nelissen@gmail.com>
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
 slideToolkit (C) 2014, B.G.L. Nelissen
 EOF
 }
