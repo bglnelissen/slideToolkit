@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Create scaled mask and macro of the slide
+# Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Create macro and mask from virtual slide"
+DESCRIPTIONSHORT="Create scaled mask and macro from a virtual slide"
 DEPENDENCIES=("convert" "parallel")
 MASKSUFFIX_DEFAULT=".mask"
 MACROSUFFIX_DEFAULT=".macro"
@@ -39,7 +39,8 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME [options] [path/]file
+usage:  $SCRIPTNAME -f|--file[=FILE]
+        [-l|--layer[=INT]] [--masksuffix[=TEXT]] [--macrosuffix[=TEXT]]
         [--help]
 EOF
 }
@@ -52,9 +53,9 @@ $(usage)
 
 options:
   -f, --file[=FILE]         virtual slide to create mask from
-  --masksuffix[=TEXT]       mask suffix [DEFAULT="$MASKSUFFIX_DEFAULT"]
-  --macrosuffix[=TEXT]      macro suffix [DEFAULT="$MACROSUFFIX_DEFAULT"]
-  -l, --layer[=INT]         force specific layer by layer id [DEFAULT="$LAYER_DEFAULT"]
+  --masksuffix[=TEXT]       mask suffix ["$MASKSUFFIX_DEFAULT"]
+  --macrosuffix[=TEXT]      macro suffix ["$MACROSUFFIX_DEFAULT"]
+  -l, --layer[=INT]         force specific layer by layer id ["$LAYER_DEFAULT"]
 
   --help                    display this help and exit
 
@@ -74,15 +75,14 @@ HPC qsub job submission:
 
 dependencies: ${DEPENDENCIES[@]}
 
-Sometimes not all tissue on your virtual slide needs processing. You can
-mask parts of your image that you do not wat to process. This program
-will automatically create a mask for you which you can later edit if
-needed. The slideToolkit only excludes real black (color #000000). Two
-new files will be created, one file.macro.png and one file.mask.png.
-Existing files will be overwritten.
+You can mask parts of your image that you do not wat to process. This
+program will automatically create a mask for you which you can later
+edit if needed. The slideToolkit only excludes real black (color
+#000000). Two new files will be created, one file.macro.png and one
+file.mask.png. Existing files will be overwritten.
 
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, B.G.L. Nelissen
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 # Menu

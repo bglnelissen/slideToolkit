@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Cut virtual slides into tiles"
+DESCRIPTIONSHORT="Cut virtual slide into tiles"
 DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
 DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
@@ -35,7 +35,6 @@ DEFAULTHEIGHT=2000  # 2000
 DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
 MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
-AR_TIFFSPLIT_SUFFIX=(aaa aab aac aad aae aaf aag aah aai aaj aak aal aam aan aao aap) # standard suffix of tiffsplit
 
 # automate this:
 SLOTS=3
@@ -62,7 +61,9 @@ debug() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME [options] [path/]file
+usage:  $SCRIPTNAME -f|--file[=FILE]
+        [-m|--mask[=FILE]] [--layer[=INT]] [--height[=PIXELS]] [--width[=PIXELS]]
+        [--keepEmtpy] [--outputsuffix[=TEXT]]
         [--help]
 EOF
 }
@@ -79,7 +80,7 @@ options:
   --layer[=INT]             force specific layer [$DEFAULTLAYER]
   --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
-  --keepEmtpy[=TRUE]        keep empty tiles when found
+  --keepEmtpy               do not delete empty tiles when found
   --outputsuffix[=TEXT]     output directory suffix
   
   --help                    display this help and exit
@@ -91,7 +92,7 @@ examples:
 multiple files at once:
   find ./ -iname "*tif" | parallel "\$(command -v "$SCRIPTNAME")" --mask="{.}.mask.png" --file="{}"
 
-HPC qsub job submission: (fetch full path [=j])
+HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded "$SLOTS" -q veryshort \\
@@ -106,7 +107,7 @@ Cut slides into tiles for further processing. Reasonable tile size is
 all empty tiles are deleted.
 
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, B.G.L. Nelissen
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 
@@ -137,8 +138,8 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    --keepEmpty=*)
-      KEEPEMPTYTILES=${1#*=}
+    --keepEmpty)
+      KEEPEMPTYTILES=TRUE
       shift ;;
     -m | --mask)
       MASK=$2
@@ -348,6 +349,7 @@ createTilesConvert(){
 
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+  AR_TIFFSPLIT_SUFFIX=aa{a..z} # a, b , c, d, etc, etc,  standard suffix of tiffsplit
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"

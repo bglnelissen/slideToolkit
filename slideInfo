@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Show virtual slide information"
+DESCRIPTIONSHORT="Fetch slide metadata (resolution, dates, etc)"
 DEPENDENCIES=("identify tiffinfo")
 
 # Errors go to stderr
@@ -38,7 +38,7 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME file
+usage:  $SCRIPTNAME -f|--file[=FILE]
         [--help]
 EOF
 }
@@ -62,7 +62,9 @@ examples:
 dependencies: ${DEPENDENCIES[@]}
 
 Show virtual slide information: color depth, layers, etc.
+
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 

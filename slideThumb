@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Extract thumbnail from virtual slide"
+DESCRIPTIONSHORT="Create slide thumbnail, including label"
 DEPENDENCIES=("convert" "parallel" "perl")
 DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
@@ -43,7 +43,8 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME [options] [path/]file
+usage:  $SCRIPTNAME -f|--file[=FILE]
+        [-l|--layer[=INT]] [--suffix[=TEXT]] [--extension[=TEXT]]
         [--help]
 EOF
 }
@@ -58,8 +59,8 @@ $(usage)
 options:
   -f, --file[=FILE]         extract the thumbnail from this virtual slide
   -l, --layer[=INT]         force specific layer by layer id
-  --suffix[=TEXT]           suffix to filename (default: $DEFAULT_OUTPUT_SUFFIX)
-  --extension[=TEXT]        thumbnail output extension (default: $DEFAULT_OUTPUT_EXTENSION)
+  --suffix[=TEXT]           suffix to filename ["$DEFAULT_OUTPUT_SUFFIX"]
+  --extension[=TEXT]        thumbnail output extension ["$DEFAULT_OUTPUT_EXTENSION"]
   
   --help                    display this help and exit
 
@@ -76,8 +77,9 @@ A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
 these layers. This script extracts the correct layers and resizes,
 rotates and concatenates when necessary. 
+
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, B.G.L. Nelissen
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 

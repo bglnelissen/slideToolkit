@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Move file into a similar named directory"
+DESCRIPTIONSHORT="Create a staging directorie per slide"
 DEPENDENCIES=("convert" "parallel")
 
 # Errors go to stderr
@@ -38,7 +38,7 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME file
+usage:  $SCRIPTNAME -f|--file[=FILE]
         [--help]
 EOF
 }
@@ -65,7 +65,9 @@ multiple files at once:
 dependencies: ${DEPENDENCIES[@]}
 
 Move file into a similar named directory.
+
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 

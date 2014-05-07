@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Create a qsub joblist for the HPC to analyse all tiles. One job per slide.
+# Description: Create a qsub joblist for the HPC to analyse all tiles.
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Create joblist to count cells using CellProfiler"
+DESCRIPTIONSHORT="Create a qsub joblist for the HPC to analyse all tiles."
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULTHANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
@@ -58,7 +58,8 @@ debug() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME [options] [path/]file
+usage:  $SCRIPTNAME -i|--inputdir[=DIR] -p|--pipeline[=PIPELINE]
+        [--handler[=qsub]] [-N|--name[=TEXT]]
         [--help]
 EOF
 }
@@ -75,7 +76,7 @@ options:
   --handler[=qsub]            specify the job handler
 
 qsub:
-  -N, --name                  qsub job name
+  -N, --name[=TEXT]           qsub job name
 
   --help                      display this help and exit
 
@@ -90,9 +91,8 @@ dependencies: ${DEPENDENCIES[@]}
 Create a joblist that analyses multiple folders containing tiles using
 CellProfiler. You can redirect the output of this program to a file using:
 
-
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, B.G.L. Nelissen
+slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 EOF
 }
 
@@ -189,7 +189,7 @@ checkRequirements() {
     exit 1
   fi
   # set HANDLER (parallel|qsub|etc)
-  if ! [[ "$HANDLER" =~ (qsub) || "$HANDLER" == "" ]] ; then
+  if ! [[ "$HANDLER" =~ (qsub|QSUB) || "$HANDLER" == "" ]] ; then
     err "No such job handler: $HANDLER"
     usage
     exit 1
