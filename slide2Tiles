@@ -1,32 +1,42 @@
 #!/bin/bash
 #
-# Description: Cut virtual slides into tiles
-# Copyright (C) 2014, B.G.L. Nelissen. All rights reserved.
-# Last edit: 8 march 2014
-#
-# License here.
-#
-# Respect the Google Shell style guide.
-# http://google-styleguide.googlecode.com/svn/trunk/shell.xml
-#
-# ToDo:
-# add openslide for non masked slides
-# make memory as an option and dynamically change qsub -pe threated flag
-# delete empty tiles
-# improve tissue detection for tiles: use this: http://www.multipole.org/discourse-server/viewtopic.php?f=1&t=11297
-# use -normalize !
+# Description: Cut virtual slide into tiles
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut virtual slides into tiles"
-DEPENDENCIES=("convert" "parallel")
-DEFAULTMASKSUFFIX=".mask.png" # 3
+DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
+DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
 DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
 MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
-TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+AR_TIFFSPLIT_SUFFIX=(aaa aab aac aad aae aaf aag aah aai aaj aak aal aam aan aao aap) # standard suffix of tiffsplit
+
 # automate this:
 SLOTS=3
 MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
@@ -211,11 +221,6 @@ checkRequirements() {
     usage
     exit 1
   fi
-  if ! [[ -f "$MASK" ]] ; then
-    echo "No such mask: $MASK">&2;
-    usage
-    exit 1
-  fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
     echo "Layer is not an integer: $LAYER">&2;
@@ -254,13 +259,7 @@ checkRequirements() {
     usage
     exit 1
   fi
-  
-  if ! [[ -f "$M" ]] ; then
-    err "No such mask: $M"
-    usage
-    exit 1
-  fi
-  
+
   if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF) ]] ; then
     err "TIF or TIFF extension expected. (case insensitive)"
     err "Extension found: $INPUTSCANEXT"
@@ -287,12 +286,13 @@ checkDependencies(){
 }
 
 # actual program
-programOutput(){
+createTilesConvert(){
+  TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   debug "Virtual slide: $S"
-  dimensionsslide="$(identify -format %w "${S}[${LAYER}]")"x"$(identify -format %h "${S}[${LAYER}]")"
+  dimensionsslide="$(identify -format %w "${S}"["${LAYER}"])"x"$(identify -format %h "${S}"["${LAYER}"])"
   debug "Create buffer [$dimensionsslide]; $buffer"
   date1="$(date +'%s')"
-  convert -limit area "${MEMORYLIMIT}" "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+  convert -limit area "${MEMORYLIMIT}" "${S}"["${LAYER}"] \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
   debug "Done buffer; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
@@ -344,6 +344,61 @@ programOutput(){
   diff="$(($date2-$date1))"
   debug "Done tiles; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
   rm -rf "$TMPSTORAGE"
+}
+
+createTilesOpenslide(){
+  TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+  # extract layer to tmp
+  TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
+  cp "$S" "$TMPS"
+  cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp
+  SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX["${LAYER}"]}".tif
+  
+  mkdir -p "$OUTPUTDIRNAME" # create output directory
+  width="$(identify -format %w "${SLIDE}")"
+  height="$(identify -format %h "${SLIDE}")"
+  limit_w="$(($width / $TILESWIDTH))"
+  limit_h="$(($height / $TILESHEIGHT))"
+
+  for y in $(seq 0 "$limit_h"); do
+    for x in $(seq 0 "$limit_w"); do
+      # one tile
+      tile="${SHORTNAME}.X${y}.Y${x}.tile.png"
+      w="$((x * $TILESWIDTH))"
+      h="$((y * $TILESHEIGHT))"
+      FILE="${OUTPUTDIRNAME}/${tile}"
+      filename="${FILE%.*}" # full path without extension
+      
+      # openslide-write-png [OPTION...] slide x y layer width height output.png
+      openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
+
+      # find tissue, needs improvement
+      if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
+        # more than MINBYTESIZE bytes... tissue found
+        # fit within width and height
+        TISSUE="tissue";
+        mv "$FILE" "${filename}.${TISSUE}.png"
+      else 
+        # no tissue found
+        TISSUE="empty";
+        if [ "$KEEPEMPTYTILES" == "true" ]; then
+           mv "$FILE" "${filename}"".""${TISSUE}.png"
+        else
+          rm -rf "$FILE"
+        fi
+      fi;
+    done
+  done
+  # rm -rf "$TMPSTORAGE"
+}
+
+# programOutput
+programOutput(){
+  if ! [[ -f "$MASK" ]] ; then
+    createTilesOpenslide
+  else
+    createTilesConvert
+  fi
 }
 
 # all check?
