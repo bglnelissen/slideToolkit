@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut virtual slide into tiles"
-DEPENDENCIES=("convert" "identify" "parallel" "openslide-writes-png") # must exist in PATH
+DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
 DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
