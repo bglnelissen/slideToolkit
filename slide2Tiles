@@ -55,7 +55,7 @@ err() {
 
 # Debug go to stdout
 debug() {
-  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
+  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
 }
 
 # usage message
@@ -366,7 +366,8 @@ createTilesOpenslide(){
   cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp #tmp is the standard prefix of this file, example: tmpaaf.tif
   SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX[${LAYER}]}".tif
   debug "Working slide: $SLIDE"
-  mkdir -p -v "$OUTPUTDIRNAME" # create output directory
+  mkdir -p "$OUTPUTDIRNAME" # create output directory
+  debug "Outputdir: $OUTPUTDIRNAME" 
   width="$(identify -format %w "${SLIDE}")"
   height="$(identify -format %h "${SLIDE}")"
   limit_w="$(($width / $TILESWIDTH))"
@@ -382,7 +383,7 @@ createTilesOpenslide(){
       filename="${FILE%.*}" # full path without extension
       
       # openslide-write-png [OPTION...] slide x y layer width height output.png
-      openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
+      openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" # >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
 
       # find tissue, needs improvement
       if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
