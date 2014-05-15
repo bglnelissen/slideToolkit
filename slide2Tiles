@@ -362,7 +362,8 @@ createTilesOpenslide(){
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"
-  cd "$TMPSTORAGE" && tiffsplit "$TMPS"
+  debug "TMPS: $TMPS"
+  cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp #tmp is the standard prefix of this file, example: tmpaaf.tif
   SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX["${LAYER}"]}".tif
   debug "Working slide: $SLIDE"
   mkdir -p "$OUTPUTDIRNAME" # create output directory
