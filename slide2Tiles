@@ -357,6 +357,8 @@ createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=aa{a..z} # a, b , c, d, etc, etc,  standard suffix of tiffsplit
   debug "Virtual slide: $S"
+  debug "Layer: $LAYER"
+  debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"
