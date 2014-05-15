@@ -81,8 +81,10 @@ edit if needed. The slideToolkit only excludes real black (color
 #000000). Two new files will be created, one file.macro.png and one
 file.mask.png. Existing files will be overwritten.
 
+The slideToolkit is licensed under a MIT license
+The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
+
 EOF
 }
 # Menu

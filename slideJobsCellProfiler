@@ -91,8 +91,10 @@ dependencies: ${DEPENDENCIES[@]}
 Create a joblist that analyses multiple folders containing tiles using
 CellProfiler. You can redirect the output of this program to a file using:
 
+The slideToolkit is licensed under a MIT license
+The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
-slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
+
 EOF
 }
 
