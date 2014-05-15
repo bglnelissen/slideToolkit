@@ -355,7 +355,7 @@ createTilesConvert(){
 
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
-  AR_TIFFSPLIT_SUFFIX=("aaa" "aab" "aac" "aad" "aae" "aaf" "aag" "aah" "aai" "aaj" "aak" "aal" "aam" "aan" "aao" "aap" "aaq" "aar" "aas" "aat" "aau" "aav" "aaw" "aax" "aay" "aaz")# aa{a..z} # a, b , c, d, etc, etc,  standard suffix of tiffsplit
+  AR_TIFFSPLIT_SUFFIX=("aaa" "aab" "aac" "aad" "aae" "aaf" "aag" "aah" "aai" "aaj" "aak" "aal" "aam" "aan" "aao" "aap" "aaq" "aar" "aas" "aat" "aau" "aav" "aaw" "aax" "aay" "aaz") # aa{a..z} standard suffix of tiffsplit
   debug "Virtual slide: $S"
   debug "Layer: $LAYER"
   debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
