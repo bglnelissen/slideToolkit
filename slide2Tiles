@@ -221,6 +221,13 @@ checkRequirements() {
     usage
     exit 1
   fi
+  if [ "$MASK" != "" ]; then
+    if ! [[ -f "$MASK" ]] ; then
+      err "No such mask: $MASK">&2;
+      usage
+      exit 1
+    fi
+  fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
     err "Layer is not an integer: $LAYER">&2;
@@ -349,12 +356,13 @@ createTilesConvert(){
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=aa{a..z} # a, b , c, d, etc, etc,  standard suffix of tiffsplit
+  debug "Virtual slide: $S"
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"
   cd "$TMPSTORAGE" && tiffsplit "$TMPS"
   SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX["${LAYER}"]}".tif
-  
+  debug "Working slide: $SLIDE"
   mkdir -p "$OUTPUTDIRNAME" # create output directory
   width="$(identify -format %w "${SLIDE}")"
   height="$(identify -format %h "${SLIDE}")"
@@ -390,7 +398,7 @@ createTilesOpenslide(){
       fi;
     done
   done
-  # rm -rf "$TMPSTORAGE"
+  rm -rf "$TMPSTORAGE"
 }
 
 # programOutput
