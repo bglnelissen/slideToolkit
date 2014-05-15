@@ -183,7 +183,6 @@ fi
 if [ "$MASK" != "" ]; then
   MASK="$MASK"
 fi
-
 # set LAYER 
 if [ "$LAYER" != "" ]; then
   LAYER="$LAYER"
@@ -259,14 +258,6 @@ checkRequirements() {
     err "No such scan: $S"
     usage
     exit 1
-  fi
-
-  if [ "$M" != "" ]; then
-    if ! [[ -f "$M" ]] ; then
-      err "No such mask: $M"
-      usage
-      exit 1
-    fi
   fi
 
   if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF) ]] ; then
@@ -404,10 +395,10 @@ createTilesOpenslide(){
 
 # programOutput
 programOutput(){
-  if [ "$MASK" != "" ]; then
-    createTilesConvert
-  else
+  if ! [[ -f "$MASK" ]] ; then
     createTilesOpenslide
+  else
+    createTilesConvert
   fi
 }
 
