@@ -366,7 +366,7 @@ createTilesOpenslide(){
   cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp #tmp is the standard prefix of this file, example: tmpaaf.tif
   SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX[${LAYER}]}".tif
   debug "Working slide: $SLIDE"
-  mkdir -p "$OUTPUTDIRNAME" # create output directory
+  mkdir -p -v "$OUTPUTDIRNAME" # create output directory
   width="$(identify -format %w "${SLIDE}")"
   height="$(identify -format %h "${SLIDE}")"
   limit_w="$(($width / $TILESWIDTH))"
