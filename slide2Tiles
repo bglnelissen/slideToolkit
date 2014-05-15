@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut virtual slide into tiles"
-DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
+DEPENDENCIES=("convert" "identify" "parallel" "openslide-writes-png") # must exist in PATH
 DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
@@ -277,17 +277,17 @@ checkRequirements() {
 
 # Dependencies
 checkDependencies(){
-  DEPENDENCIES="$DEPENDENCIES"
   DEPS=""
-  for DEP in "$DEPENDENCIES"; do
-    if [[ 0 != $(command -v "$DEP" >/dev/null ;echo $?) ]]; then
-      DEPS=$(echo "$DEPS $DEP") # create `array` with unknown dependencies
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
     fi
   done
-  if [[ "" != $(echo "$DEPS" | perl -p -e 's/ //g') ]]; then
-    for d in "$DEPS"; do
-      echo "Missing dependency: \"$d\""
-    done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
     exit 1
   fi
 }
