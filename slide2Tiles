@@ -182,10 +182,8 @@ fi
 # set MASK 
 if [ "$MASK" != "" ]; then
   MASK="$MASK"
-else
-  # Same as file, using DEFAULTMASKSUFFIX as suffix (including extension)
-  MASK=${FILE%.*}${DEFAULTMASKSUFFIX}
 fi
+
 # set LAYER 
 if [ "$LAYER" != "" ]; then
   LAYER="$LAYER"
@@ -220,23 +218,23 @@ fi
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    echo "No such file: $FILE">&2;
+    err "No such file: $FILE">&2;
     usage
     exit 1
   fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
-    echo "Layer is not an integer: $LAYER">&2;
+    err "Layer is not an integer: $LAYER">&2;
     usage
     exit 1
   fi
   if ! [[ "$HEIGHT" =~ $regexnumeric ]] ; then
-    echo "Height is not valid: $HEIGHT">&2;
+    err "Height is not valid: $HEIGHT">&2;
     usage
     exit 1
   fi
   if ! [[ "$WIDTH" =~ $regexnumeric ]] ; then
-    echo "Width is not valid: $WIDTH">&2;
+    err "Width is not valid: $WIDTH">&2;
     usage
     exit 1
   fi
@@ -261,6 +259,14 @@ checkRequirements() {
     err "No such scan: $S"
     usage
     exit 1
+  fi
+
+  if [ "$M" != "" ]; then
+    if ! [[ -f "$M" ]] ; then
+      err "No such mask: $M"
+      usage
+      exit 1
+    fi
   fi
 
   if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF) ]] ; then
@@ -398,10 +404,10 @@ createTilesOpenslide(){
 
 # programOutput
 programOutput(){
-  if ! [[ -f "$MASK" ]] ; then
-    createTilesOpenslide
-  else
+  if [ "$MASK" != "" ]; then
     createTilesConvert
+  else
+    createTilesOpenslide
   fi
 }
 
