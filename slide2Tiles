@@ -56,7 +56,7 @@ err() {
 
 # Debug go to stdout
 debug() {
-  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
+  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
 }
 
 # usage message
