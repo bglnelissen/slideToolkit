@@ -228,30 +228,30 @@ fi
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
-    err "No such file: $FILE">&2;
+    err "No such file: $FILE"
     usage
     exit 1
   fi
   if [ "$MASK" != "" ]; then
     if ! [[ -f "$MASK" ]] ; then
-      err "No such mask: $MASK">&2;
+      err "No such mask: $MASK"
       usage
       exit 1
     fi
   fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
-    err "Layer is not an integer: $LAYER">&2;
+    err "Layer is not an integer: $LAYER"
     usage
     exit 1
   fi
   if ! [[ "$HEIGHT" =~ $regexnumeric ]] ; then
-    err "Height is not valid: $HEIGHT">&2;
+    err "Height is not valid: $HEIGHT"
     usage
     exit 1
   fi
   if ! [[ "$WIDTH" =~ $regexnumeric ]] ; then
-    err "Width is not valid: $WIDTH">&2;
+    err "Width is not valid: $WIDTH"
     usage
     exit 1
   fi
@@ -265,11 +265,10 @@ checkRequirements() {
   FILENAMESCAN="${S##*/}"
   SHORTNAME="$(basename $INPUTFILENAME)"
   FILENAMEMASK="${M##*/}"
-  TMPSTORAGE="$TMPSTORAGE"                    # CAREFUL THIS FOLDER GETS DELETED! # CAREFUL WITH THIS MOTHERFUCKER
+#   TMPSTORAGE="$TMPSTORAGE"                    # CAREFUL THIS FOLDER GETS DELETED! # CAREFUL WITH THIS MOTHERFUCKER
   LAYER="$LAYER"                             # layer 3 is 20x (for Roche scanner)
   TILESWIDTH="$WIDTH"
   TILESHEIGHT="$HEIGHT"
-  buffer="${TMPSTORAGE}/${SHORTNAME}.mpc"
   STARTDATE="$(date)"
     
   if ! [[ -f "$S" ]] ; then
@@ -306,11 +305,15 @@ checkDependencies(){
 # actual program
 createTilesConvert(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+  buffer="${TMPSTORAGE}/${SHORTNAME}.mpc"
   debug "Virtual slide: $S"
+  debug "Tempstorage: $TMPSTORAGE"
   dimensionsslide="$(identify -format %w "${S}"["${LAYER}"])"x"$(identify -format %h "${S}"["${LAYER}"])"
   debug "Create buffer [$dimensionsslide]; $buffer"
   date1="$(date +'%s')"
-  convert -limit area "${MEMORYLIMIT}" "${S}"["${LAYER}"] \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+  # convert -limit area "${MEMORYLIMIT}" "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+  convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
   debug "Done buffer; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
@@ -366,8 +369,9 @@ createTilesConvert(){
 
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
-  AR_TIFFSPLIT_SUFFIX=("aaa" "aab" "aac" "aad" "aae" "aaf" "aag" "aah" "aai" "aaj" "aak" "aal" "aam" "aan" "aao" "aap" "aaq" "aar" "aas" "aat" "aau" "aav" "aaw" "aax" "aay" "aaz") # aa{a..z} standard suffix of tiffsplit
+  AR_TIFFSPLIT_SUFFIX=$(echo aa{a..z})  # this is the standard suffix of tiffsplit
   debug "Virtual slide: $S"
+  debug "Tempstorage: $TMPSTORAGE"
   debug "Layer: $LAYER"
   debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
   # extract layer to tmp
