@@ -98,7 +98,7 @@ name. The image theshold can be used to increase the contrast and make
 unreadable barcodes readable again, you can use --convert_args="-threshold 90%"
 for example.
 
-The slideToolkit is licensed under a MIT license
+The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
 

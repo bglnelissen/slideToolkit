@@ -78,7 +78,7 @@ Different vendors store an overview of each slide in one (or more) of
 these layers. This script extracts the correct layers and resizes,
 rotates and concatenates when necessary. 
 
-The slideToolkit is licensed under a MIT license
+The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
 

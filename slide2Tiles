@@ -36,9 +36,10 @@ DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
 MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
 
-# automate this:
+# TODO automate or remove this
+# sets the memory limits for imagemagicks
 SLOTS=3
-MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (good for imageMagick to know...)
+MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (seems good for imageMagick to know...)
 
 # Exit and cleanup
 set -e
@@ -106,7 +107,7 @@ Cut slides into tiles for further processing. Reasonable tile size is
 '$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
 all empty tiles are deleted.
 
-The slideToolkit is licensed under a MIT license
+The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
 
