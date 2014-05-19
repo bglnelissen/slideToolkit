@@ -54,17 +54,12 @@ err() {
   echo "ERROR: $@" >&2
 }
 
-# Debug go to stdout
-debug() {
-  echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
-}
-
 # usage message
 usage() {
 cat <<- EOF
 usage:  $SCRIPTNAME -f|--file[=FILE]
         [-m|--mask[=FILE]] [--layer[=INT]] [--height[=PIXELS]] [--width[=PIXELS]]
-        [--keepEmtpy] [--outputsuffix[=TEXT]]
+        [--keepEmtpy] [--outputsuffix[=TEXT]] [--ignore-dependencies] [--verbose]
         [--help]
 EOF
 }
@@ -84,8 +79,10 @@ options:
   --keepEmtpy               do not delete empty tiles when found
   --outputsuffix[=TEXT]     output directory suffix
   --ignore-dependencies     ignores all dependencies
+  --verbose                 verbose output, for debugging only
   
   --help                    display this help and exit
+  -h                        display usage
 
 examples:
   $SCRIPTNAME "file.tif"
@@ -136,6 +133,9 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    -h )
+      usage
+      exit 0 ;;
     -f | --file)
       FILE=$2
       shift 2 ;;
@@ -165,6 +165,9 @@ do
       shift ;;
      --ignore-dependencies)
       IGNOREDEPENDENCIES=TRUE
+      shift ;;
+     --verbose)
+      VERBOSE=TRUE
       shift ;;
     --) # End of all options
       shift
@@ -212,18 +215,33 @@ if [ "$WIDTH" != "" ]; then
 else
   WIDTH="$DEFAULTWIDTH"
 fi
-# set KEEPEMPTYTILES  (this does nothing, as it is set to set in Menu)
+# set KEEPEMPTYTILES  (this if statement does nothing, as it is set to set in Menu)
 if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
   KEEPEMPTYTILES=true
 else
   KEEPEMPTYTILES=false
 fi
-# set IGNOREDEPENDENCIES (this does nothing, as it is set to set in Menu)
+# set IGNOREDEPENDENCIES  (this if statement does nothing, as it is set to set in Menu)
 if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
   IGNOREDEPENDENCIES=true
 else
   IGNOREDEPENDENCIES=false
 fi
+# set VERBOSE  (this if statement does nothing, as it is set to set in Menu)
+if [[ "$VERBOSE" =~ (true|TRUE|YES|yes) ]] ; then
+  VERBOSE=true
+else
+  VERBOSE=false
+fi
+
+# DEBUG / VERBOSE
+debug() {
+  if ! [[ "$VERBOSE" == "true" ]]; then
+    echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
+  else
+    echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
+  fi
+}
 
 # requirements
 checkRequirements() {
@@ -431,11 +449,9 @@ programOutput(){
 
 # all check?
 checkRequirements
-
 if ! [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
   checkDependencies
 fi
-
 
 # lets go!
 programOutput
