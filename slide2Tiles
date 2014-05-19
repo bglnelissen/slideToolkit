@@ -164,7 +164,7 @@ do
       WIDTH=${1#*=}
       shift ;;
      --ignore-dependencies)
-      IGNORE_DEPENDENCIES=TRUE
+      IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
       shift
