@@ -83,6 +83,7 @@ options:
   --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
   --keepEmtpy               do not delete empty tiles when found
   --outputsuffix[=TEXT]     output directory suffix
+  --ignore-dependencies     ignores all dependencies
   
   --help                    display this help and exit
 
@@ -162,6 +163,9 @@ do
     --width=*)
       WIDTH=${1#*=}
       shift ;;
+     --ignore-dependencies)
+      IGNORE_DEPENDENCIES=TRUE
+      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -208,11 +212,17 @@ if [ "$WIDTH" != "" ]; then
 else
   WIDTH="$DEFAULTWIDTH"
 fi
-# set KEEPEMPTYTILES 
+# set KEEPEMPTYTILES  (this does nothing, as it is set to set in Menu)
 if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
   KEEPEMPTYTILES=true
 else
   KEEPEMPTYTILES=false
+fi
+# set IGNOREDEPENDENCIES (this does nothing, as it is set to set in Menu)
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
 fi
 
 # requirements
@@ -417,7 +427,11 @@ programOutput(){
 
 # all check?
 checkRequirements
-checkDependencies
+
+if ! [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+  checkDependencies
+fi
+
 
 # lets go!
 programOutput
