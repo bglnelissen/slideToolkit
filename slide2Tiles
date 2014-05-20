@@ -38,8 +38,8 @@ MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
 
 # TODO automate or remove this
 # sets the memory limits for imagemagicks
-# SLOTS=3
-# MEMORYLIMIT="$((14 * $SLOTS))GB" # 14 GB per slot (seems good for imageMagick to know...)
+THREADS=3
+# MEMORYLIMIT="$((14 * $THREADS))GB" # 14 GB per slot (seems good for imageMagick to know...)
 
 # Exit and cleanup
 set -e
@@ -94,7 +94,7 @@ multiple files at once:
 HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "qsub" -pe threaded "$SLOTS" -q veryshort \\
+    echo "qsub" -pe threaded "$THREADS" -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
