@@ -45,7 +45,7 @@ function cleanup {
     kill $IM_DISPLAY_PID
   fi
   # quit Preview like a polite man if it is still alive.
-  if [[ $(ps -ax | grep -i [P]review | wc -l) != 0 ]]; then
+  if [[ $(ps ux | grep -i [P]review | wc -l) != 0 ]]; then
     osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
   fi
   
