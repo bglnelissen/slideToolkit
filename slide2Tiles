@@ -118,6 +118,7 @@ FILE=""
 MASK=""
 LAYER=""
 KEEPEMPTYTILES=""
+VERBOSE=""
 # illegal option
 illegalOption() {
 cat <<- EOF

@@ -28,8 +28,8 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
-DEPENDENCIES=("convert" "identify" "parallel" "perl" "tiffinfo")
-PREVIEWDIMENSIONS="512x1024"
+DEPENDENCIES=("convert" "identify" "display" "parallel" "perl" "tiffinfo")
+DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
 DEFAULT_IM_ARGS="" # imagemagick arguments
@@ -40,8 +40,15 @@ DEFAULT_IM_ARGS="" # imagemagick arguments
 # Cleanup stage
 set -e
 function cleanup {
-  # quit Preview
-  osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+  # kill display like a real man if alive
+  if [[ $IM_DISPLAY_PID > 0 ]]; then
+    kill $IM_DISPLAY_PID
+  fi
+  # quit Preview like a polite man if it is still alive.
+  if [[ $(ps -ax | grep -i [P]review | wc -l) != 0 ]]; then
+    osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+  fi
+  
   # remove temp files
   rm -rf "$PREVIEW_TMPFILE"
   echo
@@ -56,9 +63,11 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
 usage:  $SCRIPTNAME -f|--file[=FILE]
         [-l, --layer[=INT]] [--prefix[=TEXT]] [--suffix[=TEXT]] [--to-lower] [--to-upper]
-        [--convert_args[=OPTIONS]]
+        [--convert-args[=OPTIONS]] [--resize[=WidthxHeight]] [--im-display ]
         [--help]
 EOF
 }
@@ -66,8 +75,6 @@ EOF
 # help message
 helpMessage() {
 cat <<- EOF
-${SCRIPTNAME}: ${DESCRIPTIONSHORT}
-
 $(usage)
 
 options:
@@ -77,26 +84,26 @@ options:
   --suffix[=TEXT]           filename suffix
   --to-lower                filename output is transformed to lower cases
   --to-upper                filename output is transformed to upper cases
-  --convert_args[=OPTIONS]  convert (imageMagick) options for extra enhancement
-  
+  --im-display              use display (imageMagick) to preview slide
+  --convert-args[=OPTIONS]  convert (imageMagick) arguments
+  --resize[=WidthxHeight]   preview dimentions, x is manatory [${DEFAULT_RESIZE}]
   --help                    display this help and exit
 
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
-  $SCRIPTNAME  --layer=5 --convert_args="-threshold 90%" -f "file.tif"
+  $SCRIPTNAME  --layer=5 --convert-args="-threshold 90%" -f "file.tif"
 
 multiple files at once:
      find ./ -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
-WARNING: ${SCRIPTNAME} only works on 'OS X' using 'Preview.app'
-
 This script displays a miniture of the whole slide and asks for a  new
-name. The image theshold can be used to increase the contrast and make
-unreadable barcodes readable again, you can use --convert_args="-threshold 90%"
-for example.
+name. The theshold argument can be used to increase the contrast and make
+unreadable barcodes readable again, you can use --convert-args="-threshold 90%"
+for example. The --convert-args overrides all other arguments that are
+already set (like --resize)
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -111,7 +118,8 @@ FILE=""
 LAYER=""
 OUTPUT_PREFIX=""
 OUTPUT_SUFFIX=""
-
+RESIZE=""
+IM_DISPLAY=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -145,13 +153,19 @@ do
     --suffix=*)
       OUTPUT_SUFFIX=${1#*=}
       shift ;;
+    --resize=*)
+      RESIZE=${1#*=}
+      shift ;;
     --to-upper)
       CASE="CASE_UPPER"
       shift ;;
     --to-lower)
       CASE="CASE_LOWER"
       shift ;;
-    --convert_args=*)
+    --im-display)
+      IM_DISPLAY=TRUE
+      shift ;;
+    --convert-args=*)
       IM_ARGS=${1#*=}
       shift ;;
     --extension=*)
@@ -186,11 +200,23 @@ if [ "$OUTPUT_SUFFIX" != "" ]; then
 else
   OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
 fi
+# set RESIZE default
+if [ "$RESIZE" != "" ]; then
+  RESIZE="$RESIZE"
+else
+  RESIZE="$DEFAULT_RESIZE"
+fi
 # set IM_ARGS default
 if [ "$IM_ARGS" != "" ]; then
   IM_ARGS="$IM_ARGS"
 else
   IM_ARGS="$DEFAULT_IM_ARGS"
+fi
+# set IM_DISPLAY  (this if statement does nothing, as it is set to set in Menu)
+if [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]] ; then
+  IM_DISPLAY=true
+else
+  IM_DISPLAY=false
 fi
 
 # requirements
@@ -200,8 +226,13 @@ checkRequirements() {
     usage
     exit 1
   fi
+  regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 is also possible
+  if ! [[ "$RESIZE" =~ $regexresize ]] ; then
+    err "This is not a valid --resize option: $RESIZE"
+    usage
+    exit 1
+  fi
 }
-
 
 # Dependencies
 checkDependencies(){
@@ -228,18 +259,18 @@ getThumbiScanHT(){
     LAYER=0
   fi
 	# get the thumb
-	convert "$FILEFULL[$LAYER]"  $IM_ARGS -filter box -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
+	convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbAperio(){
   if [ "$LAYER" != "" ]; then
-    convert "$FILEFULL"[$LAYER]  $IM_ARGS -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
+    convert "$FILEFULL"[$LAYER]  $IM_ARGS -resize "$RESIZE" "$PREVIEW_TMPFILE"
   else
     # the last 2 layers contain thumb and the tissue (couning starts at 0)
     NR_LAYERS=`identify "$FILE" | wc -l`
     N_LABEL="$(($NR_LAYERS - 2))"
     N_TISSUE="$(($NR_LAYERS - 1))"
     # get label, get tissue, rotate and resize both, then concatenate 
-    convert "$FILEFULL[$N_LABEL]" $IM_ARGS -resize "$PREVIEWDIMENSIONS" "$PREVIEW_TMPFILE"
+    convert "$FILEFULL[$N_LABEL]" $IM_ARGS -resize "$RESIZE" "$PREVIEW_TMPFILE"
   fi
 }
 
@@ -270,8 +301,13 @@ programOutput(){
     usage
     exit 1
   fi
-  # show file
-  open -g -a Preview "$PREVIEW_TMPFILE"
+  # show file using Preview or display
+  if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]] && ! [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]];then
+    open -g -a Preview "$PREVIEW_TMPFILE"
+  else 
+    display "$PREVIEW_TMPFILE" &
+    IM_DISPLAY_PID=$!
+  fi
 
   echo "Current name: $FILENAME"
   echo "Rename your slide. [c to cancel] [ctrl-c to quit]"
