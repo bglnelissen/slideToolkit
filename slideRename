@@ -63,8 +63,6 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-${SCRIPTNAME}: ${DESCRIPTIONSHORT}
-
 usage:  $SCRIPTNAME -f|--file[=FILE]
         [-l, --layer[=INT]] [--prefix[=TEXT]] [--suffix[=TEXT]] [--to-lower] [--to-upper]
         [--convert-args[=OPTIONS]] [--resize[=WidthxHeight]] [--im-display ]
@@ -75,6 +73,8 @@ EOF
 # help message
 helpMessage() {
 cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
 $(usage)
 
 options:
@@ -315,7 +315,7 @@ programOutput(){
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi
   read -p "Enter slide name:" SLIDENAME_UNSAVE
-  if [[ "c" == "$SLIDENAME_UNSAVE" ]]; then
+  if [[ "c" == "$SLIDENAME_UNSAVE" ]] || [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
     echo "Cancel slide..."
     exit 1
   fi
