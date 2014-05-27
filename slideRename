@@ -226,7 +226,7 @@ checkRequirements() {
     usage
     exit 1
   fi
-  regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 is also possible
+  regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 or 234x must also be possible
   if ! [[ "$RESIZE" =~ $regexresize ]] ; then
     err "This is not a valid --resize option: $RESIZE"
     usage
