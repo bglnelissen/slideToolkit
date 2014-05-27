@@ -237,7 +237,7 @@ fi
 
 # DEBUG / VERBOSE
 debug() {
-  if ! [[ "$VERBOSE" == "true" ]]; then
+  if [[ "$VERBOSE" == "true" ]]; then
     echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
   else
     echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
