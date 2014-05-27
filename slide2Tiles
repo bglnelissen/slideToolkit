@@ -38,7 +38,7 @@ MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
 
 # TODO automate or remove this
 # sets the memory limits for imagemagicks
-THREADS=3
+# THREADS=3
 # MEMORYLIMIT="$((14 * $THREADS))GB" # 14 GB per slot (seems good for imageMagick to know...)
 
 # Exit and cleanup
@@ -94,7 +94,7 @@ multiple files at once:
 HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "qsub" -pe threaded "$THREADS" -q veryshort \\
+    echo "qsub" -pe threaded 4 -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
@@ -361,8 +361,8 @@ createTilesConvert(){
       h="$((y * $TILESHEIGHT))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
-      convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
-
+      # convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
+      convert "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
       # find tissue, needs improvement
       if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
         # more than MINBYTESIZE bytes... tissue found
