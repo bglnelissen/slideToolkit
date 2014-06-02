@@ -338,7 +338,9 @@ createTilesConvert(){
   verbose_debug "Done buffer; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
 
   date1="$(date +'%s')"
-  convert -limit area "${MEMORYLIMIT}" "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
+  # convert -limit area "${MEMORYLIMIT}" "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
+  convert -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
+
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
   verbose_debug "bufferexample.png created; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
