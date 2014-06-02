@@ -326,7 +326,6 @@ createTilesConvert(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   buffer="${TMPSTORAGE}/${SHORTNAME}.mpc"
   verbose_debug "Virtual slide: $S"
-  verbose_debug "Tempstorage: $TMPSTORAGE"
   dimensionsslide="$(identify -format %w "${S}"["${LAYER}"])"x"$(identify -format %h "${S}"["${LAYER}"])"
   verbose_debug "Create buffer [$dimensionsslide]; $buffer"
   date1="$(date +'%s')"
@@ -339,7 +338,7 @@ createTilesConvert(){
 
   date1="$(date +'%s')"
   # convert -limit area "${MEMORYLIMIT}" "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
-  convert -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
+  convert "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
 
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
