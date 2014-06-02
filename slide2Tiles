@@ -36,7 +36,7 @@ DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
 MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
 
-# TODO automate or remove this
+# TODO: automate or remove this
 # sets the memory limits for imagemagicks
 # THREADS=3
 # MEMORYLIMIT="$((14 * $THREADS))GB" # 14 GB per slot (seems good for imageMagick to know...)
@@ -79,7 +79,7 @@ options:
   --keepEmtpy               do not delete empty tiles when found
   --outputsuffix[=TEXT]     output directory suffix
   --ignore-dependencies     ignores all dependencies
-  --verbose                 verbose output, for debugging only
+  --verbose                 verbose output
   
   --help                    display this help and exit
   -h                        display usage
@@ -101,7 +101,7 @@ HPC qsub job submission:
 dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
-2000 by 2000 pixels (default). Tiles are stored in a folder with suffix
+'$DEFAULTWIDTH' by '$DEFAULTHEIGHT' pixels (default). Tiles are stored in a folder with suffix
 '$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
 all empty tiles are deleted.
 
@@ -235,12 +235,12 @@ else
   VERBOSE=false
 fi
 
-# DEBUG / VERBOSE
-debug() {
+# VERBOSE / DEBUG
+verbose_debug() {
   if [[ "$VERBOSE" == "true" ]]; then
-    echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
+    echo "VERBOSE: $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 # >/dev/null
   else
-    echo "DEBUG $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
+    echo "VERBOSE: $(date +'%Y-%m-%d %H:%M:%S'): $@" >&1 >/dev/null
   fi
 }
 
@@ -251,7 +251,7 @@ checkRequirements() {
     usage
     exit 1
   fi
-  if [ "$MASK" != "" ]; then
+  if ! [[ "$MASK" == "" ]] ; then
     if ! [[ -f "$MASK" ]] ; then
       err "No such mask: $MASK"
       usage
@@ -325,23 +325,23 @@ checkDependencies(){
 createTilesConvert(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   buffer="${TMPSTORAGE}/${SHORTNAME}.mpc"
-  debug "Virtual slide: $S"
-  debug "Tempstorage: $TMPSTORAGE"
+  verbose_debug "Virtual slide: $S"
+  verbose_debug "Tempstorage: $TMPSTORAGE"
   dimensionsslide="$(identify -format %w "${S}"["${LAYER}"])"x"$(identify -format %h "${S}"["${LAYER}"])"
-  debug "Create buffer [$dimensionsslide]; $buffer"
+  verbose_debug "Create buffer [$dimensionsslide]; $buffer"
   date1="$(date +'%s')"
   # convert -limit area "${MEMORYLIMIT}" "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
   convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
 
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
-  debug "Done buffer; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
+  verbose_debug "Done buffer; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
 
   date1="$(date +'%s')"
   convert -limit area "${MEMORYLIMIT}" "${buffer}" -scale "$TILESWIDTH"x"$TILESHEIGHT" "${INPUTFILENAME}.bufferexample.png"
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
-  debug "bufferexample.png created; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
+  verbose_debug "bufferexample.png created; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
 
   mkdir -p "$OUTPUTDIRNAME" # create output directory
   # create tiles per row, measure dimensions of newly create image
@@ -351,7 +351,7 @@ createTilesConvert(){
   limit_w="$(($width / $TILESWIDTH))"
   limit_h="$(($height / $TILESHEIGHT))"
 
-  debug "Dimensions [$dimensionsbuffer]; tile size [${TILESWIDTH}x${TILESHEIGHT}]"
+  verbose_debug "Dimensions [$dimensionsbuffer]; tile size [${TILESWIDTH}x${TILESHEIGHT}]"
   date1="$(date +'%s')"
   for y in $(seq 0 "$limit_h"); do
     for x in $(seq 0 "$limit_w"); do
@@ -382,26 +382,26 @@ createTilesConvert(){
   done
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
-  debug "Done tiles; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
+  verbose_debug "Done tiles; $(($diff / 60)) minutes and $(($diff % 60)) seconds"
   rm -rf "$TMPSTORAGE"
 }
 
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=$(echo aa{a..z})  # this is the standard suffix of tiffsplit
-  debug "Virtual slide: $S"
-  debug "Tempstorage: $TMPSTORAGE"
-  debug "Layer: $LAYER"
-  debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
+  verbose_debug "Virtual slide: $S"
+  verbose_debug "Tempstorage: $TMPSTORAGE"
+  verbose_debug "Layer: $LAYER"
+  verbose_debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"
-  debug "TMPS: $TMPS"
+  verbose_debug "TMPS: $TMPS"
   cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp #tmp is the standard prefix of this file, example: tmpaaf.tif
   SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX[${LAYER}]}".tif
-  debug "Working slide: $SLIDE"
+  verbose_debug "Working slide: $SLIDE"
   mkdir -p "$OUTPUTDIRNAME" # create output directory
-  debug "Outputdir: $OUTPUTDIRNAME" 
+  verbose_debug "Outputdir: $OUTPUTDIRNAME" 
   width="$(identify -format %w "${SLIDE}")"
   height="$(identify -format %h "${SLIDE}")"
   limit_w="$(($width / $TILESWIDTH))"
