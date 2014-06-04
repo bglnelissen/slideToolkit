@@ -34,7 +34,7 @@ DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
 DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
-MINBYTESIZE=100000  # min size in bytes to detect if tissue is present
+MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 
 # TODO: automate or remove this
 # sets the memory limits for imagemagicks
