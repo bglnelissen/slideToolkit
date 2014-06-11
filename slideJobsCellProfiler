@@ -234,7 +234,7 @@ programOutput(){
     # create job command for qsub
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   fi
-  echo "$MKDIR"";" "$JOB"
+  echo "$JOB"
 }
 
 # all check?
