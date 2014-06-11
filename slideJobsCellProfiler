@@ -226,18 +226,13 @@ programOutput(){
   QERR="$OUTPUTDIRFULL"../"$QSUBERR"
   QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
-    # create output directory
-  MKDIR="mkdir -p \"$OUTPUTDIRFULL\""
-  if [[  "$HANDLER" == ""  ]]; then
-    # create job command for qsub
-    JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
-  elif [[  "$HANDLER" == "qsub"  ]]; then
+  # MKDIR="mkdir -p \"$OUTPUTDIRFULL\"" # REMOVE # Not needed, CP does this with 'SaveImages' or 'ExportToSpreadsheet' 
+  if [[  "$HANDLER" == "qsub"  ]]; then
     # create job command for qsub
     JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT -e \"${QERR}\" -o \"${QOUT}\" $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
-  else
-    err "No such job handler: $HANDLER"
-    usage
-    exit 1
+  elif [[  "$HANDLER" == ""  ]]; then
+    # create job command for qsub
+    JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   fi
   echo "$MKDIR"";" "$JOB"
 }
