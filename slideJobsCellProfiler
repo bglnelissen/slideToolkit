@@ -32,10 +32,7 @@ CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
 DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
-QSUBERR="$SCRIPTNAME.e.log"
-QSUBOUT="$SCRIPTNAME.o.log"
 QSUBOPT="-pe threaded 3 -q short"
-PARALLELOPT="-j+0"
 
 # Cleanup stage
 set -e
@@ -87,7 +84,7 @@ examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
 multiple folders at once:
-  find ./ -iname "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" --handler=qsub -p "pipeline.cp" \;
+  find ./ -iname "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" --handler=qsub -p "pipeline.cp" --mkdir-output \;
 
 dependencies: ${DEPENDENCIES[@]}
 
