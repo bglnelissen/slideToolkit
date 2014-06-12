@@ -138,9 +138,6 @@ do
     -N | --name)
       QSUBNAME=$2
       shift 2 ;;
-    --name=*)
-      QSUBNAME=${1#*=}
-      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -223,18 +220,17 @@ programOutput(){
   INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path to dir with Tiles
   OUTPUTDIRFULL="$INPUTDIRFULL""$OUTPUTDIR""/" # full path to output dir
   QSUBNAME=$(echo "$QSUBNAME" | perl -p -e 's/.*\/(.+)/\1/g' | perl -p -e 's/[^0-9a-zA-Z]*//g') # [a-zA-Z0-9] only
-  QERR="$OUTPUTDIRFULL"../"$QSUBERR"
-  QOUT="$OUTPUTDIRFULL"../"$QSUBOUT"
   
-  MKDIR="mkdir -p \"$OUTPUTDIRFULL\"" # REMOVE # Not needed, CP does this with 'SaveImages' or 'ExportToSpreadsheet' 
+  # MKDIR="mkdir -p \"$OUTPUTDIRFULL\"" # REMOVE # Not needed, CP does this with 'SaveImages' or 'ExportToSpreadsheet' 
   if [[  "$HANDLER" == "qsub"  ]]; then
     # create job command for qsub
-    JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT -e \"${QERR}\" -o \"${QOUT}\" $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+    JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   elif [[  "$HANDLER" == ""  ]]; then
     # create job command for qsub
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   fi
-  echo "$MKDIR" " ; " "$JOB"
+  # echo "$MKDIR" " ; " "$JOB"
+  echo "$JOB"
 }
 
 # all check?
