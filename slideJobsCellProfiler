@@ -29,9 +29,9 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a qsub joblist for the HPC to analyse all tiles."
 CPBIN="cellprofiler" # command to run CellProfiler
-DEFAULTHANDLER="" # default is empty [qsub]
+DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
-OUTPUTDIR=".cp.out" # relative to input dir
+DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
 QSUBERR="$SCRIPTNAME.e.log"
 QSUBOUT="$SCRIPTNAME.o.log"
 QSUBOPT="-pe threaded 3 -q short"
@@ -59,7 +59,8 @@ debug() {
 usage() {
 cat <<- EOF
 usage:  $SCRIPTNAME -i|--inputdir[=DIR] -p|--pipeline[=PIPELINE]
-        [--handler[=qsub]] [-N|--name[=TEXT]]
+        [--output-suffix[=TEXT]] [--handler[=qsub]] [-N|--name[=TEXT]]
+        [--mkdir-output]
         [--help]
 EOF
 }
@@ -73,7 +74,9 @@ $(usage)
 options:
   -i, --inputdir[=DIR]        directory with tiles to analyse
   -p, --pipeline              CellProfiler pipeline to use on images located in '--inputdir'
+  --output-suffix[=TEXT]      suffix for output directory ["$DEFAULT_OUTPUT_SUFFIX"]
   --handler[=qsub]            specify the job handler
+  --mkdir-output              create  output directory before running CellProfiler
 
 qsub:
   -N, --name[=TEXT]           qsub job name
@@ -89,7 +92,12 @@ multiple folders at once:
 dependencies: ${DEPENDENCIES[@]}
 
 Create a joblist that analyses multiple folders containing tiles using
-CellProfiler. You can redirect the output of this program to a file using:
+CellProfiler. CellProfiler results are stored in the output directory
+and is located at the same path as the input directory with default
+suffix "$DEFAULT_OUTPUT_SUFFIX".
+The output directory can be generated using the --mkdir-output flag,
+some versions of CellProfiler want to output directory to exist before
+starting the pipeline.
 
 The slideToolkit is licensed under a MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -135,6 +143,12 @@ do
     --pipeline=*)
       PIPELINE=${1#*=}
       shift ;;
+    --output-suffix=*)
+      DEFAULT_OUTPUT_SUFFIX=${1#*=}
+      shift ;;
+    --mkdir-output)
+      MKDIR_OUTPUT="MKDIR_OUTPUT"
+      shift ;;
     -N | --name)
       QSUBNAME=$2
       shift 2 ;;
@@ -158,6 +172,10 @@ fi
 if [ "$PIPELINE" != "" ]; then
   PIPELINE="$PIPELINE"
 fi
+# set LAYER default
+if [ "$DEFAULT_OUTPUT_SUFFIX" != "" ]; then
+  DEFAULT_OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
+fi
 # set QSUBNAME default
 if [ "$QSUBNAME" != "" ]; then
   QSUBNAME="$QSUBNAME"
@@ -168,7 +186,7 @@ fi
 if [ "$HANDLER" != "" ]; then
   HANDLER="$HANDLER"
 else
-  HANDLER="$DEFAULTHANDLER"
+  HANDLER="$DEFAULT_HANDLER"
 fi
 
 
@@ -218,19 +236,23 @@ programOutput(){
   CPBINFULL="$(command -v "$CPBIN" )" # full path
   PIPELINEFULL="$(echo "$(cd "$(dirname "$PIPELINE")"; pwd)"/"$(basename "$PIPELINE")")" # full path to pipeline
   INPUTDIRFULL="$(echo "$(cd "$(dirname "$INPUTDIR")"; pwd)"/"$(basename "$INPUTDIR")")" # full path to dir with Tiles
-  OUTPUTDIRFULL="$INPUTDIRFULL""$OUTPUTDIR""/" # full path to output dir
+  OUTPUTDIRFULL="$INPUTDIRFULL""$DEFAULT_OUTPUT_SUFFIX""/" # full path to output dir
   QSUBNAME=$(echo "$QSUBNAME" | perl -p -e 's/.*\/(.+)/\1/g' | perl -p -e 's/[^0-9a-zA-Z]*//g') # [a-zA-Z0-9] only
+  MKDIR="mkdir -p \"$OUTPUTDIRFULL\""
   
-  # MKDIR="mkdir -p \"$OUTPUTDIRFULL\"" # REMOVE # Not needed, CP does this with 'SaveImages' or 'ExportToSpreadsheet' 
   if [[  "$HANDLER" == "qsub"  ]]; then
     # create job command for qsub
     JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   elif [[  "$HANDLER" == ""  ]]; then
-    # create job command for qsub
+    # create job command
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   fi
-  # echo "$MKDIR" " ; " "$JOB"
-  echo "$JOB"
+  # echo output back to user, give mkdir command if this option was set.
+  if [[ "$MKDIR_OUTPUT" == "MKDIR_OUTPUT" ]] ; then
+    echo "$MKDIR" " && " "$JOB"
+  else
+    echo "$JOB"
+  fi
 }
 
 # all check?
