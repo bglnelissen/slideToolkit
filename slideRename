@@ -314,11 +314,14 @@ programOutput(){
   if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi
-  read -p "Enter slide name:" SLIDENAME_UNSAVE
-  if [[ "c" == "$SLIDENAME_UNSAVE" ]] || [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
-    echo "Cancel slide..."
-    exit 1
-  fi
+  while [ "$SLIDENAME_UNSAVE" == "" ]; do
+    read -p "Enter slide name:" SLIDENAME_UNSAVE
+    if [[ "c" == "$SLIDENAME_UNSAVE" ]] || [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
+      echo "Cancel slide..."
+      exit 1
+    fi
+  done
+  
   SLIDENAME_UNSAVE=$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')  # fix barcodescanner output 
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   SLIDEFILE="${SLIDENAME}.${EXTENSION}"
