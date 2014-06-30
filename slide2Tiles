@@ -57,10 +57,9 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME -f|--file[=FILE]
-        [-m|--mask[=FILE]] [--layer[=INT]] [--height[=PIXELS]] [--width[=PIXELS]]
-        [--keepEmtpy] [--outputsuffix[=TEXT]] [--ignore-dependencies] [--verbose]
-        [--help]
+usage:  
+$SCRIPTNAME -f <filename> [options]
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 # help message

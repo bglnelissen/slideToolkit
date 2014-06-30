@@ -38,8 +38,9 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME -f|--file[=FILE]
-        [--help]
+usage:  
+$SCRIPTNAME -f <filename> 
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -48,7 +49,7 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+$SCRIPTNAME -f <filename> 
 
 options:
   -f, --file[=VALUE]        Move file into a similar named directory 
@@ -64,7 +65,7 @@ multiple files at once:
 
 dependencies: ${DEPENDENCIES[@]}
 
-Move file into a similar named directory.
+Move file into a similar named directory at the same location
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen

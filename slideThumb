@@ -43,9 +43,9 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME -f|--file[=FILE]
-        [-l|--layer[=INT]] [--suffix[=TEXT]] [--extension[=TEXT]]
-        [--help]
+usage:  
+$SCRIPTNAME -f <filename> [options]
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -105,6 +105,9 @@ do
   case $1 in
     --help | -\?)
       helpMessage
+      exit 0 ;;
+    --h)
+      usage
       exit 0 ;;
     -f | --file)
       FILE=$2

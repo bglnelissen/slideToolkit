@@ -39,8 +39,9 @@ SUFFIX=".head"
 #usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME [options] [path/]file
-        [--help]
+usage:  
+$SCRIPTNAME -f <filename> [options]
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -92,7 +93,10 @@ exit 1
 while :
 do
   case $1 in
-    -h | --help | -\?)
+    -h)
+      usage
+      exit 0 ;;
+    --help | -\?)
       helpMessage
       exit 0 ;;
     -f | --file)

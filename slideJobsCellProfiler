@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Create a qsub joblist for the HPC to analyse all tiles.
+# Description: Create a joblist for the HPC to analyse all tiles.
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Create a qsub joblist for the HPC to analyse all tiles."
+DESCRIPTIONSHORT="Create a joblist for the HPC to analyse all tiles."
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
@@ -55,10 +55,9 @@ debug() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME -i|--inputdir[=DIR] -p|--pipeline[=PIPELINE]
-        [--output-suffix[=TEXT]] [--handler[=qsub]] [-N|--name[=TEXT]]
-        [--mkdir-output]
-        [--help]
+usage:  
+$SCRIPTNAME -i <dirname> -p <pipeline> [options]
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 # help message
@@ -122,6 +121,9 @@ exit 1
 while :
 do
   case $1 in
+      -h)
+      usage
+      exit 0 ;;
     --help | -\?)
       helpMessage
       exit 0 ;;

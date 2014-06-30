@@ -39,9 +39,9 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  $SCRIPTNAME -f|--file[=FILE]
-        [-l|--layer[=INT]] [--masksuffix[=TEXT]] [--macrosuffix[=TEXT]]
-        [--help]
+usage:  
+$SCRIPTNAME -f <filename> [options]
+Try $SCRIPTNAME --help for more information.
 EOF
 }
 # help message
@@ -49,7 +49,7 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+$SCRIPTNAME -f <filename> [options]
 
 options:
   -f, --file[=FILE]         virtual slide to create mask from
