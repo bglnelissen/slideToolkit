@@ -52,9 +52,10 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $SCRIPTNAME -f <filename> 
 
 options:
-  -f, --file[=VALUE]        Move file into a similar named directory 
+  -f|--file <filename>      Move file into a similar named directory 
 
-  --help                    display this help and exit
+  --help                    display this help
+  -h                        display usage
 
 examples:
   $SCRIPTNAME "file.tif"

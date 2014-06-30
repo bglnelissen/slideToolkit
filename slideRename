@@ -77,17 +77,20 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         virtual slide to rename
-  -l, --layer[=INT]         force specific layer by layer id
-  --prefix[=TEXT]           filename prefix
-  --suffix[=TEXT]           filename suffix
-  --to-lower                filename output is transformed to lower cases
-  --to-upper                filename output is transformed to upper cases
-  --im-display              use display (imageMagick) to preview slide
-  --convert-args[=OPTIONS]  convert (imageMagick) arguments
-  --resize[=WidthxHeight]   preview dimentions, x is manatory [${DEFAULT_RESIZE}]
-  --help                    display this help and exit
+  -f|--file <filename>        virtual slide to rename
+  -l|--layer <integer>        force specific layer by layer id
 
+  [--prefix] <text>             filename prefix
+  [--suffix] <text>             filename suffix
+  [--to-lower]                  filename output is transformed to lower cases
+  [--to-upper]                  filename output is transformed to upper cases
+  [--im-display]                use display (imageMagick) to preview slide
+  [--convert-args] <arguments>  convert (imageMagick) arguments
+  [--resize] <widthxheight>     preview dimentions (${DEFAULT_RESIZE})
+
+  --help                        display this help
+  -h                            display this help
+  
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"

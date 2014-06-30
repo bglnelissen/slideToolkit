@@ -57,12 +57,14 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         extract the thumbnail from this virtual slide
-  -l, --layer[=INT]         force specific layer by layer id
-  --suffix[=TEXT]           suffix to filename ["$DEFAULT_OUTPUT_SUFFIX"]
-  --extension[=TEXT]        thumbnail output extension ["$DEFAULT_OUTPUT_EXTENSION"]
+  -f|--file <filename>        extract the thumbnail from this virtual slide
+
+  [-l|--layer] <integer>      force specific layer by layer id
+  [--suffix] <text>           suffix to filename ("$DEFAULT_OUTPUT_SUFFIX")
+  [--extension] <text>        thumbnail output extension ("$DEFAULT_OUTPUT_EXTENSION")
   
-  --help                    display this help and exit
+  --help                    display this help
+  -h                        display usage
 
 examples:
   $SCRIPTNAME "file.svs"

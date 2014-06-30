@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Create a joblist for the HPC to analyse all tiles.
+# Description: Create a joblist to analyse multiple tiles using CellProfiler.
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Create a joblist for the HPC to analyse all tiles."
+DESCRIPTIONSHORT="Create a joblist to analyse multiple tiles using CellProfiler."
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("convert" "parallel" "$CPBIN")
@@ -65,19 +65,21 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+$SCRIPTNAME -i <dirname> -p <pipeline> [options]
 
 options:
-  -i, --inputdir[=DIR]        directory with tiles to analyse
-  -p, --pipeline              CellProfiler pipeline to use on images located in '--inputdir'
-  --output-suffix[=TEXT]      suffix for output directory ["$DEFAULT_OUTPUT_SUFFIX"]
-  --handler[=qsub]            specify the job handler
-  --mkdir-output              create  output directory before running CellProfiler
+  -i|--inputdir <dirname>     directory with tiles to analyse
+  -p|--pipeline <pipeline>    CellProfiler pipeline
+
+  [--output-suffix] <text>    suffix for output directory ("$DEFAULT_OUTPUT_SUFFIX")
+  [--handler] <jobhandler>    specify the job handler
+  [--mkdir-output]            create  output directory before running CellProfiler
 
 qsub:
-  -N, --name[=TEXT]           qsub job name
+  [-N|--name <text>]          job handler -N flag (job identification name)
 
-  --help                      display this help and exit
+  --help                      display this help
+  -h                          display usage
 
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
@@ -90,7 +92,7 @@ dependencies: ${DEPENDENCIES[@]}
 Create a joblist that analyses multiple folders containing tiles using
 CellProfiler. CellProfiler results are stored in the output directory
 and is located at the same path as the input directory with default
-suffix "$DEFAULT_OUTPUT_SUFFIX".
+suffix: "$DEFAULT_OUTPUT_SUFFIX".
 The output directory can be generated using the --mkdir-output flag,
 some versions of CellProfiler want to output directory to exist before
 starting the pipeline.

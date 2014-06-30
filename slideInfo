@@ -52,9 +52,10 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=VALUE]        Virtual slide 
+  -f|--file <filename>        Virtual slide 
 
-  --help                    display this help and exit
+  --help                      display this help
+  -h                          display usage
 
 examples:
   $SCRIPTNAME "file.tif"

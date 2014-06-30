@@ -59,10 +59,12 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         "SQL_SETUP.SQL" file 
-      --add-head[=FILE]     "file.csv" file 
+  -f|--file <filename>      "SQL_SETUP.SQL" file 
+  
+  [--add-head] <filename>   "file.csv" file 
 
-  --help                    display this help and exit
+  --help                    display this help
+  -h                        display usage
 
 examples:
   $SCRIPTNAME "SQL_SETUP.SQL"

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Description: Cut virtual slide into tiles
+# Description: Cut whole virtual slide into tiles
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Cut virtual slide into tiles"
+DESCRIPTIONSHORT="Cut whole virtual slide into tiles"
 DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
 DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
@@ -70,17 +70,18 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $(usage)
 
 options:
-  -f, --file[=FILE]         virtual slide to create tiles from
-  -m, --mask[=FILE]         black mask for excluding parts of the virtual slide 
-  --layer[=INT]             force specific layer [$DEFAULTLAYER]
-  --height[=PIXELS]         tile height in pixels [$DEFAULTHEIGHT]
-  --width[=PIXELS]          tile width in pixels [$DEFAULTWIDTH]
-  --keepEmtpy               do not delete empty tiles when found
-  --outputsuffix[=TEXT]     output directory suffix
-  --ignore-dependencies     ignores all dependencies
-  --verbose                 verbose output
+  -f|--file <filename>      virtual slide to create tiles from
+  -m|--mask <filename>      black mask for excluding parts of the virtual slide 
+
+  [--layer] <integer>       force specific layer ($DEFAULTLAYER)
+  [--height] <pixels>       tile height in pixels ($DEFAULTHEIGHT)
+  [--width] <pixels>        tile width in pixels ($DEFAULTWIDTH)
+  [--keepEmtpy]             do not delete empty tiles when found
+  [--outputsuffix] <text>   output directory suffix
+  [--ignore-dependencies]   ignores all dependencies
+  [--verbose]               verbose output (for debugging)
   
-  --help                    display this help and exit
+  --help                    display this help
   -h                        display usage
 
 examples:

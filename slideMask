@@ -52,12 +52,14 @@ ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 $SCRIPTNAME -f <filename> [options]
 
 options:
-  -f, --file[=FILE]         virtual slide to create mask from
-  --masksuffix[=TEXT]       mask suffix ["$MASKSUFFIX_DEFAULT"]
-  --macrosuffix[=TEXT]      macro suffix ["$MACROSUFFIX_DEFAULT"]
-  -l, --layer[=INT]         force specific layer by layer id ["$LAYER_DEFAULT"]
+  -f|--file <filename>       virtual slide to create mask from
 
-  --help                    display this help and exit
+  [--masksuffix] <text>      mask suffix ["$MASKSUFFIX_DEFAULT"]
+  [--macrosuffix] <text>     macro suffix ["$MACROSUFFIX_DEFAULT"]
+  [-l|--layer] <integer>     force specific layer by layer id ["$LAYER_DEFAULT"]
+
+  --help                    display this help
+  -h                        display usage
 
 examples:
   $SCRIPTNAME "file.tif"
