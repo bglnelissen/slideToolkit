@@ -67,7 +67,7 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+$SCRIPTNAME -f <filename> [options]
 
 options:
   -f|--file <filename>      virtual slide to create tiles from
