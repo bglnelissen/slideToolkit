@@ -74,11 +74,12 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+usage:
+  $SCRIPTNAME -f <filename> [options]
 
 options:
-  -f|--file <filename>        virtual slide to rename
-  -l|--layer <integer>        force specific layer by layer id
+  -f, --file <filename>         virtual slide to rename
+  -l, --layer <integer>         force specific layer by layer id
 
   [--prefix] <text>             filename prefix
   [--suffix] <text>             filename suffix

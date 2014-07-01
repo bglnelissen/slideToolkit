@@ -65,21 +65,22 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$SCRIPTNAME -i <dirname> -p <pipeline> [options]
+usage:
+  $SCRIPTNAME -i <dirname> -p <pipeline> [options]
 
 options:
-  -i|--inputdir <dirname>     directory with tiles to analyse
-  -p|--pipeline <pipeline>    CellProfiler pipeline
+  -i, --inputdir <dirname>     directory with tiles to analyse
+  -p, --pipeline <pipeline>    CellProfiler pipeline
 
-  [--output-suffix] <text>    suffix for output directory ("$DEFAULT_OUTPUT_SUFFIX")
-  [--handler] <jobhandler>    specify the job handler
-  [--mkdir-output]            create  output directory before running CellProfiler
+  [--output-suffix] <text>     suffix for output directory ("$DEFAULT_OUTPUT_SUFFIX")
+  [--handler] <jobhandler>     specify the job handler
+  [--mkdir-output]             create  output directory before running CellProfiler
 
 qsub:
-  [-N|--name <text>]          job handler -N flag (job identification name)
+  [-N, --name] <text>          job handler -N flag (job identification name)
 
-  --help                      display this help
-  -h                          display usage
+  --help                       display this help
+  -h                           display usage
 
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"

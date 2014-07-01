@@ -54,17 +54,18 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+usage:
+  $SCRIPTNAME -f <filename> [options]
 
 options:
-  -f|--file <filename>        extract the thumbnail from this virtual slide
+  -f, --file <filename>       extract the thumbnail from this virtual slide
 
-  [-l|--layer] <integer>      force specific layer by layer id
+  [-l, --layer] <integer>     force specific layer by layer id
   [--suffix] <text>           suffix to filename ("$DEFAULT_OUTPUT_SUFFIX")
   [--extension] <text>        thumbnail output extension ("$DEFAULT_OUTPUT_EXTENSION")
   
-  --help                    display this help
-  -h                        display usage
+  --help                      display this help
+  -h                          display usage
 
 examples:
   $SCRIPTNAME "file.svs"

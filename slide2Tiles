@@ -67,11 +67,12 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$SCRIPTNAME -f <filename> [options]
+usage:
+  $SCRIPTNAME -f <filename> [options]
 
 options:
-  -f|--file <filename>      virtual slide to create tiles from
-  -m|--mask <filename>      black mask for excluding parts of the virtual slide 
+  -f, --file <filename>     virtual slide to create tiles from
+  -m, --mask <filename>     black mask for excluding parts of the virtual slide 
 
   [--layer] <integer>       force specific layer ($DEFAULTLAYER)
   [--height] <pixels>       tile height in pixels ($DEFAULTHEIGHT)

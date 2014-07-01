@@ -56,10 +56,11 @@ helpMessage() {
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
-$(usage)
+usage:
+  $SCRIPTNAME -f <filename> [options]
 
 options:
-  -f|--file <filename>      "SQL_SETUP.SQL" file 
+  -f, --file <filename>     "SQL_SETUP.SQL" file 
   
   [--add-head] <filename>   "file.csv" file 
 
