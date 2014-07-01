@@ -108,6 +108,9 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
+    --add-head)
+      ADDHEAD=$2
+      shift 2 ;;
     --add-head=*)
       ADDHEAD=${1#*=}
       shift ;;
