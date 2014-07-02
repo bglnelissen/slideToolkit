@@ -109,6 +109,9 @@ exit 1
 while :
 do
   case $1 in
+    -h)
+      usage
+      exit 0 ;;
     --help | -\?)
       helpMessage
       exit 0 ;;
