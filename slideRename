@@ -156,9 +156,15 @@ do
     --prefix=*)
       OUTPUT_PREFIX=${1#*=}
       shift ;;
+    --prefix)
+      OUTPUT_PREFIX=$2
+      shift 2 ;;
     --suffix=*)
       OUTPUT_SUFFIX=${1#*=}
       shift ;;
+    --suffix)
+      OUTPUT_SUFFIX=$2
+      shift 2 ;;
     --resize=*)
       RESIZE=${1#*=}
       shift ;;
@@ -344,7 +350,7 @@ programOutput(){
   if [[ -n "$OUTPUTFILE" ]]; then
     if [[ ! -a "$OUTPUTFILE" ]]; then
       # verbose rename file
-      mv -v "$FILEFULL" "$OUTPUTFILE"
+      mv --interactive -v "$FILEFULL" "$OUTPUTFILE"
     else
       err "Filename exists: $OUTPUTFILE"
       usage
