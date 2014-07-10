@@ -74,6 +74,13 @@ examples:
 multiple files at once:
     find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
+HPC qsub job submission:
+  for i in \$(find ./ -iname "*tif"); do
+    j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
+    echo "qsub" -pe threaded 1 -q veryshort \\
+    "$(command -v "$SCRIPTNAME")" --file="\${j}"
+  done
+
 dependencies: ${DEPENDENCIES[@]}
 
 A virtual slide is usually variant of a multilayered/pyramid TIFF file.
