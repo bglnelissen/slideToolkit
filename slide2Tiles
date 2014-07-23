@@ -44,7 +44,7 @@ MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes 
 # Exit and cleanup
 set -e
 function cleanup {
-  # remove temp files
+  # remove temp files, clean up
   rm -rf "$TMPSTORAGE"
 }
 trap cleanup EXIT
@@ -104,7 +104,9 @@ dependencies: ${DEPENDENCIES[@]}
 Cut slides into tiles for further processing. Reasonable tile size is
 '$DEFAULTWIDTH' by '$DEFAULTHEIGHT' pixels (default). Tiles are stored in a folder with suffix
 '$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
-all empty tiles are deleted.
+all empty tiles are deleted. A memory-mapped disk file (image-magick
+.mpc file) is used when a mask is used. The fast and efficient
+'openslide-write-png' is used when no mask is used.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -390,11 +392,13 @@ createTilesConvert(){
 
 createTilesOpenslide(){
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
-  AR_TIFFSPLIT_SUFFIX=$(echo aa{a..z})  # this is the standard suffix of tiffsplit
+  AR_TIFFSPLIT_SUFFIX=($(echo aa{a..z}))  # this is the standard suffix of tiffsplit. # myArray=('red' 'orange' 'green')
+  # declare -a AR_TIFFSPLIT_SUFFIX # declare array
   verbose_debug "Virtual slide: $S"
   verbose_debug "Tempstorage: $TMPSTORAGE"
   verbose_debug "Layer: $LAYER"
   verbose_debug "Suffix array: $AR_TIFFSPLIT_SUFFIX"
+  verbose_debug "Suffix array item: " "${AR_TIFFSPLIT_SUFFIX[${LAYER}]}"
   # extract layer to tmp
   TMPS="$TMPSTORAGE"/"$FILENAMESCAN"
   cp "$S" "$TMPS"
@@ -435,7 +439,7 @@ createTilesOpenslide(){
         else
           rm -rf "$FILE"
         fi
-      fi;
+      fi
     done
   done
   rm -rf "$TMPSTORAGE"
