@@ -42,9 +42,8 @@ MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes 
 # MEMORYLIMIT="$((14 * $THREADS))GB" # 14 GB per slot (seems good for imageMagick to know...)
 
 # Exit and cleanup
-set -e
+set -e # set -e makes it possible to catch the exit signal and cleanup if needed.
 function cleanup {
-  # remove temp files, clean up
   rm -rf "$TMPSTORAGE"
 }
 trap cleanup EXIT
