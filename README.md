@@ -28,3 +28,5 @@ collection of tools for automated feature analysis of whole slide images
 to create reproducible and meaningful phenotypic datasets.
 
 Release early, release often.
+
+B. Nelissen
