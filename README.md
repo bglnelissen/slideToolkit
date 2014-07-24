@@ -23,17 +23,8 @@ images using advanced cell detecting algorithms. The slideToolkit has
 been developed for modern personal computers and high performance
 clusters (HPCs) and is available as an opensource project on github.com.
 
-We here illustrate the power of slideToolkit by a repeated measurement
-of 303 digital slides containing CD3 stained (DAB) abdominal aortic
-aneurysm tissue from a tissue biobank. Our workflow consists of four
-consecutive steps. In the first step (acquisition), whole slide images
-are collected and converted to TIFF files. In the second step
-(preparation), files are organized. The third step (tiles), creates
-multiple manageable tiles to count. In the fourth step (analysis),
-tissue is analyzed and results are stored in a dataset. Using this
-method, two consecutive measurements of 303 slides showed an intraclass
-correlation of 0.99.
-
 In conclusion, slideToolkit provides a free, powerful and versatile
 collection of tools for automated feature analysis of whole slide images
 to create reproducible and meaningful phenotypic datasets.
+
+Release early, release often.
