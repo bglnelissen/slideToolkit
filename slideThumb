@@ -251,7 +251,7 @@ programOutput(){
    OUTPUT_DIRECTORY_PATH="${DIRFULL}/${OUTPUT_DIRECTORY}"
   fi
   # Create the path if it does not exist
-  mkdir -p "$OUTPUT_DIRECTORY_PATH"
+  mkdir -p -v "$OUTPUT_DIRECTORY_PATH"
   # The final path for the output file is:
   OUTPUTFILENAME="${OUTPUT_DIRECTORY_PATH}/${FILENAME}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
   
