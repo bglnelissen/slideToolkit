@@ -137,12 +137,21 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
+    --suffix)
+      OUTPUT_SUFFIX=$2
+      shift 2;;
     --suffix=*)
       OUTPUT_SUFFIX=${1#*=}
       shift ;;
+    --extension)
+      OUTPUT_EXTENSION=$2
+      shift 2;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
+    --output-dir)
+      OUTPUT_DIRECTORY=$2
+      shift 2;;
     --output-dir=*)
       OUTPUT_DIRECTORY=${1#*=}
       shift ;;
@@ -164,13 +173,6 @@ else
   FILE="$1"
 fi
 
-
-# DEBUG
-echo "OUTPUT_SUFFIX $OUTPUT_SUFFIX"
-echo "OUTPUT_DIRECTORY $OUTPUT_DIRECTORY"
-echo "OUTPUT_EXTENSION $OUTPUT_EXTENSION"
-
-
 # set OUTPUT_SUFFIX default
 if [ "$OUTPUT_SUFFIX" != "" ]; then
   OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
@@ -189,13 +191,6 @@ if [ "$OUTPUT_DIRECTORY" != "" ]; then
 else
   OUTPUT_DIRECTORY="$DEFAULT_OUTPUT_DIRECTORY"
 fi
-
-
-# DEBUG
-echo "OUTPUT_SUFFIX $OUTPUT_SUFFIX"
-echo "OUTPUT_DIRECTORY $OUTPUT_DIRECTORY"
-echo "OUTPUT_EXTENSION $OUTPUT_EXTENSION"
-
 
 # requirements
 checkRequirements() {
