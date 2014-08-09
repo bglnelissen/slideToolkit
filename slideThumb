@@ -31,6 +31,7 @@ DESCRIPTIONSHORT="Create slide thumbnail, including label"
 DEPENDENCIES=("convert" "parallel" "perl")
 DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
+DEFAULT_OUTPUT_DIRECTORY="" # Relative to input file
 WIDTH="512"
 
 # DEBUG setting, remove before going live
@@ -63,6 +64,7 @@ options:
   [-l, --layer] <integer>     force specific layer by layer id
   [--suffix] <text>           suffix to filename ("$DEFAULT_OUTPUT_SUFFIX")
   [--extension] <text>        thumbnail output extension ("$DEFAULT_OUTPUT_EXTENSION")
+  [--output-dir] <path>       path to output directory
   
   --help                      display this help
   -h                          display usage
@@ -86,7 +88,10 @@ dependencies: ${DEPENDENCIES[@]}
 A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
 these layers. This script extracts the correct layers and resizes,
-rotates and concatenates when necessary. 
+rotates and concatenates when necessary. By default the thumbnail is
+created in the same folder as the original file, a specific output
+directory can be set with --output-dir (path can be a relative path or
+absolute path) , if the location does not exist it will be created.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -137,6 +142,9 @@ do
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
+    --output-dir=*)
+      OUTPUT_DIRECTORY=${1#*=}
+      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -165,6 +173,12 @@ if [ "$OUTPUT_EXTENSION" != "" ]; then
   OUTPUT_EXTENSION="$OUTPUT_EXTENSION"
 else
   OUTPUT_EXTENSION="$DEFAULT_OUTPUT_EXTENSION"
+fi
+# set OUTPUT_DIRECTORY default
+if [ "$OUTPUT_DIRECTORY" != "" ]; then
+  OUTPUT_DIRECTORY="$OUTPUT_DIRECTORY"
+else
+  OUTPUT_DIRECTORY="$DEFAULT_OUTPUT_DIRECTORY"
 fi
 
 # requirements
@@ -221,12 +235,25 @@ programOutput(){
   FILE="$FILE"
   # path variables
   FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  DIRFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)")"
   BASENAME="$(basename "$FILEFULL")"    # basename
   DIRNAME="$(dirname "$FILE")"          # dirname
   EXTENSION="${BASENAME##*.}"           # extension
   FILEPATH="${FILEFULL%.*}"             # full path, no extension
   FILENAME="${BASENAME%.*}"             # filename, no extension"
-  OUTPUTFILENAME="${FILEPATH}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
+  # Check if path to OUTPUT_DIRECTORY is absolute or relative
+  if [[ "$OUTPUT_DIRECTORY" = /* ]]
+  then
+   # Absolute path is found, use it
+   OUTPUT_DIRECTORY_PATH="$OUTPUT_DIRECTORY"
+  else
+   # Relative path
+   OUTPUT_DIRECTORY_PATH="${DIRFULL}/${OUTPUT_DIRECTORY}"
+  fi
+  # Create the path if it does not exist
+  mkdir -p "$OUTPUT_DIRECTORY_PATH"
+  # The final path for the output file is:
+  OUTPUTFILENAME="${OUTPUT_DIRECTORY_PATH}/${FILENAME}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
   
   # check metadata for scanner data
   if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l)" ]]; then
