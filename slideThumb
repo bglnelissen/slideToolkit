@@ -137,8 +137,8 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    --suffix=*)
-      OUTPUT_SUFFIX=${1#*=}
+    --suffix)
+      OUTPUT_SUFFIX=$2
       shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
