@@ -31,7 +31,7 @@ DESCRIPTIONSHORT="Create slide thumbnail, including label"
 DEPENDENCIES=("convert" "parallel" "perl")
 DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
-DEFAULT_OUTPUT_DIRECTORY="" # Relative to input file
+DEFAULT_OUTPUT_DIRECTORY="." # Relative to input file
 WIDTH="512"
 
 # DEBUG setting, remove before going live
@@ -163,6 +163,14 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
+
+
+# DEBUG
+echo "OUTPUT_SUFFIX $OUTPUT_SUFFIX"
+echo "OUTPUT_DIRECTORY $OUTPUT_DIRECTORY"
+echo "OUTPUT_EXTENSION $OUTPUT_EXTENSION"
+
+
 # set OUTPUT_SUFFIX default
 if [ "$OUTPUT_SUFFIX" != "" ]; then
   OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
