@@ -91,7 +91,7 @@ these layers. This script extracts the correct layers and resizes,
 rotates and concatenates when necessary. By default the thumbnail is
 created in the same folder as the original file, a specific output
 directory can be set with --output-dir (path can be a relative path or
-absolute path) , if the location does not exist it will be created.
+absolute path, if the location does not exist it will be created).
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
