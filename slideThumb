@@ -139,7 +139,7 @@ do
       shift ;;
     --suffix)
       OUTPUT_SUFFIX=$2
-      shift ;;
+      shift 2;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
