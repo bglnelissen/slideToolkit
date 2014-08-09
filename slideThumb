@@ -106,6 +106,7 @@ FILE=""
 LAYER=""
 OUTPUT_SUFFIX=""
 OUTPUT_EXTENSION=""
+OUTPUT_DIRECTORY=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -180,7 +181,7 @@ if [ "$OUTPUT_DIRECTORY" != "" ]; then
 else
   OUTPUT_DIRECTORY="$DEFAULT_OUTPUT_DIRECTORY"
 fi
-
+echo "OUTPUT_SUFFIX $OUTPUT_SUFFIX"
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
