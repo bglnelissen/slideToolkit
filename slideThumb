@@ -137,9 +137,9 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    --suffix)
-      OUTPUT_SUFFIX=$2
-      shift 2;;
+    --suffix=*)
+      OUTPUT_SUFFIX=${1#*=}
+      shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
@@ -181,7 +181,14 @@ if [ "$OUTPUT_DIRECTORY" != "" ]; then
 else
   OUTPUT_DIRECTORY="$DEFAULT_OUTPUT_DIRECTORY"
 fi
+
+
+# DEBUG
 echo "OUTPUT_SUFFIX $OUTPUT_SUFFIX"
+echo "OUTPUT_DIRECTORY $OUTPUT_DIRECTORY"
+echo "OUTPUT_EXTENSION $OUTPUT_EXTENSION"
+
+
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
