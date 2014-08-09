@@ -40,7 +40,7 @@ err() {
 usage() {
 cat <<- EOF
 usage:  
-$SCRIPTNAME -f <filename> [options]
+$SCRIPTNAME [options] -f <filename>
 Try $SCRIPTNAME --help for more information.
 EOF
 }
@@ -50,7 +50,7 @@ cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
 usage:
-  $SCRIPTNAME -f <filename> [options]
+  $SCRIPTNAME [options] -f <filename>
 
 options:
   -f, --file <filename>      virtual slide to create mask from
