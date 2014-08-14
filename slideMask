@@ -57,7 +57,7 @@ options:
 
   [--masksuffix] <text>      mask suffix ["$MASKSUFFIX_DEFAULT"]
   [--macrosuffix] <text>     macro suffix ["$MACROSUFFIX_DEFAULT"]
-  [-l, --layer] <integer>    force specific layer by layer id ["$LAYER_DEFAULT"]
+  [-l, --layer] <integer>    force specific layer by layer id
 
   --help                     display this help
   -h                         display usage
@@ -70,19 +70,22 @@ multiple files at once:
   find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
 HPC qsub job submission:
+  SAVEIFS=$IFS; IFS=$(echo -en "\n\b")
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --file="\${j}"
   done
+  IFS=$SAVEIFS
 
 dependencies: ${DEPENDENCIES[@]}
 
 You can mask parts of your image that you do not wat to process. This
 program will automatically create a mask for you which you can later
-edit if needed. The slideToolkit only excludes real black (color
-#000000). Two new files will be created, one file.macro.png and one
-file.mask.png. Existing files will be overwritten.
+edit if needed. The mask is a layer or the original TIF file, hte layer
+id is choosen automatically. The slideToolkit only excludes real black
+(color #000000). Two new files will be created, one file.macro.png and
+one file.mask.png. Existing files will be overwritten.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -167,12 +170,6 @@ if [ "$MACROSUFFIX" != "" ]; then
   MACROSUFFIX="$MACROSUFFIX"
 else
   MACROSUFFIX="$MACROSUFFIX_DEFAULT"
-fi
-# set LAYER default
-if [ "$LAYER" != "" ]; then
-  LAYER="$LAYER"
-else
-  LAYER="$LAYER_DEFAULT"
 fi
 
 # requirements
