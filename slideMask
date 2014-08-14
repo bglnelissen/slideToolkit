@@ -78,6 +78,13 @@ HPC qsub job submission:
   done
   IFS=\$SAVEIFS
 
+HPC qsub job submission:
+find find ./ -iname "*tif" -print0 | while IFS= read -r -d '' file; do
+    j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
+    echo "qsub" -pe threaded 1 -q veryshort \\
+    "$(command -v "$SCRIPTNAME")" --file=\""\${j}"\"
+  done
+
 dependencies: ${DEPENDENCIES[@]}
 
 You can mask parts of your image that you do not wat to process. This
