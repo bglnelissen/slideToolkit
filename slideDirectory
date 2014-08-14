@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a staging directorie per slide"
-DEPENDENCIES=("convert" "parallel")
+DEPENDENCIES=("convert")
 
 # Errors go to stderr
 err() {
