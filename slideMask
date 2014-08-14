@@ -69,7 +69,7 @@ examples:
 multiple files at once:
   find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
-HPC qsub job submission:
+HPC qsub commands (commands to stdout only):
   find ./ -iname "*tif" -print0 | while IFS= read -r -d '' file; do
     j="\$(echo "\$(cd "\$(dirname "\$file")"; pwd)"/"\$(basename "\$file")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
