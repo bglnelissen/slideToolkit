@@ -70,13 +70,13 @@ multiple files at once:
   find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
 
 HPC qsub job submission:
-  SAVEIFS=$IFS; IFS=$(echo -en "\n\b")
+  SAVEIFS=\$IFS; IFS=\$(echo -en "\n\b")
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
     "$(command -v "$SCRIPTNAME")" --file="\${j}"
   done
-  IFS=$SAVEIFS
+  IFS=\$SAVEIFS
 
 dependencies: ${DEPENDENCIES[@]}
 
