@@ -74,7 +74,7 @@ examples:
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 multiple files at once:
-    find ./ -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " "{}"
+  find "$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " "{}"
 
 HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do

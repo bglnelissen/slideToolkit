@@ -90,13 +90,13 @@ examples:
   $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
 
 multiple folders at once:
-  find ./ -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
+  find "$(pwd)" -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=" \; \\
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
 
 HPC qsub job submission:
-  find ./ -iname "*tif" -type f \\
+  find "$(pwd)" -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=\"" \; \\

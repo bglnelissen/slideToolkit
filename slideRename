@@ -98,7 +98,7 @@ examples:
   $SCRIPTNAME  --layer=5 --convert-args="-threshold 90%" -f "file.tif"
 
 multiple files at once:
-     find ./ -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
+  find "$(pwd)" -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 

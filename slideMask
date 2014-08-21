@@ -69,10 +69,10 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
+  find "$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
 HPC qsub job submission:
-  find ./ -iname "*tif" -type f \\
+  find "$(pwd)" -iname "*tif" -type f \\
         -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
         -exec echo "--file=\""{}"\" " \;
