@@ -63,7 +63,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -iname "*tif" -exec echo "parallel " "$(command -v "$SCRIPTNAME")" "{}" \;
+  find "$(pwd)" -iname "*tif" -exec echo "parallel " "$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
