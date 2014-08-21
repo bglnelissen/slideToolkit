@@ -92,7 +92,7 @@ rotates and concatenates when necessary. By default the thumbnail is
 created in the same folder as the original file, a specific output
 directory can be set with --output-dir (path can be a relative path or
 absolute path, if the location does not exist it will be created). Pipe
-the 'multiple folders at once' output in `parallel` for parallel
+the 'multiple folders at once' output in 'parallel' for parallel
 processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license

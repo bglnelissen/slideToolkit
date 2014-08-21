@@ -112,7 +112,7 @@ in a folder with suffix '$DEFAULTOUTPUTDIRSUFFIX' at the same location
 as the input file. By default all empty tiles are deleted. A
 memory-mapped disk file (image-magick .mpc file) is used when a mask is
 used. The fast and efficient 'openslide-write-png' is used when no mask
-is used. Pipe the 'multiple folders at once' output in `parallel` for
+is used. Pipe the 'multiple folders at once' output in 'parallel' for
 parallel processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license

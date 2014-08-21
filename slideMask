@@ -85,7 +85,7 @@ edit if needed. The mask is a layer or the original TIF file, hte layer
 id is choosen automatically. The slideToolkit only excludes real black
 (color #000000). Two new files will be created, one file.macro.png and
 one file.mask.png. Existing files will be overwritten. Pipe the
-'multiple folders at once' output in `parallel` for parallel processing.
+'multiple folders at once' output in 'parallel' for parallel processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
