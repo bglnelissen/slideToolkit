@@ -73,9 +73,9 @@ multiple files at once:
 
 HPC qsub job submission:
   find ./ -iname "*tif" -type f \\
-        -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
-        -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
-        -exec echo " --file=\""{}"\" " \;
+        -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
+        -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
+        -exec echo "--file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 
