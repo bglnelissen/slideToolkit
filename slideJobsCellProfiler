@@ -30,9 +30,11 @@ SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a joblist to analyse multiple tiles using CellProfiler."
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
-DEPENDENCIES=("convert" "parallel" "$CPBIN")
+DEPENDENCIES=("convert" "parallel" "$CPBIN") # these scripts/binaries must be in your path: `command -v binary`
 DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
-QSUBOPT="-pe threaded 3 -q short"
+QSUBARGS="-pe threaded 3 -q short"
+DEFAULT_QSUBNAME="$SCRIPTNAME"
+DEFAULT_QSUBARGS="-pe threaded 3 -q short"
 
 # Cleanup stage
 set -e
@@ -74,10 +76,11 @@ options:
 
   [--output-suffix] <text>     suffix for output directory ("$DEFAULT_OUTPUT_SUFFIX")
   [--handler] <jobhandler>     specify the job handler
-  [--mkdir-output]             create  output directory before running CellProfiler
+  [--mkdir-output] <dirname>   create output directory before running CellProfiler
 
 qsub:
-  [-N, --name] <text>          job handler -N flag (job identification name)
+  [-N, --name] <text>          qsub job identification name ("$DEFAULT_QSUBNAME")
+  [--qsub-args] <arguments>    qsub arguments ("$DEFAULT_QSUBARGS")
 
   --help                       display this help
   -h                           display usage
@@ -113,6 +116,7 @@ INPUTDIR=""
 PIPELINE=""
 NAME=""
 QSUBNAME=""
+QSUBARGS=""
 HANDLER=""
 # illegal option
 illegalOption() {
@@ -156,6 +160,9 @@ do
     -N | --name)
       QSUBNAME=$2
       shift 2 ;;
+    --qsub-args)
+      QSUBARGS=$2
+      shift 2 ;;
     --) # End of all options
       shift
       break ;;
@@ -184,7 +191,13 @@ fi
 if [ "$QSUBNAME" != "" ]; then
   QSUBNAME="$QSUBNAME"
 else
-  QSUBNAME="$SCRIPTNAME"
+  QSUBNAME="$DEFAULT_QSUBNAME"
+fi
+# set QSUBARGS default
+if [ "$QSUBARGS" != "" ]; then
+  QSUBARGS="$QSUBARGS"
+else
+  QSUBARGS="$DEFAULT_QSUBARGS"
 fi
 # set HANDLER
 if [ "$HANDLER" != "" ]; then
@@ -246,7 +259,7 @@ programOutput(){
   
   if [[  "$HANDLER" == "qsub"  ]]; then
     # create job command for qsub
-    JOB="qsub -N \"${QSUBNAME}\" $QSUBOPT $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
+    JOB="qsub -N \"${QSUBNAME}\" $QSUBARGS $CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
   elif [[  "$HANDLER" == ""  ]]; then
     # create job command
     JOB="$CPBINFULL -r -c -i $INPUTDIRFULL -o $OUTPUTDIRFULL -p $PIPELINEFULL" 
