@@ -28,12 +28,13 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut whole virtual slide into tiles"
-DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png") # must exist in PATH
+DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png" "perl") # must exist in PATH
 DEFAULTMASKSUFFIX=".mask.png"
 DEFAULTLAYER=3 # 3
 DEFAULTHEIGHT=2000  # 2000
 DEFAULTWIDTH=2000   # 2000
 DEFAULTOUTPUTDIRSUFFIX=".tiles"
+DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 
 # TODO: automate or remove this
@@ -88,19 +89,19 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
 
-multiple files at once:
-  find ./ -iname "*tif" | parallel "\$(command -v "$SCRIPTNAME")" --mask="{.}.mask.png" --file="{}"
+multiple folders at once:
+  find ./ -iname "*tif" -type f -exec printf "\$(command -v "$SCRIPTNAME")" \; \\
+        -exec printf " --mask=" \; \\
+        -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
+        -exec echo " --file="{}" " \;
 
 HPC qsub job submission:
-  for i in \$(find ./ -iname "*tif"); do
-    j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "qsub" -pe threaded 4 -q veryshort \\
-    "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
-  done
-
-multiple folders at once:
-  find ./ -iname "*tif" -type f -exec echo "\$(command -v "$SCRIPTNAME")" --mask="{.}.mask.png" --file="{}" \;
-
+  find ./ -iname "*tif" -type f \\
+        -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
+        -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
+        -exec printf " --mask=" \; \\
+        -exec bash -c "printf \"{}\" | perl -pe 's/\.TIF$/$DEFAULTMASKSUFFIX/i' " \; \\
+        -exec echo " --file="{}" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 
