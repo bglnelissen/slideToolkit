@@ -98,6 +98,10 @@ HPC qsub job submission:
     "$(command -v "$SCRIPTNAME")" --mask="\${j%.*}".mask.png --file="\${j}"
   done
 
+multiple folders at once:
+  find ./ -iname "*tif" -type f -exec echo "\$(command -v "$SCRIPTNAME")" --mask="{.}.mask.png" --file="{}" \;
+
+
 dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
