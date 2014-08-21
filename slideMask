@@ -32,6 +32,8 @@ DEPENDENCIES=("convert" "parallel")
 MASKSUFFIX_DEFAULT=".mask"
 MACROSUFFIX_DEFAULT=".macro"
 MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
+DEFAULT_QSUBARGS="-pe threaded 1 -q veryshort"
+
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
@@ -67,14 +69,13 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
+  find ./ -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
-HPC qsub commands (commands to stdout only):
-  find ./ -iname "*tif" -print0 | while IFS= read -r -d '' file; do
-    j="\$(echo "\$(cd "\$(dirname "\$file")"; pwd)"/"\$(basename "\$file")")"; \\
-    echo "qsub" -pe threaded 1 -q veryshort \\
-    "$(command -v "$SCRIPTNAME")" --file=\""\${j}"\"
-  done
+HPC qsub job submission:
+  find ./ -iname "*tif" -type f \\
+        -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
+        -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
+        -exec echo " --file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 
