@@ -99,9 +99,10 @@ HPC qsub job submission:
   find ./ -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
-        -exec printf " --mask=" \; \\
+        -exec printf " --mask=\"" \; \\
         -exec bash -c "printf \"{}\" | perl -pe 's/\.TIF$/$DEFAULTMASKSUFFIX/i' " \; \\
-        -exec echo " --file="{}" " \;
+        -exec printf "\"" \; \\
+        -exec echo " --file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 
