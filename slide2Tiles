@@ -90,7 +90,7 @@ examples:
   $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
 
 multiple folders at once:
-  find ./ -iname "*tif" -type f -exec printf " parallel \$(command -v "$SCRIPTNAME")" \; \\
+  find ./ -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=" \; \\
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
@@ -107,11 +107,13 @@ HPC qsub job submission:
 dependencies: ${DEPENDENCIES[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
-'$DEFAULTWIDTH' by '$DEFAULTHEIGHT' pixels (default). Tiles are stored in a folder with suffix
-'$DEFAULTOUTPUTDIRSUFFIX' at the same location as the input file. By default
-all empty tiles are deleted. A memory-mapped disk file (image-magick
-.mpc file) is used when a mask is used. The fast and efficient
-'openslide-write-png' is used when no mask is used.
+'$DEFAULTWIDTH' by '$DEFAULTHEIGHT' pixels (default). Tiles are stored
+in a folder with suffix '$DEFAULTOUTPUTDIRSUFFIX' at the same location
+as the input file. By default all empty tiles are deleted. A
+memory-mapped disk file (image-magick .mpc file) is used when a mask is
+used. The fast and efficient 'openslide-write-png' is used when no mask
+is used. Pipe the 'multiple folders at once' output in `parallel` for
+parallel processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen

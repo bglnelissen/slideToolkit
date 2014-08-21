@@ -74,7 +74,7 @@ examples:
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 multiple files at once:
-    find ./ -iname "*tif" | parallel "$(command -v "$SCRIPTNAME")" "{}"
+    find ./ -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " "{}"
 
 HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do
@@ -91,7 +91,9 @@ these layers. This script extracts the correct layers and resizes,
 rotates and concatenates when necessary. By default the thumbnail is
 created in the same folder as the original file, a specific output
 directory can be set with --output-dir (path can be a relative path or
-absolute path, if the location does not exist it will be created).
+absolute path, if the location does not exist it will be created). Pipe
+the 'multiple folders at once' output in `parallel` for parallel
+processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
