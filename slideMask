@@ -69,7 +69,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
+  find ./ -iname "*tif" -exec echo "parallel $(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
 HPC qsub job submission:
   find ./ -iname "*tif" -type f \\

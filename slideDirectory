@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a staging directorie per slide"
-DEPENDENCIES=("convert")
+DEPENDENCIES=("parallel")
 
 # Errors go to stderr
 err() {
@@ -63,7 +63,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find ./ -iname "*tif" -exec "$(command -v "$SCRIPTNAME")" "{}" \;
+  find ./ -iname "*tif" -exec echo "parallel " "$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
