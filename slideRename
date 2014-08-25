@@ -350,7 +350,8 @@ programOutput(){
   if [[ -n "$OUTPUTFILE" ]]; then
     if [[ ! -a "$OUTPUTFILE" ]]; then
       # verbose rename file
-      mv --interactive -v "$FILEFULL" "$OUTPUTFILE"
+      mv -v "$FILEFULL" "$OUTPUTFILE"
+      #       mv --interactive -v "$FILEFULL" "$OUTPUTFILE"
     else
       err "Filename exists: $OUTPUTFILE"
       usage
