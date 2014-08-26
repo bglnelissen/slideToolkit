@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Fetch slide metadata (resolution, dates, etc)"
-DEPENDENCIES=("identify tiffinfo")
+DEPENDENCIES=("identify" "tiffinfo" "openslide-show-properties" "perl" "awk")
 
 # Errors go to stderr
 err() {
@@ -65,6 +65,8 @@ examples:
 dependencies: ${DEPENDENCIES[@]}
 
 Show virtual slide metadata/information: color depth, layers, etc.
+
+CAVE: $SCRIPTNAME does suppress lots of warnings!
 
 The slideToolkit is licensed under a MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -157,8 +159,27 @@ programOutput(){
   FILENAME="${BASENAME%.*}"             # filename, no extension
   
   # remove lines with these tags to make the file more readable (awk 'NF' removes blank lines)
-  tiffinfo "$FILEFULL" | perl -p -e 's/^<.?AOI.*//g;s/^<.?AnchorPoint.*//g;s/^<.?Metadata.*//g;s/^<.?PrescanData.*//g;s/^\s*XML.*//g' | awk 'NF'
-  identify "$FILEFULL"
+  # all output to std out 2>&1, this will make it possible to suppress errors.
+  echo
+  echo "### openslide-show-properties (openslide) ###########################"
+  openslide-show-properties "$FILEFULL" 2>&1 | \
+    perl -p -e 's/^.*Warning.*$//g' | \
+    awk 'NF'
+  echo
+  echo "### tiffinfo (libtiff) ##############################################"
+  tiffinfo "$FILEFULL" 2>&1 | \
+    perl -p -e 's/^<.?AOI.*//g;s/^<.?AnchorPoint.*//g;s/^<.?Metadata.*//g;s/^<.?PrescanData.*//g;s/^\s*XML.*//g' | \
+    perl -p -e 's/^\ *Tag\ .*$//g' | \
+    perl -p -e 's/^AHEX.*$//g' | \
+    perl -p -e 's/([0-9]{1,9}[,]{1})?//g' | \
+    perl -p -e 's/^.*Warning.*$//g' | \
+    perl -p -e 's/^<.?TileJointInfo.*//g' | \
+    awk 'NF'
+  echo
+  echo "### identify (ImageMagick) ##########################################"
+  identify "$FILEFULL" 2>&1 | \
+    perl -p -e 's/^identify:\ Unknown\ field.*$//g'| \
+    awk 'NF'
 }
 
 # all check?

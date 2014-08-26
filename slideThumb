@@ -29,10 +29,11 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create slide thumbnail, including label"
 DEPENDENCIES=("convert" "parallel" "perl")
+SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
 DEFAULT_OUTPUT_DIRECTORY="." # Relative to input file
-WIDTH="512"
+DEFAULT_RESIZE="1024x1024"
 
 # DEBUG setting, remove before going live
 # set -o verbose
@@ -62,9 +63,10 @@ options:
   -f, --file <filename>       extract the thumbnail from this virtual slide
 
   [-l, --layer] <integer>     force specific layer by layer id
-  [--suffix] <text>           suffix to filename ("$DEFAULT_OUTPUT_SUFFIX")
-  [--extension] <text>        thumbnail output extension ("$DEFAULT_OUTPUT_EXTENSION")
+  [--suffix] <text>           suffix to filename ["$DEFAULT_OUTPUT_SUFFIX"]
+  [--extension] <text>        thumbnail output extension ["$DEFAULT_OUTPUT_EXTENSION"]
   [--output-dir] <path>       path to output directory
+  [--resize] <widthxheight>   maximum output dimentions ["$DEFAULT_RESIZE"]
   
   --help                      display this help
   -h                          display usage
@@ -74,7 +76,7 @@ examples:
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 multiple files at once:
-  find "$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " "{}"
+  find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " "{}"
 
 HPC qsub job submission:
   for i in \$(find ./ -iname "*tif"); do
@@ -84,6 +86,7 @@ HPC qsub job submission:
   done
 
 dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
 
 A virtual slide is usually variant of a multilayered/pyramid TIFF file.
 Different vendors store an overview of each slide in one (or more) of
@@ -145,6 +148,12 @@ do
     --suffix=*)
       OUTPUT_SUFFIX=${1#*=}
       shift ;;
+    --resize=*)
+      RESIZE=${1#*=}
+      shift ;;
+    --resize)
+      RESIZE=$2
+      shift 2 ;;
     --extension)
       OUTPUT_EXTENSION=$2
       shift 2;;
@@ -193,7 +202,12 @@ if [ "$OUTPUT_DIRECTORY" != "" ]; then
 else
   OUTPUT_DIRECTORY="$DEFAULT_OUTPUT_DIRECTORY"
 fi
-
+# set RESIZE default
+if [ "$RESIZE" != "" ]; then
+  RESIZE="$RESIZE"
+else
+  RESIZE="$DEFAULT_RESIZE"
+fi
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
@@ -221,28 +235,35 @@ checkDependencies(){
 }
 
 # get thumb for each scanner type
+getThumb(){
+  # get thumb by layer id
+  LAYER="$LAYER"
+  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
+}
 getThumbiScanHT(){
-  if [ "$LAYER" != "" ]; then
-    LAYER="$LAYER"
-  else
-    # layer 0 contains the thumb
-    LAYER=0
-  fi
-	convert "$FILEFULL[$LAYER]" "$OUTPUTFILENAME"
+  LAYER=0
+  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbAperio(){
-  if [ "$LAYER" != "" ]; then
-    convert "$FILEFULL"[$LAYER] "$OUTPUTFILENAME"
-  else
-    # the last 2 layers contain thumb and the tissue (couning starts at 0)
-    NR_LAYERS=`identify "$FILE" | wc -l`
-    N_LABEL="$(($NR_LAYERS - 2))"
-    N_TISSUE="$(($NR_LAYERS - 1))"
-    # get label, get tissue, rotate one and resize both, then append 
-    convert "$FILEFULL[$N_LABEL]" -resize "$WIDTH"x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize "$WIDTH"x \) -append "$OUTPUTFILENAME"
-  fi
+  # the last 2 layers contain thumb and the tissue (couning starts at 0)
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  N_LABEL="$(($NR_LAYERS - 2))"
+  N_TISSUE="$(($NR_LAYERS - 1))"
+  # get label, get tissue, rotate one and resize both, then append and do a final resize
+  convert "$FILEFULL[$N_LABEL]" -resize 1024x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize 1024x \)-append -resize "$RESIZE" "$OUTPUTFILENAME"
 }
-
+getThumbLeica(){
+  LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
+}
+getThumbHamamatsu(){
+  LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
+}
+getThumbiScan(){
+  LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL"[$LAYER] -resize "$RESIZE" "$OUTPUTFILENAME"
+}
 programOutput(){
   # set variables
   FILE="$FILE"
@@ -269,12 +290,22 @@ programOutput(){
   OUTPUTFILENAME="${OUTPUT_DIRECTORY_PATH}/${FILENAME}${OUTPUT_SUFFIX}.${OUTPUT_EXTENSION}"
   
   # check metadata for scanner data
-  if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l)" ]]; then
+  if [ "$LAYER" != "" ]; then
+    getThumb # layer is set, do it the easy way
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
     getThumbiScanHT # iScanHT found
-  elif [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "Aperio" | wc -l)" ]]; then
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Aperio" | wc -l | awk '{print $1}')" ]]; then
     getThumbAperio  # Aperio found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Leica" | wc -l | awk '{print $1}')" ]]; then
+    getThumbLeica  # Leica found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Hamamatsu" | wc -l | awk '{print $1}')" ]]; then
+    getThumbHamamatsu  # Hamamatsu found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScan" | wc -l | awk '{print $1}')" ]]; then
+    getThumbiScan  # iScan found
   else
     err "Unknown virtual slide format: $FILE"
+    err "You probably want to set --layer manually."
+    err "Run slideInfo for layer information."
     usage
     exit 1
   fi

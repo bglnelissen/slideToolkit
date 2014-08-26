@@ -29,10 +29,12 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create scaled mask and macro from a virtual slide"
 DEPENDENCIES=("convert" "parallel")
-MASKSUFFIX_DEFAULT=".mask"
-MACROSUFFIX_DEFAULT=".macro"
-MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
+SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+DEFAULT_MASKSUFFIX=".mask"
+DEFAULT_MACROSUFFIX=".macro"
+DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
 DEFAULT_QSUBARGS="-pe threaded 1 -q veryshort"
+DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
 err() {
@@ -55,37 +57,46 @@ usage:
   $SCRIPTNAME [options] -f <filename>
 
 options:
-  -f, --file <filename>      virtual slide to create mask from
+  -f, --file <filename>         virtual slide to create mask from
 
-  [--masksuffix] <text>      mask suffix ["$MASKSUFFIX_DEFAULT"]
-  [--macrosuffix] <text>     macro suffix ["$MACROSUFFIX_DEFAULT"]
-  [-l, --layer] <integer>    force specific layer by layer id
-
-  --help                     display this help
-  -h                         display usage
+  [--masksuffix] <text>         mask suffix ["$DEFAULT_MASKSUFFIX"]
+  [--macrosuffix] <text>        macro suffix ["$DEFAULT_MACROSUFFIX"]
+  [-l, --layer] <integer>       force specific layer by layer id
+  [--mask-args] <arguments>     mask arguments (imageMagick) ["$DEFAULT_MASKARGS"]
+  
+  --help                        display this help
+  -h                            display usage
 
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
 multiple files at once:
-  find "$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
+  find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
 HPC qsub job submission:
-  find "$(pwd)" -iname "*tif" -type f \\
+  find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
         -exec echo "--file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
 
 You can mask parts of your image that you do not wat to process. This
-program will automatically create a mask for you which you can later
-edit if needed. The mask is a layer or the original TIF file, hte layer
-id is choosen automatically. The slideToolkit only excludes real black
-(color #000000). Two new files will be created, one file.macro.png and
-one file.mask.png. Existing files will be overwritten. Pipe the
-'multiple folders at once' output in 'parallel' for parallel processing.
+program will use 'convert' to create a mask for you which you can later
+edit if needed. The mask is a layer within the original TIF file. The
+slideToolkit excludes real black in further processing (color #000000).
+Two new files will be created, one file.macro.png, and one masked macro
+file (file.mask.png). Definitions of masking can be set with the
+--mask-args flag. A blur creates space between the mask and the tissue.
+A fuzz selects the background. A fuzz of 3% works well, but fails on
+very light slides, a fuzz of 2% is mightby to easy on the selection, 5%
+works on slides with a darkish background. Pipe the 'multiple folders at
+once' output in 'parallel' for parallel processing. For some slides, the
+virtual slide format is not known. For these instances you need to run
+slideInfo to find the correct layer manually. When the mask layer is
+identified (approximately 2000x2000 pixels), use the --layer flag.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -99,7 +110,7 @@ FILE=""
 LAYER=""
 MASKSUFFIX=""
 MACROSUFFIX=""
-
+MASKARGS=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -136,6 +147,12 @@ do
     --masksuffix=*)
       MASKSUFFIX=${1#*=}
       shift ;;
+    --mask-args)
+      MASKARGS=$2
+      shift 2 ;;
+    --mask-args=*)
+      MASKARGS=${1#*=}
+      shift ;;
     --macrosuffix)
       MACROSUFFIX=$2
       shift 2 ;;
@@ -163,13 +180,19 @@ fi
 if [ "$MASKSUFFIX" != "" ]; then
   MASKSUFFIX="$MASKSUFFIX"
 else
-  MASKSUFFIX="$MASKSUFFIX_DEFAULT"
+  MASKSUFFIX="$DEFAULT_MASKSUFFIX"
+fi
+# set MASKARGS default
+if [ "$MASKARGS" != "" ]; then
+  MASKARGS="$MASKARGS"
+else
+  MASKARGS="$DEFAULT_MASKARGS"
 fi
 # set MACROSUFFIX default
 if [ "$MACROSUFFIX" != "" ]; then
   MACROSUFFIX="$MACROSUFFIX"
 else
-  MACROSUFFIX="$MACROSUFFIX_DEFAULT"
+  MACROSUFFIX="$DEFAULT_MACROSUFFIX"
 fi
 
 # requirements
@@ -199,25 +222,34 @@ checkDependencies(){
 }
 
 # get mask function for each type of scanner
-getThumbiScanHT(){
-  if [ "$LAYER" != "" ]; then
-    LAYER="$LAYER"
-  else
-    # layer 8 contains the macro
-    LAYER=8
-  fi
-	convert "$FILEFULL[$LAYER]" -resize "${MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+getMacro(){
+  # get thumb by layer id
+  LAYER="$LAYER"
+	convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
-macroOlympusDP71(){
-  if [ "$LAYER" != "" ]; then
-    LAYER="$LAYER"
-  else
-    # layer 0 contains the macro
-    LAYER=0
-  fi
-	convert "$FILEFULL[$LAYER]" -resize "${MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+getMacroiScanHT(){
+  # layer 8 contains the macro
+  LAYER=8
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
-
+getMacroAperio(){
+  # the third to last layer contains the macro
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  LAYER="$(($NR_LAYERS - 3))"
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroLeica(){
+  LAYER=5 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroHamamatsu(){
+  LAYER=5 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroiScan(){
+  LAYER=7 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
 
 # actual program
 programOutput(){
@@ -231,19 +263,28 @@ programOutput(){
   MASK="${FILEPATH}${MASKSUFFIX}.png"
   MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
-  # create macro
   # check metadata for scanner data
-  if [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "iScanHT" | wc -l)" ]]; then
-    getThumbiScanHT # iScanHT found
-  elif [[ "0" < "$(tiffinfo  "$FILEFULL" | strings | grep "DP71" | wc -l)" ]]; then
-    macroOlympusDP71  # Aperio found
-  else
-    err "Unknown virtual slide format: $FILEFULL"
+  if [ "$LAYER" != "" ]; then
+    getMacro # layer is set, do it the easy way
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
+    getMacroiScanHT # iScanHT found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Aperio" | wc -l | awk '{print $1}')" ]]; then
+    getMacroAperio  # Aperio found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Leica" | wc -l | awk '{print $1}')" ]]; then
+    getMacroLeica  # Leica found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Hamamatsu" | wc -l | awk '{print $1}')" ]]; then
+    getMacroHamamatsu  # Hamamatsu found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScan" | wc -l | awk '{print $1}')" ]]; then
+    getMacroiScan  # Ventana iScan found
+  else    err "Unknown virtual slide format: $FILEFULL"
+    err "You probably want to set --layer manually."
+    err "Run slideInfo for layer information."
     usage
     exit 1
   fi
   
-  # create mask
+  # what am I doing here?
+  # create mask, lay it ontop of the macro image.
   # a fuzz of 3% works well, but fails on very light slides
   # a fuzz of 2% is mightby to easy on the selection
   # a fuzz of 2.5% is possible (but still to stringend on some slides)
@@ -254,8 +295,7 @@ programOutput(){
   #	 - create alpha and save file
   convert "$MACRO" \( "$MACRO" \
     -bordercolor white -border 100x100 \
-    -blur 40x40 \
-    -fuzz 2% -transparent white \
+    $MASKARGS -transparent white \
     -crop +100+100 -crop -100-100 +repage \
     -alpha extract -transparent white \) \
     -flatten "$MASK"

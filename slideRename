@@ -29,6 +29,7 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
 DEPENDENCIES=("convert" "identify" "display" "parallel" "perl" "tiffinfo")
+SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
@@ -87,7 +88,7 @@ options:
   [--to-upper]                  filename output is transformed to upper cases
   [--im-display]                use display (imageMagick) to preview slide
   [--convert-args] <arguments>  convert (imageMagick) arguments
-  [--resize] <widthxheight>     preview dimentions (${DEFAULT_RESIZE})
+  [--resize] <widthxheight>     preview dimentions ["$DEFAULT_RESIZE"]
 
   --help                        display this help
   -h                            display this help
@@ -95,18 +96,22 @@ options:
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
-  $SCRIPTNAME  --layer=5 --convert-args="-threshold 90%" -f "file.tif"
+  $SCRIPTNAME  --layer=5 --convert-args="-rotate 90" -f "file.tif"
 
 multiple files at once:
-  find "$(pwd)" -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
+  find "\$(pwd)" -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
 
 This script displays a miniture of the whole slide and asks for a  new
 name. The theshold argument can be used to increase the contrast and make
 unreadable barcodes readable again, you can use --convert-args="-threshold 90%"
 for example. The --convert-args overrides all other arguments that are
-already set (like --resize)
+already set (like --resize). For some slides, the virtual slide format
+is not known. For these instances you need to run slideInfo to find the
+correct layer manually. When the layer containing the label is
+identified, use the --layer flag.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -168,6 +173,9 @@ do
     --resize=*)
       RESIZE=${1#*=}
       shift ;;
+    --resize)
+      RESIZE=$2
+      shift 2 ;;
     --to-upper)
       CASE="CASE_UPPER"
       shift ;;
@@ -263,28 +271,34 @@ checkDependencies(){
   fi
 }
 
-# show thumbs per scanner type
+# show thumbs per scanner type (-filter box is best for barcodes [...I think...])
+getThumb(){
+  # get thumb by layer id
+  LAYER="$LAYER"
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
 getThumbiScanHT(){
-  if [ "$LAYER" != "" ]; then
-    LAYER="$LAYER"
-  else
-    LAYER=0
-  fi
-	# get the thumb
-	convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+  LAYER=0
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbAperio(){
-  if [ "$LAYER" != "" ]; then
-    convert "$FILEFULL"[$LAYER]  $IM_ARGS -resize "$RESIZE" "$PREVIEW_TMPFILE"
-  else
-    # the last 2 layers contain thumb and the tissue (couning starts at 0)
-    NR_LAYERS=`identify "$FILE" | wc -l`
-    N_LABEL="$(($NR_LAYERS - 2))"
-    N_TISSUE="$(($NR_LAYERS - 1))"
-    # get label, get tissue, rotate and resize both, then concatenate 
-    convert "$FILEFULL[$N_LABEL]" $IM_ARGS -resize "$RESIZE" "$PREVIEW_TMPFILE"
-  fi
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  LAYER="$(($NR_LAYERS - 2))"   # the last 2 layers contain thumb and the tissue (couning starts at 0)
+  convert "$FILEFULL[$LAYER]" $IM_ARGS --filter box resize "$RESIZE" "$PREVIEW_TMPFILE"
 }
+getThumbLeica(){
+  LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" $IM_ARGS -rotate 180 -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+}
+getThumbHamamatsu(){
+  LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" $IM_ARGS -rotate 90 -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+}
+getThumbiScan(){
+  LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" $IM_ARGS -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+}
+
 
 programOutput(){
   # set variables
@@ -304,12 +318,22 @@ programOutput(){
   fi  
   
   # check metadata for scanner data
-  if [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
+  if [ "$LAYER" != "" ]; then
+    getThumb # layer is set, do it the easy way
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
     getThumbiScanHT # iScanHT found
-  elif [[ "0" < "$(tiffinfo  "$FILE" | strings | grep "Aperio" | wc -l | awk '{print $1}')" ]]; then
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Aperio" | wc -l | awk '{print $1}')" ]]; then
     getThumbAperio  # Aperio found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Leica" | wc -l | awk '{print $1}')" ]]; then
+    getThumbLeica  # Leica found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Hamamatsu" | wc -l | awk '{print $1}')" ]]; then
+    getThumbHamamatsu  # Hamamatsu found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScan" | wc -l | awk '{print $1}')" ]]; then
+    getThumbiScan  # iScan found
   else
     err "Unknown virtual slide format: $FILE"
+    err "You probably want to set --layer manually."
+    err "Run slideInfo for layer information."
     usage
     exit 1
   fi
@@ -322,13 +346,13 @@ programOutput(){
   fi
 
   echo "Current name: $FILENAME"
-  echo "Rename your slide. [c to cancel] [ctrl-c to quit]"
+  echo "Rename your slide. [ctrl-c to quit without saving]"
   if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
     echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
   fi
   while [ "$SLIDENAME_UNSAVE" == "" ]; do
     read -p "Enter slide name:" SLIDENAME_UNSAVE
-    if [[ "c" == "$SLIDENAME_UNSAVE" ]] || [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
+    if [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
       echo "Cancel slide..."
       exit 1
     fi

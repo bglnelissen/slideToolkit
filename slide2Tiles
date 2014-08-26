@@ -29,11 +29,12 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut whole virtual slide into tiles"
 DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png" "perl") # must exist in PATH
-DEFAULTMASKSUFFIX=".mask.png"
-DEFAULTLAYER=3 # 3
-DEFAULTHEIGHT=2000  # 2000
-DEFAULTWIDTH=2000   # 2000
-DEFAULTOUTPUTDIRSUFFIX=".tiles"
+SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+DEFAULT_MASKSUFFIX=".mask.png"
+DEFAULT_LAYER=3 # 3
+DEFAULT_HEIGHT=2000  # 2000
+DEFAULT_WIDTH=2000   # 2000
+DEFAULT_OUTPUTDIRSUFFIX=".tiles"
 DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 
@@ -74,10 +75,10 @@ options:
   -f, --file <filename>     virtual slide to create tiles from
   -m, --mask <filename>     black mask for excluding parts of the virtual slide 
 
-  [--layer] <integer>       force specific layer ($DEFAULTLAYER)
-  [--height] <pixels>       tile height in pixels ($DEFAULTHEIGHT)
-  [--width] <pixels>        tile width in pixels ($DEFAULTWIDTH)
-  [--keepEmtpy]             do not delete empty tiles when found
+  [-l, --layer] <integer>   force specific layer ["$DEFAULT_LAYER"]
+  [--height] <pixels>       tile height in pixels ["$DEFAULT_HEIGHT"]
+  [--width] <pixels>        tile width in pixels ["$DEFAULT_WIDTH"]
+  [--keep-empty]            do not delete empty tiles when found
   [--outputsuffix] <text>   output directory suffix
   [--ignore-dependencies]   ignores all dependencies
   [--verbose]               verbose output (for debugging)
@@ -86,34 +87,37 @@ options:
   -h                        display usage
 
 examples:
-  $SCRIPTNAME "file.tif"
-  $SCRIPTNAME  --keepEmtpy=true --mask="file.mask.png" --file="file.tif"
+  $SCRIPTNAME --layer 0 "file.tif"
+  $SCRIPTNAME --keep-empty --mask="file.mask.png" --file="file.tif"
 
 multiple folders at once:
-  find "$(pwd)" -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
+  find "\$(pwd)" -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=" \; \\
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
 
 HPC qsub job submission:
-  find "$(pwd)" -iname "*tif" -type f \\
+  find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=\"" \; \\
-        -exec bash -c "printf \"{}\" | perl -pe 's/\.TIF$/$DEFAULTMASKSUFFIX/i' " \; \\
+        -exec bash -c "printf \"{}\" | perl -pe 's/\.TIF$/$DEFAULT_MASKSUFFIX/i' " \; \\
         -exec printf "\"" \; \\
         -exec echo " --file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
 
 Cut slides into tiles for further processing. Reasonable tile size is
-'$DEFAULTWIDTH' by '$DEFAULTHEIGHT' pixels (default). Tiles are stored
-in a folder with suffix '$DEFAULTOUTPUTDIRSUFFIX' at the same location
+'$DEFAULT_WIDTH' by '$DEFAULT_HEIGHT' pixels (default). Tiles are stored
+in a folder with suffix '$DEFAULT_OUTPUTDIRSUFFIX' at the same location
 as the input file. By default all empty tiles are deleted. A
 memory-mapped disk file (image-magick .mpc file) is used when a mask is
 used. The fast and efficient 'openslide-write-png' is used when no mask
 is used. Pipe the 'multiple folders at once' output in 'parallel' for
-parallel processing.
+parallel processing. For some slides, the virtual slide format is not
+known. For these instances you need to run slideInfo to find the correct
+layer manually. Use the --layer flag to set the correct layer.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -153,7 +157,7 @@ do
     --file=*)
       FILE=${1#*=}
       shift ;;
-    --keepEmpty)
+    --keep-empty)
       KEEPEMPTYTILES=TRUE
       shift ;;
     -m | --mask)
@@ -162,6 +166,9 @@ do
     --mask=*)
       MASK=${1#*=}
       shift ;;
+    -l | --layer)
+      LAYER=$2
+      shift 2 ;;
     --layer=*)
       LAYER=${1#*=}
       shift ;;
@@ -206,25 +213,25 @@ fi
 if [ "$LAYER" != "" ]; then
   LAYER="$LAYER"
 else
-  LAYER="$DEFAULTLAYER"
+  LAYER="$DEFAULT_LAYER"
 fi
 # set OUTPUTDIRSUFFIX 
 if [ "$OUTPUTDIRSUFFIX" != "" ]; then
   OUTPUTDIRSUFFIX="$OUTPUTDIRSUFFIX"
 else
-  OUTPUTDIRSUFFIX="$DEFAULTOUTPUTDIRSUFFIX"
+  OUTPUTDIRSUFFIX="$DEFAULT_OUTPUTDIRSUFFIX"
 fi
 # set HEIGHT 
 if [ "$HEIGHT" != "" ]; then
   HEIGHT="$HEIGHT"
 else
-  HEIGHT="$DEFAULTHEIGHT"
+  HEIGHT="$DEFAULT_HEIGHT"
 fi
 # set WIDTH 
 if [ "$WIDTH" != "" ]; then
   WIDTH="$WIDTH"
 else
-  WIDTH="$DEFAULTWIDTH"
+  WIDTH="$DEFAULT_WIDTH"
 fi
 # set KEEPEMPTYTILES  (this if statement does nothing, as it is set to set in Menu)
 if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
@@ -305,9 +312,9 @@ checkRequirements() {
     usage
     exit 1
   fi
-
-  if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF) ]] ; then
-    err "TIF or TIFF extension expected. (case insensitive)"
+	# check file extensions, aperio svs is similar as tif and should work fine.
+  if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF|svs|SVS) ]] ; then
+    err "TIF or SVS extension expected."
     err "Extension found: $INPUTSCANEXT"
     usage
     exit 1
@@ -375,7 +382,7 @@ createTilesConvert(){
       # convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
       convert "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
       # find tissue, needs improvement
-      if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
+      if [[ "$(wc -c < "$FILE" )" -ge "$MINBYTESIZE" ]]; then
         # more than MINBYTESIZE bytes... tissue found
         # fit within width and height
         TISSUE="tissue";
@@ -398,7 +405,7 @@ createTilesConvert(){
 }
 
 createTilesOpenslide(){
-  TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+  TMPSTORAGE="$(/usr/bin/mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=($(echo aa{a..z}))  # this is the standard suffix of tiffsplit. # myArray=('red' 'orange' 'green')
   # declare -a AR_TIFFSPLIT_SUFFIX # declare array
   verbose_debug "Virtual slide: $S"
@@ -411,10 +418,11 @@ createTilesOpenslide(){
   cp "$S" "$TMPS"
   verbose_debug "TMPS: $TMPS"
   cd "$TMPSTORAGE" && tiffsplit "$TMPS" tmp #tmp is the standard prefix of this file, example: tmpaaf.tif
-  SLIDE="$TMPSTORAGE"/tmp"${AR_TIFFSPLIT_SUFFIX[${LAYER}]}".tif
+  SLIDE="${TMPSTORAGE}/tmp${AR_TIFFSPLIT_SUFFIX[${LAYER}]}.tif"
   verbose_debug "Working slide: $SLIDE"
+  verbose_debug "List temp dir: "$(ls "$TMPSTORAGE")""
   mkdir -p "$OUTPUTDIRNAME" # create output directory
-  verbose_debug "Outputdir: $OUTPUTDIRNAME" 
+  verbose_debug "Outputdir: $OUTPUTDIRNAME"
   width="$(identify -format %w "${SLIDE}")"
   height="$(identify -format %h "${SLIDE}")"
   limit_w="$(($width / $TILESWIDTH))"
@@ -433,7 +441,7 @@ createTilesOpenslide(){
       openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" # >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
 
       # find tissue, needs improvement
-      if [[ "$(wc -c < $FILE )" -ge "$MINBYTESIZE" ]]; then
+      if [[ "$(wc -c < "$FILE" )" -ge "$MINBYTESIZE" ]]; then
         # more than MINBYTESIZE bytes... tissue found
         # fit within width and height
         TISSUE="tissue";
