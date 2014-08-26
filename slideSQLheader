@@ -28,6 +28,7 @@
 #Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Extract SQL-file column names created by cellprofiler"
+DEPENDENCIES=("perl")
 SUFFIX=".head"
 
 #usage message
@@ -64,6 +65,8 @@ options:
 examples:
   $SCRIPTNAME "SQL_SETUP.SQL"
   $SCRIPTNAME  --file="SQL_SETUP.SQL" --add-head="file.csv"
+
+dependencies: ${DEPENDENCIES[@]}
 
 Extract SQL-file column names created by cellprofiler. These headers
 can be added to a .csv file using the --add-head option, a copy
