@@ -143,11 +143,11 @@ checkRequirements() {
 # actual program
 programOutput(){
   # convert to 1 line
-  # sed 'CREATE TABLE Per_Image' '))'; remove data types; clean spaces and comma's
+  # perl -p -e 'CREATE TABLE Per_Image' '))'; remove data types; clean spaces and comma's
   HEAD=$(cat "$FILE" | tr '\n' ' ' \
-  | sed 's/.*CREATE\ TABLE\ Per_Image\ (\(.*\)PRIMARY\ KEY\ (ImageNumber)\ ).*/\1/' \
-  | sed 's/float//g' | sed 's/INTEGER//g' | sed 's/TEXT//g' \
-  | sed 's/\ \,\ /\,\ /g' | sed 's/\.*,\ $//' | sed 's/^\ //')
+  | perl -p -e 's/.*CREATE\ TABLE\ Per_Image\ (\(.*\)PRIMARY\ KEY\ (ImageNumber)\ ).*/\1/' \
+  | perl -p -e 's/float//g' | perl -p -e 's/INTEGER//g' | perl -p -e 's/TEXT//g' \
+  | perl -p -e 's/\ \,\ /\,\ /g' | perl -p -e 's/\.*,\ $//' | perl -p -e 's/^\ //')
   # add head, yes -> do it, no -> echo head to stdout
   if ! [[ -z "$ADDHEAD" ]]; then
     echo "$(echo $HEAD; cat $ADDHEAD)" > "${ADDHEAD%.*}${SUFFIX}.${ADDHEAD##*.}"
