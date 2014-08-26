@@ -1,0 +1,180 @@
+#!/bin/bash
+#
+# Description: Convert digital slide format into Generic-TIFF
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+
+# Variables
+SCRIPTNAME="$(basename $0)"
+DESCRIPTIONSHORT="Convert digital slide format into OME-TIFF"
+DEPENDENCIES=("convert" "bfconvert")
+DEFAULT_OUTPUTFORMAT=".ome.tiff"
+DEFAULT_BFCONVERTARGS=""
+# Errors go to stderr
+err() {
+  echo "ERROR: $@" >&2
+}
+
+# usage message
+usage() {
+cat <<- EOF
+usage:  
+$SCRIPTNAME -f <filename> 
+Try $SCRIPTNAME --help for more information.
+EOF
+}
+
+# help message
+helpMessage() {
+cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
+usage:
+  $SCRIPTNAME -f <filename> 
+
+options:
+  -f, --file <filename>           Digital slide to convert to $DEFAULT_OUTPUTFORMAT
+  
+  [--bfconvert-args] <arguments>  bfconvert arguments ["$DEFAULT_BFCONVERTARGS"]
+
+  --help                    display this help
+  -h                        display usage
+
+examples:
+  $SCRIPTNAME "file.ext"
+  $SCRIPTNAME --file="file.ext" --bfconvert-args="-compression LZW"
+
+multiple files at once:
+  find "\$(pwd)" -iname "*ext" -exec "$(command -v "$SCRIPTNAME")" "{}" \;
+
+dependencies: ${DEPENDENCIES[@]}
+
+Convert slides of multiple formats into OME-TIFF format which can be
+used by the slideToolkit. By default 'bfconvert' runs without arguments,
+you can set arguments using the --bfconvert-args flag. See 'bfconvert'
+for more information.
+
+The slideToolkit and all its tools are released under the terms of the MIT license
+The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
+Report issues at https://github.com/bglnelissen/slideToolkit/issues
+
+EOF
+}
+
+# Menu
+# Empty variables
+FILE=""
+# illegal option
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+$(usage)
+EOF
+exit 1
+}
+# loop through options
+while :
+do
+  case $1 in
+    --help | -\?)
+      helpMessage
+      exit 0 ;;
+    -f | --file)
+      FILE=$2
+      shift 2 ;;
+    --file=*)
+      FILE=${1#*=}
+      shift ;;
+    --bfconvert-args)
+      BFCONVERTARGS=$2
+      shift 2 ;;
+    --bfconvert-args=*)
+      BFCONVERTARGS=${1#*=}
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+# Defaults
+# set FILE
+if [ "$FILE" != "" ]; then
+  FILE="$FILE"
+else
+  FILE="$1"
+fi
+# set BFCONVERTARGS default
+if [ "$BFCONVERTARGS" != "" ]; then
+  BFCONVERTARGS="$BFCONVERTARGS"
+else
+  BFCONVERTARGS="$DEFAULT_BFCONVERTARGS"
+fi
+
+# requirements
+checkRequirements() {
+  if ! [[ -f "$FILE" ]] ; then
+    err "No such file: $FILE"
+    usage
+    exit 1
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    err "Fix missing dependencies (${DEPS_FAIL})"
+    usage
+    exit 1
+  fi
+}
+
+# actual program
+programOutput(){
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
+  EXTENSION="${BASENAME##*.}"         # extension
+  FILEPATH="${FILEFULL%.*}"           # full path, no extension
+  FILENAME="${BASENAME%.*}"           # filename, no extension"
+  bfconvert "$BFCONVERTARGS" "$FILEFULL" "$FILEPATH""$DEFAULT_OUTPUTFORMAT"
+}
+
+# all check?
+checkRequirements
+checkDependencies
+
+# lets go!
+programOutput
