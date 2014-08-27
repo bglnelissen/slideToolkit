@@ -143,7 +143,8 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    usage
+    echo
+    helpMessage
     exit 1
   fi
 }

@@ -243,7 +243,8 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    usage
+    echo
+    helpMessage
     exit 1
   fi
   regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 or 234x must also be possible
