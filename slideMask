@@ -285,19 +285,23 @@ programOutput(){
   
   # what am I doing here?
   # create mask, lay it ontop of the macro image.
-  # a fuzz of 3% works well, but fails on very light slides
+  # a fuzz of 4% works well, but fails on very light slides
   # a fuzz of 2% is mightby to easy on the selection
   # a fuzz of 2.5% is possible (but still to stringend on some slides)
-  #	 - add a border so blur works on the whole image
-  #	 - blur the image to fill small holes (blur is slow, but necessary)
-  #	 - make all white transparent (background)
-  #	 - remove the border
-  #	 - create alpha and save file
+  # - we add a temporary border to the image of 100 pixels.
+  # - The image is blurred, the border will make sure the blur is applied to the borders as well. A blur will fill small holes in the tissue and will get rid of dust speckles.
+  # - Using fuzz, the background is selected and made transparent.
+  # - the previous added border is removed
+  # - the alpha makes all transparent parts of the image black, and the rest white.
+  # - now everything white is converted to transparent.
+  # - this image is now put on-top of the original one.
+
   convert "$MACRO" \( "$MACRO" \
     -bordercolor white -border 100x100 \
     $MASKARGS -transparent white \
     -crop +100+100 -crop -100-100 +repage \
-    -alpha extract -transparent white \) \
+    -alpha extract \
+    -transparent white \) \
     -flatten "$MASK"
 }
 # all check?
