@@ -34,9 +34,9 @@ DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
 DEFAULT_OUTPUT_DIRECTORY="." # Relative to input file
 DEFAULT_RESIZE="1024x1024"
-
-# DEBUG setting, remove before going live
-# set -o verbose
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
+SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
 
 # Errors go to stderr
 err() {

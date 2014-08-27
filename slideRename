@@ -34,9 +34,9 @@ DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
 DEFAULT_IM_ARGS="" # imagemagick arguments
-
-# DEBUG setting, remove before going live
-# set -o verbose
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
+SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
 
 # Cleanup stage
 set -e

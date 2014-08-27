@@ -29,7 +29,7 @@
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create scaled mask and macro from a virtual slide"
 DEPENDENCIES=("convert" "parallel")
-SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image

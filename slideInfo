@@ -29,6 +29,8 @@
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Fetch slide metadata (resolution, dates, etc)"
 DEPENDENCIES=("identify" "tiffinfo" "openslide-show-properties" "perl" "awk")
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 
 # Errors go to stderr
 err() {

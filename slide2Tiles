@@ -28,8 +28,8 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut whole virtual slide into tiles"
-DEPENDENCIES=("convert" "identify" "parallel" "openslide-write-png" "perl") # must exist in PATH
-SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+DEPENDENCIES=("convert" "identify" "parallel" "perl"  "openslide-write-png") # must exist in PATH
+SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask.png"
 DEFAULT_LAYER=3 # 3
 DEFAULT_HEIGHT=2000  # 2000
@@ -37,11 +37,9 @@ DEFAULT_WIDTH=2000   # 2000
 DEFAULT_OUTPUTDIRSUFFIX=".tiles"
 DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
-
-# TODO: automate or remove this
-# sets the memory limits for imagemagicks
-# THREADS=3
-# MEMORYLIMIT="$((14 * $THREADS))GB" # 14 GB per slot (seems good for imageMagick to know...)
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
+SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
 
 # Exit and cleanup
 set -e # set -e makes it possible to catch the exit signal and cleanup if needed.
