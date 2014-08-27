@@ -31,6 +31,9 @@ DESCRIPTIONSHORT="Convert digital slide format into OME-TIFF"
 DEPENDENCIES=("convert" "bfconvert")
 DEFAULT_OUTPUTFORMAT=".ome.tiff"
 DEFAULT_BFCONVERTARGS="-overwrite"
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
+
 # Errors go to stderr
 err() {
   echo "ERROR: $@" >&2
