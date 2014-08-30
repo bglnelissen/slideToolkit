@@ -404,7 +404,7 @@ createTilesConvert(){
 }
 
 createTilesOpenslide(){
-  TMPSTORAGE="$(/usr/bin/mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
+  TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=($(echo aa{a..z}))  # this is the standard suffix of tiffsplit. # myArray=('red' 'orange' 'green')
   # declare -a AR_TIFFSPLIT_SUFFIX # declare array
   verbose_debug "Virtual slide: $S"
