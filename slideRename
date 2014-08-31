@@ -345,7 +345,9 @@ programOutput(){
     # display "$PREVIEW_TMPFILE" &
     # IM_DISPLAY_PID=$!
     wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" ;DISPLAY_PID=$! & sleep 0.1 ; wmctrl -a master$$
-    echo "DISPLAY PID: $DISPLAY_PID"
+    ps -ax grep -w "$(basename "$PREVIEW_TMPFILE")"
+    IM_DISPLAY_PID=$(ps -ax grep -w "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
+    echo "DISPLAY PID $IM_DISPLAY_PID"
   fi
 
   echo "Current name: $FILENAME"
