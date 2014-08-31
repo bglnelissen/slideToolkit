@@ -354,7 +354,7 @@ programOutput(){
   fi
   while [ "$SLIDENAME_UNSAVE" == "" ]; do
     read -p "Enter slide name:" SLIDENAME_UNSAVE
-    if [[ "" == "$SLIDENAME_UNSAVE" ]] ; then
+    if [[ -z "$SLIDENAME_UNSAVE" ]] ; then
       echo "Cancel slide..."
       exit 1
     fi
