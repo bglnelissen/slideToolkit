@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
-DEPENDENCIES=("convert" "identify" "display" "parallel" "perl" "tiffinfo")
+DEPENDENCIES=("convert" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
 SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
@@ -342,8 +342,9 @@ programOutput(){
   if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]] && ! [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]];then
     open -g -a Preview "$PREVIEW_TMPFILE"
   else 
-    display "$PREVIEW_TMPFILE" &
-    IM_DISPLAY_PID=$!
+    # display "$PREVIEW_TMPFILE" &
+    # IM_DISPLAY_PID=$!
+    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep 0.1 ; wmctrl -a master$$
   fi
 
   echo "Current name: $FILENAME"
