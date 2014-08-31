@@ -344,6 +344,7 @@ programOutput(){
   else 
     # display "$PREVIEW_TMPFILE" &
     # IM_DISPLAY_PID=$!
+    echo "wmctrl running"
     wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep 0.1 ; wmctrl -a master$$
   fi
 
