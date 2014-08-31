@@ -28,12 +28,12 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
-DEPENDENCIES=("convert" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
+DEPENDENCIES=("awk" "convert" "grep" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
 SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
-DEFAULT_IM_ARGS="" # imagemagick arguments
+DEFAULT_IM_ARGS="" # imagemagick arguments, empty by default
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -342,12 +342,9 @@ programOutput(){
   if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]] && ! [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]];then
     open -g -a Preview "$PREVIEW_TMPFILE"
   else 
-    # display "$PREVIEW_TMPFILE" &
-    # IM_DISPLAY_PID=$!
-    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" ;DISPLAY_PID=$! & sleep 0.1 ; wmctrl -a master$$
-    ps -ax grep -w "$(basename "$PREVIEW_TMPFILE")"
-    IM_DISPLAY_PID=$(ps -ax grep -w "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
-    echo "DISPLAY PID $IM_DISPLAY_PID"
+    # wmctrl makes sure the terminal stays active, and 'display' will open in the background.
+    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep 0.1 ; wmctrl -a master$$
+    IM_DISPLAY_PID=$(ps ax | grep [d]isplay | grep "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
   fi
 
   echo "Current name: $FILENAME"
