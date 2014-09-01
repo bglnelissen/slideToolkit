@@ -37,5 +37,5 @@ to create reproducible and meaningful phenotypic datasets.
 
 ## Installation instructions for Ubuntu 12.04
 A manual with installation instructions can be downloaded as
-[pdf](slideToolkit-Ubuntu_12.04-installation-manual.pdf), the
+[pdf](guides/slideToolkit-Ubuntu_12.04-installation-manual.pdf), the
 accompanying video can be found on [youtube.com](https://youtube.com)
