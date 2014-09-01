@@ -1,5 +1,4 @@
-slideToolkit
-============
+slideToolkit ============
 
 slideToolkit: an assistive toolset for the histological quantification
 of whole slide images
@@ -20,7 +19,8 @@ In order to comply with this need, we developed the slideToolkit as a
 fast method to handle large quantities of low contrast whole slides
 images using advanced cell detecting algorithms. The slideToolkit has
 been developed for modern personal computers and high-performance
-clusters (HPCs) and is available as an open-source project on github.com.
+clusters (HPCs) and is available as an open-source project on
+github.com.
 
 A workflow consists of four consecutive steps. In the first step
 (acquisition), whole slide images are collected and converted to TIFF
@@ -33,3 +33,8 @@ showed an intraclass correlation of 0.99.
 In conclusion, slideToolkit provides a free, powerful and versatile
 collection of tools for automated feature analysis of whole slide images
 to create reproducible and meaningful phenotypic datasets.
+
+## Installation instructions for Ubuntu 12.04
+A manual with installation instructions can be downloaded as
+[pdf](slideToolkit-Ubuntu_12.04-installation-manual.pdf), the
+accompanying video can be found on [youtube.com](https://youtube.com)
