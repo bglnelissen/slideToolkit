@@ -16,4 +16,6 @@ In conclusion, slideToolkit provides a free, powerful and versatile collection o
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=KVpZgC9pUAg
 " target="_blank"><img src="http://img.youtube.com/vi/KVpZgC9pUAg/0.jpg" 
-alt="Ubuntu 12.04 dependency installation instructions" width="240" height="180" border="10" /></a>
+alt="Ubuntu 12.04 dependency's installation instructions" width="240" height="180" border="10" /></a>
+
+[![Ubuntu 12.04 dependency's installation instructions](http://img.youtube.com/vi/KVpZgC9pUAg/0.jpg)](http://www.youtube.com/watch?v=KVpZgC9pUAg)
