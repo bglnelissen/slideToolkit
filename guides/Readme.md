@@ -3,6 +3,11 @@ Installation instructions & dependency's
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. Please tell us if you run into problems, it is likely we can help you out.
 
+#### Guides:
+
+- [Ubuntu 12.04 installation instructions](#ubuntu_12.04)
+
+<a name="ubuntu_12.04"></a>
 Ubuntu 12.04 - slideToolkit installation instructions
 --------------
 
@@ -156,7 +161,7 @@ sudo reboot
 ```
 
 
-#### Screencaset - Ubuntu 12.04 - slideToolkit installation instructions
-[![Ubuntu 12.04 - slideToolkit installation instructions](http://img.youtube.com/vi/KVpZgC9pUAg/0.jpg)](http://www.youtube.com/watch?v=KVpZgC9pUAg)
+#### Screencaset - Ubuntu isntallation instructions.
+[![Ubuntu 12.04 - slideToolkit installation instructions - click to play](http://img.youtube.com/vi/KVpZgC9pUAg/0.jpg)](http://www.youtube.com/watch?v=KVpZgC9pUAg)
 
 ---
