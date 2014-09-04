@@ -12,4 +12,4 @@ A workflow consists of four consecutive steps. In the first step (acquisition), 
 In conclusion, slideToolkit provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
 
 -----------------------------------------------
-> Installation instructions for Ubuntu 12.04 A manual with installation instructions can be downloaded as [pdf](guides/slideToolkit-Ubuntu_12.04-installation-manual.pdf), the accompanying video can be found on [youtube.com](http://youtu.be/KVpZgC9pUAg)
+> Installation instructions can be found in [guides](guides).
