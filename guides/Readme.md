@@ -6,6 +6,7 @@ The slideToolkit is a set of scripts that requires other programs and libraries 
 #### Guides:
 
 - [Ubuntu 12.04 installation instructions](#ubuntu_12.04)
+- [OS X 10.9 Mavericks] todo
 
 <a name="ubuntu_12.04"></a>
 Ubuntu 12.04 - slideToolkit installation instructions
@@ -80,7 +81,8 @@ Install the latest libtiff library using cvs. When asked for a password, just pr
 ```
 mkdir -p ~/cvs && cd ~/cvs
 export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
-cvs login # no password, just press entercvs checkout libtiff
+cvs login # no password, just press enter
+cvs checkout libtiff
 ```
 Install libtiff.
 
@@ -139,12 +141,22 @@ make
 sudo make install && make clean
 ```
 
-#### Step 7 - Install bfconvertInstall the latest version of bfconvert:```mkdir -p ~/usr && cd ~/usrwget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+#### Step 7 - Install bfconvert
+Install the latest version of bfconvert:
+
+```
+mkdir -p ~/usr && cd ~/usr
+wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
-	rm bftools.zipprintf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/ usr/bfconvert:\$PATH\" \n\n" \	>> ~/.profile
+	rm bftools.zip
+printf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/ usr/bfconvert:\$PATH\" \n\n" \
+	>> ~/.profile
 ```
 
-#### Step 8 - Download the slideToolkitDownload the latest version of the slideToolkit from github. Pull if already exists; clone if none existing.```
+#### Step 8 - Download the slideToolkit
+Download the latest version of the slideToolkit from github. Pull if already exists; clone if none existing.
+
+```
 mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/slideToolkit && \
@@ -156,7 +168,11 @@ if [ -d ~/git/slideToolkit/.git ]; then \
 	fi
 ```
 
-#### Step 9 - Cleanup, restart & you're done!Fix linked libraries and restart.```sudo ldconfig
+#### Step 9 - Cleanup, restart & you're done!
+Fix linked libraries and restart.
+
+```
+sudo ldconfig
 sudo reboot
 ```
 
