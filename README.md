@@ -1,4 +1,4 @@
-slideToolkit
+[slideToolkit](http://bglnelissen.github.io/slideToolkit)
 ============
 
 slideToolkit: an assistive toolset for the histological quantification of whole slide images
