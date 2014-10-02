@@ -149,7 +149,7 @@ mkdir -p ~/usr && cd ~/usr
 wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
-printf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/ usr/bfconvert:\$PATH\" \n\n" \
+printf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
 
