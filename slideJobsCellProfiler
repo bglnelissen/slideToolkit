@@ -211,19 +211,19 @@ checkRequirements() {
   # input dir must exist
   if ! [[ -d "$INPUTDIR" ]] ; then
     err "No such inputdir: $INPUTDIR"
-    usage
+    helpMessage
     exit 1
   fi
   # pipeline must exist
   if ! [[ -f "$PIPELINE" ]] ; then
     err "No such pipeline: $PIPELINE"
-    usage
+    helpMessage
     exit 1
   fi
   # set HANDLER (parallel|qsub|etc)
   if ! [[ "$HANDLER" =~ (qsub|QSUB) || "$HANDLER" == "" ]] ; then
     err "No such job handler: $HANDLER"
-    usage
+    helpMessage
     exit 1
   fi
 }
@@ -240,7 +240,7 @@ checkDependencies(){
   done
   if [[ "$DEPS_FAIL" > 0 ]]; then
     err "Fix missing dependencies (${DEPS_FAIL})"
-    usage
+    helpMessage
     exit 1
   fi
 }
