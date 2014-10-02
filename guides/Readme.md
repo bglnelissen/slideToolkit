@@ -106,7 +106,7 @@ wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.g
 Install ImageMagick.
 
 ```
-cd ~/cvs/ImageMagick*
+cd ~/src/ImageMagick*
 ./configure
 make
 sudo make install && make clean
