@@ -6,7 +6,7 @@ The slideToolkit is a set of scripts that requires other programs and libraries 
 #### Guides:
 
 - [Ubuntu 12.04 installation instructions](#ubuntu_12.04)
-- [OS X 10.9 Mavericks] todo
+- [OS X 10.9 Mavericks](#osx_10.9)
 
 <a name="ubuntu_12.04"></a>
 Ubuntu 12.04 - slideToolkit installation instructions
@@ -176,8 +176,85 @@ sudo ldconfig
 sudo reboot
 ```
 
+<a name="osx_10.9"></a>
+OS X 10.9 Mavericks - slideToolkit installation instructions
+--------------
 
-#### Screencaset - Ubuntu isntallation instructions.
-[![Ubuntu 12.04 - slideToolkit installation instructions - click to play](http://img.youtube.com/vi/KVpZgC9pUAg/0.jpg)](http://www.youtube.com/watch?v=KVpZgC9pUAg)
+Here are the installation instructions for OS X Mavericks. I tried to create as few steps as possible
+with one-liners that are *easy* to read. Most of the installation is done with [brew](http://brew.sh) You can copy/paste each command, line by line. For some steps you need administrator privileges. All steps run in the Terminal.
 
----
+```
+these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
+```
+
+To make it easier to copy and paste, long commands that stretch over multiple lines are structed as follows:
+
+```
+Multiline commands end with a dash \
+	indent, and continue on the next line.
+```
+
+#### Step 1 - Make shure you have the 'latest & greatest'
+The system must be up-to-date. Go to the Apple menu on the top left, click "Softeware Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
+
+Now we are up to date, and ready to continue the installation.
+
+#### Step 2 - Install XQuartz, a version of the X.Org X Window System that runs on OS X
+XQuartz is needed. Go to [xquartz.macosforge.org](http://xquartz.macosforge.org), download (about 70mb) and install the latest stable version of XQuartz. You can find it under "Quick Download".
+
+On the end of the installation you are asked to log out and log back in, and of course you comply.
+
+#### Step 3 - Install brew, the missing package manager for OS X
+We install [brew](http://brew.sh) using the following one-liner. You need administrator rights for the installation. No characters will appear on the screen when you type in your password. Paste the following oneliner in your the terminal.
+
+```
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+When asked if you want to install the "command line developer tools", choose 'Install'. After the "command line developer tools" installation, continue the installation in the Terminal
+
+After a `brew` installation, it is wise to do a `brew doctor` and follow the instructions on the screen.
+
+```
+brew doctor
+```
+
+Now your `brew` packages manager is good to go.
+
+#### Step 4 - Install packages using brew
+We install most packages using brew.
+
+```
+brew install jpeg libpng libtiff parallel \
+    imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
+```
+
+#### Step 5 - Disable parallel bibtex warning
+On each run, `parallel` asks you to cite it when you use GNU parallel to process data for publication. To disable this warning you need to run the following command once and follow instructions on the screen. 
+
+```
+parallel --bibtex
+```
+
+Respect the auther, and please cite when appropriate. 
+
+#### Step 6 - Install slideToolkit
+Download and install the latest version of the slideToolkit.
+
+```
+mkdir -p ~/slideToolkit/ && cd ~/slideToolkit
+wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
+	tar xzfv slideToolkit.zip && \
+	rm slideToolkit.zip
+```
+
+Add the slideToolkit directory to your path
+
+```
+printf "\n# Add the slideToolkit directory to the PATH \
+    \nPATH=\"$HOME/slideToolkit:\$PATH\" \n\n" \
+	>> ~/.bash_profile
+```
+
+#### Step 7 - Reboot
+Restart and you're done.
