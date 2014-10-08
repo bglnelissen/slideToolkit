@@ -242,7 +242,7 @@ Respect the auther, and please cite when appropriate.
 Download and install the latest version of the slideToolkit.
 
 ```
-cd ~/ \
+cd ~/ && \
 	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
