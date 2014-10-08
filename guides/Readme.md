@@ -75,7 +75,7 @@ parallel --bibtex
 Respect the auther, and please cite when appropriate. 
 
 #### Step 6 - Install the bioformat tools
-Install the latest version of BioFormats, including `bfconvert`. And add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools folder to your PATH is obligatory for the slideToolkit to find its dependencies.
+Install the latest version of BioFormats, including `bfconvert`.
 
 ```
 cd ~/ && \
@@ -83,6 +83,8 @@ cd ~/ && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
+Add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools folder to your PATH is obligatory for the slideToolkit to find its dependencies. You only have to do this once.
+
 ```
 printf "\n# Add the BioFormats directory to the PATH \
     \nPATH=\"$HOME/bftools:\$PATH\" \n\n" \
