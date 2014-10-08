@@ -225,7 +225,7 @@ Now your `brew` packages manager is good to go.
 We install most packages using brew.
 
 ```
-brew install wget jpeg libpng libtiff parallel \
+brew install wget jpeg libpng libtiff parallel openslide \
     imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
@@ -249,7 +249,7 @@ cd ~/ && \
 	mv ~/slideToolkit-master ~/slideToolkit	
 ```
 
-Add the slideToolkit directory to your path
+Add the slideToolkit directory to your PATH, we do this in the file `.bash_profile`. Adding the slideToolkit folder to your PATH makes it easier to acces the slideToolkit commands. (You only have to do this once).
 
 ```
 printf "\n# Add the slideToolkit directory to the PATH \
