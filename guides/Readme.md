@@ -86,7 +86,7 @@ Add the BioFormats directory to your PATH (in `.bash_profile`). Adding the bftoo
 ```
 printf "\n# Add the BioFormats directory to the PATH \
     \nPATH=\"$HOME/bftools:\$PATH\" \n\n" \
-	>> ~/.bash_profilegit
+	>> ~/.bash_profile
 ```
 
 #### Step 7 - Install slideToolkit
