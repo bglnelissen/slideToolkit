@@ -106,7 +106,7 @@ wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.g
 Install ImageMagick.
 
 ```
-cd ~/src/ImageMagick*
+cd ~/cvs/ImageMagick*
 ./configure
 make
 sudo make install && make clean
@@ -225,7 +225,7 @@ Now your `brew` packages manager is good to go.
 We install most packages using brew.
 
 ```
-brew install jpeg libpng libtiff parallel \
+brew install wget jpeg libpng libtiff parallel \
     imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
@@ -242,10 +242,11 @@ Respect the auther, and please cite when appropriate.
 Download and install the latest version of the slideToolkit.
 
 ```
-mkdir -p ~/slideToolkit/ && cd ~/slideToolkit
-wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
-	tar xzfv slideToolkit.zip && \
-	rm slideToolkit.zip
+cd ~/ \
+	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
+	unzip slideToolkit.zip && \
+	rm slideToolkit.zip && \
+	mv ~/slideToolkit-master ~/slideToolkit	
 ```
 
 Add the slideToolkit directory to your path
