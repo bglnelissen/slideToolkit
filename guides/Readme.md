@@ -3,11 +3,12 @@ Installation instructions & dependency's
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. Please tell us if you run into problems, it is likely we can help you out.
 
-#### Guides:
+#### Installation instructions for:
 
 
 - [OS X 10.9 Mavericks](#osx_10.9)
-- [Ubuntu 12.04 installation instructions](#ubuntu_12.04)
+- [Linux Ubuntu 12.04](#ubuntu_12.04)
+- We have not planned to create installation instructions for Windows
 
 ---
 
@@ -25,7 +26,8 @@ To make it easier to copy and paste, long commands that stretch over multiple li
 
 ```
 Multiline commands end with a dash \
-	indent, and continue on the next line.
+	indent 4 spaces, and continue on the next line. \
+	Copy & paste these whole blocks of code.
 ```
 
 #### Step 1 - Make shure you have the 'latest & greatest'
@@ -34,7 +36,7 @@ The system must be up-to-date. Go to the Apple menu on the top left, click "Soft
 Now we are up to date, and ready to continue the installation.
 
 #### Step 2 - Install XQuartz, a version of the X.Org X Window System that runs on OS X
-XQuartz is needed. Go to [xquartz.macosforge.org](http://xquartz.macosforge.org), download (about 70mb) and install the latest stable version of XQuartz. You can find it under "Quick Download".
+XQuartz is needed. Go to [xquartz.macosforge.org](http://xquartz.macosforge.org), download and install the latest stable version of XQuartz (about 70mb). You can find it under "Quick Download".
 
 On the end of the installation you are asked to log out and log back in, and of course you comply.
 
@@ -53,7 +55,7 @@ After a `brew` installation, it is wise to do a `brew doctor` and follow the ins
 brew doctor
 ```
 
-Now your `brew` packages manager is good to go.
+From now on, we asume your `brew` package manager is good to go.
 
 #### Step 4 - Install packages using brew
 We install most packages using brew.
@@ -73,16 +75,14 @@ parallel --bibtex
 Respect the auther, and please cite when appropriate. 
 
 #### Step 6 - Install the bioformat tools
-Install the latest version of BioFormats, including `bfconvert`:
+Install the latest version of BioFormats, including `bfconvert`. And add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools folder to your PATH is obligatory for the slideToolkit to find its dependencies.
 
 ```
 cd ~/ && \
-wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+    wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
-Add the BioFormats directory to your PATH (in `.bash_profile`). Adding the bftools folder to your PATH makes it easier to acces the slideToolkit commands. You only have to do this once.
-
 ```
 printf "\n# Add the BioFormats directory to the PATH \
     \nPATH=\"$HOME/bftools:\$PATH\" \n\n" \
@@ -167,6 +167,8 @@ Install the latest zlib compression libraries. First create and go to the src di
 
 ```
 mkdir -p ~/src && cd ~/src
+```
+```
 wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
 	tar xzvf zlib-1.2.8.tar.gz && \
 	rm zlib-1.2.8.tar.gz
@@ -175,8 +177,11 @@ Install zlib.
 
 ```
 cd ~/src/zlib-1.2.8
-./configure
-make
+```
+```
+./configure && make
+```
+```
 sudo make install && make clean
 ```
 
@@ -185,16 +190,21 @@ Install the latest libtiff library using cvs. When asked for a password, just pr
 
 ```
 mkdir -p ~/cvs && cd ~/cvs
+```
+```
 export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
+```
+```
 cvs login # no password, just press enter
+```
+```
 cvs checkout libtiff
 ```
 Install libtiff.
 
 ```
 cd ~/cvs/libtiff
-./configure
-make
+./configure && make
 sudo make install && make clean
 ```
 
@@ -212,9 +222,14 @@ Install ImageMagick.
 
 ```
 cd ~/cvs/ImageMagick*
-./configure
-make
+```
+```
+./configure && make
+```
+```
 sudo make install && make clean
+```
+```
 sudo ldconfig /usr/local/lib
 ```
 
@@ -224,6 +239,8 @@ Download the latest version of openslide from github. Pull if already exists; cl
 
 ```
 mkdir -p ~/git/ && cd ~/git
+```
+```
 if [ -d ~/git/openslide/.git ]; then \
 		echo pull; \
 		cd ~/git/openslide && \
@@ -240,9 +257,14 @@ Install openslide.
 
 ```
 cd ~/git/openslide
+```
+```
 autoreconf -i
-./configure
-make
+```
+```
+./configure && make
+```
+```
 sudo make install && make clean
 ```
 
@@ -251,26 +273,35 @@ Install the latest version of bfconvert:
 
 ```
 mkdir -p ~/usr && cd ~/usr
+```
+```
 wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
-printf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
+```
+```
+printf "\n# Add the bfconvert directory to the PATH \
+    \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
 
 #### Step 8 - Download the slideToolkit
-Download the latest version of the slideToolkit from github. Pull if already exists; clone if none existing.
+Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
-mkdir -p ~/git/ && cd ~/git
-if [ -d ~/git/slideToolkit/.git ]; then \
-		cd ~/git/slideToolkit && \
-		git pull; \
-	else \
-		cd ~/git/ && \
-		git clone git://github.com/bglnelissen/slideToolkit.git && \
-		cd ~/git; \
-	fi
+mkdir -p ~/usr/ && cd ~/usr
+```
+```
+cd ~/usr && \
+	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
+	unzip slideToolkit.zip && \
+	rm slideToolkit.zip && \
+	mv ~/usr/slideToolkit-master ~/usr/slideToolkit
+```
+```
+printf "\n# Add the slideToolkit directory to the PATH \
+    \nPATH=\"$HOME/usr/slideToolkit:\$PATH\" \n\n" \
+	>> ~/.profile
 ```
 
 #### Step 9 - Cleanup, restart & you're done!

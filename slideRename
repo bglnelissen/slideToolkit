@@ -339,7 +339,7 @@ programOutput(){
     exit 1
   fi
   # show file using Preview or display
-  if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]] && ! [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]];then
+  if [ -f "/Applications/Preview.app/Contents/MacOS/Preview" ] && ! [ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ];then
     open -g -a Preview "$PREVIEW_TMPFILE"
   else 
     # wmctrl makes sure the terminal stays active, and 'display' will open in the background.
