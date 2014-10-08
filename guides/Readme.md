@@ -8,7 +8,7 @@ The slideToolkit is a set of scripts that requires other programs and libraries 
 
 - [OS X 10.9 Mavericks](#osx_10.9)
 - [Linux Ubuntu 12.04](#ubuntu_12.04)
-- We have not planned to create installation instructions for Windows
+- We have not planned to create installation instructions for Windows in the near future
 
 ---
 
