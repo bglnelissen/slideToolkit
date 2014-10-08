@@ -3,20 +3,7 @@ Installation instructions & dependency's
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. Please tell us if you run into problems, it is likely we can help you out.
 
-#### Installation instructions for:
-
-
-- [OS X 10.9 Mavericks](#osx_10.9)
-- [Linux Ubuntu 12.04](#ubuntu_12.04)
-- We have not planned to create installation instructions for Windows in the near future
-
----
-
-<a name="osx_10.9"></a>
-OS X 10.9 Mavericks - slideToolkit installation instructions
---------------
-
-Here are the installation instructions for OS X Mavericks. I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done with [brew](http://brew.sh) You can copy/paste each command, line by line. For some steps you need administrator privileges. Follow the steps in consecutive order.
+I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
 ```
 these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
@@ -29,6 +16,20 @@ Multiline commands end with a dash \
 	indent 4 spaces, and continue on the next line. \
 	Copy & paste these whole blocks of code.
 ```
+
+
+#### Installation instructions for:
+
+
+- [OS X 10.9 Mavericks](#osx_10.9)
+- [Linux Ubuntu 12.04](#ubuntu_12.04)
+- We have not planned to create installation instructions for Windows in the near future
+
+---
+
+<a name="osx_10.9"></a>
+OS X 10.9 Mavericks - slideToolkit installation instructions
+--------------
 
 #### Step 1 - Make shure you have the 'latest & greatest'
 The system must be up-to-date. Go to the Apple menu on the top left, click "Softeware Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
@@ -118,23 +119,6 @@ Restart and you're done.
 <a name="ubuntu_12.04"></a>
 Ubuntu 12.04 - slideToolkit installation instructions
 --------------
-
-Here are the installation instructions for Ubuntu 12.04 [LTS](https://wiki.ubuntu.com/LTS).
-Ubuntu 12.04 is probably the most documented and most supported version
-of Linux available today. I tried to create as few steps as possible
-with one-liners that are *easy* to read. You can copy/paste each command, line by line. All
-steps run in the Terminal.
-
-```
-these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
-```
-
-To make it easier to copy and paste, long commands that stretch over multiple lines are structed as follows:
-
-```
-Multiline commands end with a dash \
-	indent, and continue on the next line.
-```
 
 #### Step 1 - Make shure you have the 'latest & greatest'
 The system must be up-to-date. Install updates, answer --yes to everything. This can take a while.
