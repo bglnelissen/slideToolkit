@@ -78,7 +78,7 @@ examples:
 multiple files at once:
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " \""{}"\" \;
 
-HPC qsub job submission:
+create a qsub job list for multiple folders at once:
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\

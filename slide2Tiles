@@ -88,13 +88,13 @@ examples:
   $SCRIPTNAME --layer 0 "file.tif"
   $SCRIPTNAME --keep-empty --mask="file.mask.png" --file="file.tif"
 
-multiple folders at once:
+create a job list for multiple folders at once:
   find "\$(pwd)" -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=" \; \\
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
 
-HPC qsub job submission:
+create a qsub job list for multiple folders at once:
   find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
