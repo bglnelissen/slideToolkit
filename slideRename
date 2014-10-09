@@ -34,6 +34,7 @@ DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
 DEFAULT_IM_ARGS="" # imagemagick arguments, empty by default
+DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -86,10 +87,10 @@ options:
   [--suffix] <text>             filename suffix
   [--to-lower]                  filename output is transformed to lower cases
   [--to-upper]                  filename output is transformed to upper cases
-  [--im-display]                use display (imageMagick) to preview slide
+  [--im-display]                preview slide with imageMagick (default on Linux)
+  [--wmctrl-timeout]            window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
   [--convert-args] <arguments>  convert (imageMagick) arguments
   [--resize] <widthxheight>     preview dimentions ["$DEFAULT_RESIZE"]
-
   --help                        display this help
   -h                            display this help
   
@@ -111,7 +112,12 @@ for example. The --convert-args overrides all other arguments that are
 already set (like --resize). For some slides, the virtual slide format
 is not known. For these instances you need to run slideInfo to find the
 correct layer manually. When the layer containing the label is
-identified, use the --layer flag.
+identified, use the --layer flag. When you use --im-display (default on
+linux) to preview the slide, the focus must switch back to the terminal
+for optimal usage. Using slow drives can cause the focus switching to
+fail, if so, set the '--wmctrl-timeout' to a higher number (e.g. 1.0).
+On OS X, the '--im-display' option only works properly from an X11
+terminal ('/Applications/Utilities/XQuartz.app').
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -128,6 +134,7 @@ OUTPUT_PREFIX=""
 OUTPUT_SUFFIX=""
 RESIZE=""
 IM_DISPLAY=""
+WMCTRL_TIMEOUT=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -188,6 +195,12 @@ do
     --convert-args=*)
       IM_ARGS=${1#*=}
       shift ;;
+    --wmctrl-timeout)
+      WMCTRL_TIMEOUT=$2
+      shift 2 ;;
+    --wmctrl-timeout=*)
+      WMCTRL_TIMEOUT=${1#*=}
+      shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
@@ -238,6 +251,12 @@ if [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]] ; then
 else
   IM_DISPLAY=false
 fi
+# set WMCTRL_TIMEOUT default
+if [ "$WMCTRL_TIMEOUT" != "" ]; then
+  WMCTRL_TIMEOUT="$WMCTRL_TIMEOUT"
+else
+  WMCTRL_TIMEOUT="$DEFAULT_WMCTRL_TIMEOUT"
+fi
 
 # requirements
 checkRequirements() {
@@ -249,7 +268,13 @@ checkRequirements() {
   fi
   regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 or 234x must also be possible
   if ! [[ "$RESIZE" =~ $regexresize ]] ; then
-    err "This is not a valid --resize option: $RESIZE"
+    err "This is not a valid --resize value: $RESIZE"
+    usage
+    exit 1
+  fi
+  timeoutnr='^[0-9]+[.]*[0-9]*$' # 0.1
+  if ! [[ "$WMCTRL_TIMEOUT" =~ $timeoutnr ]] ; then
+    err "This is not a valid --wmctrl-timeout value: $WMCTRL_TIMEOUT"
     usage
     exit 1
   fi
@@ -343,7 +368,7 @@ programOutput(){
     open -g -a Preview "$PREVIEW_TMPFILE"
   else 
     # wmctrl makes sure the terminal stays active, and 'display' will open in the background.
-    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep 0.1 ; wmctrl -a master$$
+    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep "$WMCTRL_TIMEOUT" ; wmctrl -a master$$
     IM_DISPLAY_PID=$(ps ax | grep [d]isplay | grep "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
   fi
 
