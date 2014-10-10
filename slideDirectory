@@ -62,7 +62,7 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-multiple files at once:
+create a joblist for 'parallel':
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
 dependencies: ${DEPENDENCIES[@]}

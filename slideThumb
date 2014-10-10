@@ -75,10 +75,10 @@ examples:
   $SCRIPTNAME "file.svs"
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
-multiple files at once:
+create a joblist for 'parallel':
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " \""{}"\" \;
 
-create a qsub job list for multiple folders at once:
+create a job list for 'qsub':
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\

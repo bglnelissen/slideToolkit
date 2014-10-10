@@ -94,7 +94,7 @@ create a job list for multiple folders at once:
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
 
-create a qsub job list for multiple folders at once:
+create a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\

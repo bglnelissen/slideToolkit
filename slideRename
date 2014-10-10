@@ -99,7 +99,7 @@ examples:
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
   $SCRIPTNAME  --layer=5 --convert-args="-rotate 90" -f "file.tif"
 
-multiple files at once:
+create a joblist for 'parallel':
   find "\$(pwd)" -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
