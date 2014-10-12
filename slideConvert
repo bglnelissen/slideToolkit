@@ -68,7 +68,7 @@ examples:
   $SCRIPTNAME "file.ext"
   $SCRIPTNAME --file="file.ext" --bfconvert-args="-compression LZW"
 
-create a joblist for 'parallel':
+print a job list:
   find "\$(pwd)" -iname "*ext" -exec "$(command -v "$SCRIPTNAME")" "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}

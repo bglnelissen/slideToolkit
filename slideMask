@@ -71,10 +71,10 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-create a joblist for 'parallel':
+print a job list:
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
-create a job list for 'qsub':
+print a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\

@@ -75,10 +75,10 @@ examples:
   $SCRIPTNAME "file.svs"
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
-create a joblist for 'parallel':
+print a job list:
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME") " \""{}"\" \;
 
-create a job list for 'qsub':
+print a job list for 'qsub':
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
     echo "qsub" -pe threaded 1 -q veryshort \\
@@ -95,8 +95,7 @@ rotates and concatenates when necessary. By default the thumbnail is
 created in the same folder as the original file, a specific output
 directory can be set with --output-dir (path can be a relative path or
 absolute path, if the location does not exist it will be created). Pipe
-the 'multiple folders at once' output in 'parallel' for parallel
-processing.
+the 'job list' output in 'parallel' for parallel processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen

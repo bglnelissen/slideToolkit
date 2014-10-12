@@ -88,13 +88,13 @@ examples:
   $SCRIPTNAME --layer 0 "file.tif"
   $SCRIPTNAME --keep-empty --mask="file.mask.png" --file="file.tif"
 
-create a job list for multiple folders at once:
+print a job list:
   find "\$(pwd)" -iname "*tif" -type f -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=" \; \\
         -exec bash -c "printf \"{}\" | sed 's/\.TIF$/.mask.png/g' " \; \\
         -exec echo " --file="{}" " \;
 
-create a job list for 'qsub':
+print a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
         -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
@@ -112,10 +112,10 @@ in a folder with suffix '$DEFAULT_OUTPUTDIRSUFFIX' at the same location
 as the input file. By default all empty tiles are deleted. A
 memory-mapped disk file (image-magick .mpc file) is used when a mask is
 used. The fast and efficient 'openslide-write-png' is used when no mask
-is used. Pipe the 'multiple folders at once' output in 'parallel' for
-parallel processing. For some slides, the virtual slide format is not
-known. For these instances you need to run slideInfo to find the correct
-layer manually. Use the --layer flag to set the correct layer.
+is used. Pipe the 'job list' output in 'parallel' for parallel
+processing. For some slides, the virtual slide format is not known. For
+these instances you need to run slideInfo to find the correct layer
+manually. Use the --layer flag to set the correct layer.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen

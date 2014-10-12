@@ -88,7 +88,7 @@ qsub:
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
 
-create a job list for multiple folders at once:
+print a job list:
   find "\$(pwd)" -iname "*tiles" -not -path "*out*" -type d -exec "\$(command -v "$SCRIPTNAME")" -i "{}" -N "{}" --handler=qsub -p "pipeline.cp" --mkdir-output \;
 
 dependencies: ${DEPENDENCIES[@]}

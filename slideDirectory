@@ -62,13 +62,13 @@ examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME  --file="file.tif"
 
-create a joblist for 'parallel':
+print a job list:
   find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
 Move file into a similar named directory at the same location. Pipe the
-'multiple folders at once' output in 'parallel' for parallel processing.
+'job list' output in 'parallel' for parallel processing.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
