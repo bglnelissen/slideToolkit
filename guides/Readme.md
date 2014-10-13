@@ -160,9 +160,9 @@ This apt-get oneliner will install most of the important packages we need and ta
 
 ```
 sudo apt-get --yes update && sudo apt-get --yes install autoconf \
-	automake "build-essential" cvs gimp git "libgtk2.0-dev" "libjpeg-dev" \
-	"libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" libtool \
-	"libxml2-dev" parallel perl "pkg-config" vim wget wmctrl
+automake "build-essential" cvs gimp git "libdmtx-dev" "libgtk2.0-dev" \
+"libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
+libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl
 ```
 
 Most dependcies are now installed, but we need some more.
@@ -278,40 +278,8 @@ printf "\n# Add the bfconvert directory to the PATH \
 	>> ~/.profile
 ```
 
-#### Step 8 - Install datamatrix barcode libraries
-Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
-```
-if [ -d ~/git/libdmtx/.git ]; then \
-		echo pull; \
-		cd ~/git/libdmtx && \
-		git pull; \
-	else \
-		echo clone; \
-		mkdir -p ~/git && cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
-	fi
-```
-```
-cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install && ./configure && make && make install
-```
-Now we install the binairies:
-
-```
-if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && \
-		git pull; \
-	else \
-		mkdir -p ~/git && cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
-	fi
-```
-```
-cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install && ./configure && make && sudo make install
-```
-The dmtx binairies are installed in `/usr/local/bin`, this location should already be in your PATH.
-
-#### Step 9 - Download the slideToolkit
+#### Step 8 - Download the slideToolkit
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
@@ -327,7 +295,7 @@ printf "\n# Add the slideToolkit directory to the PATH \
 	>> ~/.profile
 ```
 
-#### Step 10 - Cleanup, restart & you're done!
+#### Step 9 - Cleanup, restart & you're done!
 Fix linked libraries and restart.
 
 ```
