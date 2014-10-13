@@ -294,16 +294,20 @@ printf "\n# Add the bfconvert directory to the PATH \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-    git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
+mkdir -p ~/usr && cd ~/usr
+```
+```
+git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
 Now we install the binairies:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
+mkdir -p ~/usr && cd ~/usr 
+```
+```
+git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
@@ -316,8 +320,7 @@ Download the latest version of the slideToolkit from github. And add it to your 
 mkdir -p ~/usr/ && cd ~/usr
 ```
 ```
-cd ~/usr && \
-	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
+wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
 	mv ~/usr/slideToolkit-master ~/usr/slideToolkit
