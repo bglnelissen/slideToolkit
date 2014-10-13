@@ -138,7 +138,7 @@ mkdir -p ~/usr && cd ~/usr && \
 	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
-	mv ~/slideToolkit-master ~/slideToolkit	
+	mv ~/usr/slideToolkit-master ~/usr/slideToolkit	
 ```
 
 Add the slideToolkit directory to your PATH (in `.bash_profile`). Adding the slideToolkit folder to your PATH makes it easier to acces the slideToolkit commands. You only have to do this once.
