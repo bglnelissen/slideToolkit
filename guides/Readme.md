@@ -314,7 +314,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 	fi
 ```
 ```
-
+ cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 
 git clone git://git.code.sf.net/p/libdmtx/dmtx-utils libdmtx-dmtx-utils
