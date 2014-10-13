@@ -293,7 +293,7 @@ if [ -d ~/git/libdmtx/.git ]; then \
 	fi
 ```
 ```
-cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
+cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install && ./configure && make && make install
 ```
 Now we install the binairies:
 
@@ -307,7 +307,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 	fi
 ```
 ```
-cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
+cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install && ./configure && make && sudo make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`, this location should already be in your PATH.
 
