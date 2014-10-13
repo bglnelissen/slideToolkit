@@ -108,7 +108,7 @@ if [ -d ~/git/libdmtx/.git ]; then \
 	fi
 ```
 ```
-cd ~/usr/libdmtx && ./autogen.sh && ./configure && make && make install
+cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
 ```
 
 Now we install the binairies:
@@ -126,7 +126,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 	fi
 ```
 ```
-cd ~/usr/dmtx-utils && ./autogen.sh && ./configure && make && make install
+cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
