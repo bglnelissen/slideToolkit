@@ -62,7 +62,7 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install wget jpeg libpng libtiff parallel openslide wmctrl \
+brew install automake wget jpeg libpng libtiff parallel openslide wmctrl \
     imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
