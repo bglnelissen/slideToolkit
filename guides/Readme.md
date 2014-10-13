@@ -282,17 +282,35 @@ printf "\n# Add the bfconvert directory to the PATH \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
-	cd ~/usr/libdmtx && ./autogen.sh && \
+if [ -d ~/git/libdmtx/.git ]; then \
+		echo pull; \
+		cd ~/git/libdmtx && \
+		git pull; \
+	else \
+		echo clone; \
+		mkdir -p ~/git && cd ~/git/ && \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
+	fi
+```
+```
+cd ~/git/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
 Now we install the binairies:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
-	cd ~/usr/libdmtx && ./autogen.sh && \
+if [ -d ~/git/dmtx-utils/.git ]; then \
+		echo pull; \
+		cd ~/git/dmtx-utils && \
+		git pull; \
+	else \
+		echo clone; \
+		mkdir -p ~/git && cd ~/git/ && \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
+	fi
+```
+```
+cd ~/git/dmtx-utils && ./autogen.sh && \
 	./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`, this location should already be in your PATH.
