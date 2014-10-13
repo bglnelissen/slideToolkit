@@ -317,8 +317,6 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
  cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 
-git clone git://git.code.sf.net/p/libdmtx/dmtx-utils libdmtx-dmtx-utils
-
 #### Step 9 - Download the slideToolkit
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
