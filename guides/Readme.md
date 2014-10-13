@@ -310,7 +310,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 		git pull; \
 	else \
 		cd ~/git/ && \
-		git clone git://git.code.sf.net/p/libdmtx/dmtx-utils && \
+		git clone git://git.code.sf.net/p/libdmtx/dmtx-utils; \
 	fi
 ```
 ```
