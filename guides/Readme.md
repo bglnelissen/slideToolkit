@@ -79,7 +79,7 @@ Respect the auther, and please cite when appropriate.
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
-mkdir ~/usr && cd ~/usr && \
+mkdir -p ~/usr && cd ~/usr && \
     wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
@@ -96,7 +96,7 @@ printf "\n# Add the BioFormats directory to the PATH \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir ~/usr && cd ~/usr && \
+mkdir -p ~/usr && cd ~/usr && \
     git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
@@ -104,13 +104,11 @@ mkdir ~/usr && cd ~/usr && \
 Now we install the binairies:
 
 ```
-mkdir ~/usr && cd ~/usr && \
+mkdir -p ~/usr && cd ~/usr && \
 	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
-
-
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 8 - Install slideToolkit
@@ -292,7 +290,26 @@ printf "\n# Add the bfconvert directory to the PATH \
 	>> ~/.profile
 ```
 
-#### Step 8 - Download the slideToolkit
+#### Step 8 - Install datamatrix barcode libraries
+Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
+
+```
+mkdir -p ~/usr && cd ~/usr && \
+    git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
+	cd ~/usr/libdmtx && ./autogen.sh && \
+	./configure && make && make install
+```
+Now we install the binairies:
+
+```
+mkdir -p ~/usr && cd ~/usr && \
+	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
+	cd ~/usr/libdmtx && ./autogen.sh && \
+	./configure && make && make install
+```
+The dmtx binairies are installed in `/usr/local/bin`, this location should already be in your PATH.
+
+#### Step 9 - Download the slideToolkit
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
@@ -311,7 +328,7 @@ printf "\n# Add the slideToolkit directory to the PATH \
 	>> ~/.profile
 ```
 
-#### Step 9 - Cleanup, restart & you're done!
+#### Step 10 - Cleanup, restart & you're done!
 Fix linked libraries and restart.
 
 ```
