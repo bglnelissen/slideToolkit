@@ -137,8 +137,8 @@ Download and setup the latest version of the slideToolkit.
 mkdir -p ~/git/ && cd ~/git
 ```
 ```
-if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && \
+if [ -d ~/git/slideToolkit/.git ]; then \
+		cd ~/git/slideToolkit && \
 		git pull; \
 	else \
 		cd ~/git/ && \
