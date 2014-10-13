@@ -380,9 +380,9 @@ programOutput(){
 
   # display preview
   if [[ -z "$PREVIEW" ]]; then # No preview found. Use im, of osx is not found.
-    "$PREVIEW"=im
+    PREVIEW="im"
     if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]]; then
-      "$PREVIEW"="osx" # OS X Preview.app is available, use it.
+      PREVIEW="osx" # OS X Preview.app is available, use it.
     fi
   fi
 
@@ -400,7 +400,7 @@ programOutput(){
   fi
 
   # check if a slidename is already set (by --barcode-dmtx for example)
-  if [[ "$BARCODE"="BARCODE_DMTX" ]] ; then
+  if [[ "$BARCODE" == "BARCODE_DMTX" ]] ; then
     # automatically rename file using datamatrix barcode?
     SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "No barcode found, using original filename ("$FILENAME")"
     if [[ -z "$SLIDENAME_BARCODE" ]]; then
