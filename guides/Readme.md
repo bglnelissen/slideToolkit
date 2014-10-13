@@ -298,8 +298,25 @@ printf "\n# Add the bfconvert directory to the PATH \
     \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
-#### Step 8 - Install dmtx, the datamatrix barcode binairies
-The `dmtx` libraries should already be installed. Here we install the `dmtx` binairies.
+#### Step 8 - Install dmtx, the datamatrix barcode libraries
+Here we install the `dmtx` libraries and binairies. First the libraries:
+```
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/libdmtx/.git ]; then \
+		cd ~/git/libdmtx && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
+	fi
+```
+```
+ cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
+```
+
+Now the binairies:
 
 ```
 mkdir -p ~/git/ && cd ~/git
