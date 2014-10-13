@@ -160,9 +160,9 @@ This apt-get oneliner will install most of the important packages we need and ta
 
 ```
 sudo apt-get --yes update && sudo apt-get --yes install autoconf \
-automake "build-essential" cvs gimp git "libdmtx-dev" "libgtk2.0-dev" \
-"libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
-libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl
+    automake "build-essential" cvs gimp git "libdmtx-dev" "libgtk2.0-dev" \
+    "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
+    libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl
 ```
 
 Most dependcies are now installed, but we need some more.
