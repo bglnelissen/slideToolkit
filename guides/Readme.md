@@ -130,7 +130,7 @@ cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
-#### Step 8 - Install slideToolkit
+#### Step 8 - Download the slideToolkit
 Download and setup the latest version of the slideToolkit.
 
 ```
@@ -298,7 +298,7 @@ printf "\n# Add the bfconvert directory to the PATH \
     \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
-#### Step 8 - Install dmtx, the datamatrix barcode libraries
+#### Step 8 - Install datamatrix barcode libraries
 Here we install the `dmtx` libraries and binairies. First the libraries:
 ```
 mkdir -p ~/git/ && cd ~/git
