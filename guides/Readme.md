@@ -182,10 +182,7 @@ Install zlib.
 cd ~/src/zlib-1.2.8
 ```
 ```
-./configure && make
-```
-```
-sudo make install && make clean
+./configure && make && sudo make install && make clean
 ```
 
 #### Step 4 - Install libtiff
@@ -209,10 +206,7 @@ Install libtiff.
 cd ~/cvs/libtiff
 ```
 ```
-./configure && make
-```
-```
-sudo make install && make clean
+./configure && make && sudo make install && make clean
 ```
 
 #### Step 5 - Install ImageMagick
@@ -228,13 +222,10 @@ wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.g
 Install ImageMagick.
 
 ```
-cd ~/cvs/ImageMagick*
+cd ~/src/ImageMagick*
 ```
 ```
-./configure && make
-```
-```
-sudo make install && make clean
+./configure && make && sudo make install && make clean
 ```
 ```
 sudo ldconfig /usr/local/lib
@@ -269,10 +260,7 @@ cd ~/git/openslide
 autoreconf -i
 ```
 ```
-./configure && make
-```
-```
-sudo make install && make clean
+./configure && make && sudo make install && make clean
 ```
 
 #### Step 7 - Install bfconvert
