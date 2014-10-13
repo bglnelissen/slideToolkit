@@ -130,7 +130,7 @@ printf "\n# Add the slideToolkit directory to the PATH \
 	>> ~/.bash_profile
 ```
 
-#### Step 8 - Reboot
+#### Step 9 - Reboot
 Restart and you're done.
 
 ---
