@@ -171,17 +171,15 @@ Most dependcies are now installed, but we need some more.
 Install the latest zlib compression libraries. First create and go to the src directory, download and extract zlib.
 
 ```
-mkdir -p ~/src && cd ~/src
-```
-```
-wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
+mkdir -p ~/src && cd ~/src && \\
+    wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
 	tar xzvf zlib-1.2.8.tar.gz && \
 	rm zlib-1.2.8.tar.gz
 ```
 Install zlib.
 
 ```
-cd ~/src/zlib-1.2.8 && \
+cd ~/src/zlib-1.2.8
 ```
 ```
 ./configure && make
@@ -209,7 +207,11 @@ Install libtiff.
 
 ```
 cd ~/cvs/libtiff
+```
+```
 ./configure && make
+```
+```
 sudo make install && make clean
 ```
 
