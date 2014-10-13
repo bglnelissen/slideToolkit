@@ -298,9 +298,28 @@ printf "\n# Add the bfconvert directory to the PATH \
     \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
+#### Step 8 - Install dmtx, the datamatrix barcode binairies
+The `dmtx` libraries should already be installed. Here we install the `dmtx` binairies.
 
+```
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/dmtx-utils/.git ]; then \
+		cd ~/git/dmtx-utils && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+		git clone git://git.code.sf.net/p/libdmtx/dmtx-utils && \
+	fi
+```
+```
 
-#### Step 8 - Download the slideToolkit
+```
+
+git clone git://git.code.sf.net/p/libdmtx/dmtx-utils libdmtx-dmtx-utils
+
+#### Step 9 - Download the slideToolkit
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
@@ -316,7 +335,7 @@ printf "\n# Add the slideToolkit directory to the PATH \
 	>> ~/.profile
 ```
 
-#### Step 9 - Cleanup, restart & you're done!
+#### Step 10 - Cleanup, restart & you're done!
 Fix linked libraries and restart.
 
 ```
