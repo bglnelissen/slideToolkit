@@ -104,7 +104,7 @@ if [ -d ~/git/libdmtx/.git ]; then \
 		git pull; \
 	else \
 		cd ~/git/ && \
-    	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx \
+    	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
 	fi
 ```
 ```
@@ -122,7 +122,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 		git pull; \
 	else \
 		cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
 	fi
 ```
 ```
