@@ -289,29 +289,25 @@ if [ -d ~/git/libdmtx/.git ]; then \
 	else \
 		echo clone; \
 		mkdir -p ~/git && cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
 	fi
 ```
 ```
-cd ~/git/libdmtx && ./autogen.sh && \
-	./configure && make && make install
+cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
 ```
 Now we install the binairies:
 
 ```
 if [ -d ~/git/dmtx-utils/.git ]; then \
-		echo pull; \
 		cd ~/git/dmtx-utils && \
 		git pull; \
 	else \
-		echo clone; \
 		mkdir -p ~/git && cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
 	fi
 ```
 ```
-cd ~/git/dmtx-utils && ./autogen.sh && \
-	./configure && make && make install
+cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`, this location should already be in your PATH.
 
