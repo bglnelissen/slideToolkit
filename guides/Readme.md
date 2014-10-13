@@ -134,7 +134,7 @@ The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `b
 Download and setup the latest version of the slideToolkit.
 
 ```
-mkdir ~/usr && cd ~/usr && \
+mkdir -p ~/usr && cd ~/usr && \
 	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
