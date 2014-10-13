@@ -134,18 +134,23 @@ The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `b
 Download and setup the latest version of the slideToolkit.
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
-	unzip slideToolkit.zip && \
-	rm slideToolkit.zip && \
-	mv ~/usr/slideToolkit-master ~/usr/slideToolkit	
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/dmtx-utils/.git ]; then \
+		cd ~/git/dmtx-utils && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+		git clone https://github.com/bglnelissen/slideToolkit.git; \
+	fi
 ```
 
 Add the slideToolkit directory to your PATH (in `.bash_profile`). Adding the slideToolkit folder to your PATH makes it easier to acces the slideToolkit commands. You only have to do this once.
 
 ```
 printf "\n# Add the slideToolkit directory to the PATH \
-    \nPATH=\"$HOME/usr/slideToolkit:\$PATH\" \n\n" \
+    \nPATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
 	>> ~/.bash_profile
 ```
 
