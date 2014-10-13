@@ -181,7 +181,7 @@ wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
 Install zlib.
 
 ```
-cd ~/src/zlib-1.2.8
+cd ~/src/zlib-1.2.8 && \
 ```
 ```
 ./configure && make
@@ -277,10 +277,8 @@ sudo make install && make clean
 Install the latest version of bfconvert:
 
 ```
-mkdir -p ~/usr && cd ~/usr
-```
-```
-wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+mkdir -p ~/usr && cd ~/usr && \
+	wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
@@ -294,20 +292,16 @@ printf "\n# Add the bfconvert directory to the PATH \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/usr && cd ~/usr
-```
-```
-git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
+mkdir -p ~/usr && cd ~/usr && \
+	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
 Now we install the binairies:
 
 ```
-mkdir -p ~/usr && cd ~/usr 
-```
-```
-git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
+mkdir -p ~/usr && cd ~/usr && \
+	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
 	cd ~/usr/libdmtx && ./autogen.sh && \
 	./configure && make && make install
 ```
@@ -317,10 +311,8 @@ The dmtx binairies are installed in `/usr/local/bin`, this location should alrea
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
-mkdir -p ~/usr/ && cd ~/usr
-```
-```
-wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
+mkdir -p ~/usr/ && cd ~/usr && \
+	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
 	mv ~/usr/slideToolkit-master ~/usr/slideToolkit
