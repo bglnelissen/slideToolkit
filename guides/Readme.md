@@ -342,15 +342,20 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
 ```
-mkdir -p ~/usr/ && cd ~/usr && \
-	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
-	unzip slideToolkit.zip && \
-	rm slideToolkit.zip && \
-	mv ~/usr/slideToolkit-master ~/usr/slideToolkit
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/slideToolkit/.git ]; then \
+		cd ~/git/slideToolkit && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+		git clone https://github.com/bglnelissen/slideToolkit.git; \
+	fi
 ```
 ```
 printf "\n# Add the slideToolkit directory to the PATH \
-    \nPATH=\"$HOME/usr/slideToolkit:\$PATH\" \n\n" \
+    \nPATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
 	>> ~/.profile
 ```
 
