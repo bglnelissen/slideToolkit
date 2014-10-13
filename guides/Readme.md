@@ -96,18 +96,37 @@ printf "\n# Add the BioFormats directory to the PATH \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-    git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
-	cd ~/usr/libdmtx && ./autogen.sh && \
-	./configure && make && make install
+mkdir -p ~/git/ && cd ~/git
 ```
+```
+if [ -d ~/git/libdmtx/.git ]; then \
+		cd ~/git/libdmtx && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+    	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx \
+	fi
+```
+```
+cd ~/usr/libdmtx && ./autogen.sh && ./configure && make && make install
+```
+
 Now we install the binairies:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
-	cd ~/usr/libdmtx && ./autogen.sh && \
-	./configure && make && make install
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/dmtx-utils/.git ]; then \
+		cd ~/git/dmtx-utils && \
+		git pull; \
+	else \
+		cd ~/git/ && \
+		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils \
+	fi
+```
+```
+cd ~/usr/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
@@ -240,14 +259,11 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/openslide/.git ]; then \
-		echo pull; \
 		cd ~/git/openslide && \
 		git pull; \
 	else \
-		echo clone; \
 		cd ~/git/ && \
 		git clone git://github.com/openslide/openslide.git && \
-		cd ~/git; \
 	fi
 ```
 
