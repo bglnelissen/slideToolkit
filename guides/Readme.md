@@ -315,7 +315,9 @@ if [ -d ~/git/libdmtx/.git ]; then \
 ```
  cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
 ```
-
+```
+./configure && make && sudo make install && make clean
+```
 Now the binairies:
 
 ```
@@ -333,7 +335,9 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 ```
  cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
-
+```
+./configure && make && sudo make install && make clean
+```
 #### Step 9 - Download the slideToolkit
 Download the latest version of the slideToolkit from github. And add it to your PATH.
 
