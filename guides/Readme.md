@@ -79,7 +79,7 @@ Respect the auther, and please cite when appropriate.
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
-cd ~/ && \
+mkdir ~/usr && cd ~/usr && \
     wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
@@ -88,15 +88,36 @@ Add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools 
 
 ```
 printf "\n# Add the BioFormats directory to the PATH \
-    \nPATH=\"$HOME/bftools:\$PATH\" \n\n" \
+    \nPATH=\"$HOME/usr/bftools:\$PATH\" \n\n" \
 	>> ~/.bash_profile
 ```
 
-#### Step 7 - Install slideToolkit
+#### Step 7 - Install datamatrix barcode libraries
+Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
+
+```
+mkdir ~/usr && cd ~/usr && \
+    git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx && \
+	cd ~/usr/libdmtx && ./autogen.sh && \
+	./configure && make && make install
+```
+Now we install the binairies:
+
+```
+mkdir ~/usr && cd ~/usr && \
+	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils && \
+	cd ~/usr/libdmtx && ./autogen.sh && \
+	./configure && make && make install
+```
+
+
+The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
+
+#### Step 8 - Install slideToolkit
 Download and setup the latest version of the slideToolkit.
 
 ```
-cd ~/ && \
+mkdir ~/usr && cd ~/usr && \
 	wget https://github.com/bglnelissen/slideToolkit/archive/master.zip -O slideToolkit.zip && \
 	unzip slideToolkit.zip && \
 	rm slideToolkit.zip && \
@@ -107,7 +128,7 @@ Add the slideToolkit directory to your PATH (in `.bash_profile`). Adding the sli
 
 ```
 printf "\n# Add the slideToolkit directory to the PATH \
-    \nPATH=\"$HOME/slideToolkit:\$PATH\" \n\n" \
+    \nPATH=\"$HOME/usr/slideToolkit:\$PATH\" \n\n" \
 	>> ~/.bash_profile
 ```
 
@@ -121,7 +142,7 @@ Ubuntu 12.04 - slideToolkit installation instructions
 --------------
 
 #### Step 1 - Make shure you have the 'latest & greatest'
-The system must be up-to-date. Install updates, answer --yes to everything. This can take a while.
+The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on version 12.04 and do not upgrade to Ubuntu 14 (Trusty Tar). This can take a while.
 
 ```
 sudo apt-get --yes update && sudo apt-get --yes upgrade && sudo \

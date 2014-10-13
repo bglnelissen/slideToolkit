@@ -28,13 +28,14 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
-DEPENDENCIES=("awk" "convert" "grep" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
+DEPENDENCIES=("awk" "convert" "dmtxread" "grep" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
 SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
-DEFAULT_IM_ARGS="" # imagemagick arguments, empty by default
+DEFAULT_IM_ARGS=" +dither -colors 2 -colorspace gray " # imagemagick arguments # +dither -colors 2 -colorspace gray
 DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
+DEFAULT_DMTXREAD_ARGS=" --stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10 " # options for dmtxread. See man dmtxread for details
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -47,19 +48,20 @@ function cleanup {
     kill $IM_DISPLAY_PID
   fi
   # quit Preview like a polite man if it is still alive.
-  if [[ $(ps ux | grep -i [P]review | wc -l) != 0 ]]; then
-    osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+  if [[ "$PREVIEW" == "osx" ]];then # did we use preview at all?
+    if [[ $(ps ux | grep -i [P]review | wc -l) != 0 ]]; then
+      osascript -e "ignoring application responses" -e "tell application \"Preview\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+    fi
   fi
   
   # remove temp files
   rm -rf "$PREVIEW_TMPFILE"
-  echo
 }
 trap cleanup EXIT
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
 
 # usage message
@@ -81,16 +83,18 @@ usage:
 
 options:
   -f, --file <filename>         virtual slide to rename
-  -l, --layer <integer>         force specific layer by layer id
 
+  [-l, --layer] <integer>       force specific layer by layer id
   [--prefix] <text>             filename prefix
   [--suffix] <text>             filename suffix
   [--to-lower]                  filename output is transformed to lower cases
   [--to-upper]                  filename output is transformed to upper cases
-  [--im-display]                preview slide with imageMagick (default on Linux)
-  [--wmctrl-timeout]            window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
-  [--convert-args] <arguments>  convert (imageMagick) arguments
+  [--barcode-dmtx]              find datamatrix barcode and rename accordingly
   [--resize] <widthxheight>     preview dimentions ["$DEFAULT_RESIZE"]
+  [--convert-args] <arguments>  imagemagick convert arguments ["DEFAULT_IM_ARGS"]
+  [--preview im|osx|none]       display preview miniature (imageMagick, OS X Preview.app, none)
+  [--wmctrl-timeout] <seconds>  window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
+
   --help                        display this help
   -h                            display this help
   
@@ -112,12 +116,13 @@ for example. The --convert-args overrides all other arguments that are
 already set (like --resize). For some slides, the virtual slide format
 is not known. For these instances you need to run slideInfo to find the
 correct layer manually. When the layer containing the label is
-identified, use the --layer flag. When you use --im-display (default on
+identified, use the --layer flag. When you use --preview (default on
 linux) to preview the slide, the focus must switch back to the terminal
 for optimal usage. Using slow drives can cause the focus switching to
 fail, if so, set the '--wmctrl-timeout' to a higher number (e.g. 1.0).
-On OS X, the '--im-display' option only works properly from an X11
-terminal ('/Applications/Utilities/XQuartz.app').
+On OS X, the Preview.app is used for thumb previews, the '--preview'
+option only works properly from an X11 terminal
+('/Applications/Utilities/XQuartz.app').
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -135,6 +140,8 @@ OUTPUT_SUFFIX=""
 RESIZE=""
 IM_DISPLAY=""
 WMCTRL_TIMEOUT=""
+BARCODE_DMTX=""
+PREVIEW=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -189,9 +196,12 @@ do
     --to-lower)
       CASE="CASE_LOWER"
       shift ;;
-    --im-display)
-      IM_DISPLAY=TRUE
+    --preview=*)
+      PREVIEW=${1#*=}
       shift ;;
+    --preview)
+      PREVIEW=$2
+      shift 2 ;;
     --convert-args=*)
       IM_ARGS=${1#*=}
       shift ;;
@@ -203,6 +213,9 @@ do
       shift ;;
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
+      shift ;;
+    --barcode-dmtx)
+      BARCODE="BARCODE_DMTX"
       shift ;;
     --) # End of all options
       shift
@@ -245,12 +258,6 @@ if [ "$IM_ARGS" != "" ]; then
 else
   IM_ARGS="$DEFAULT_IM_ARGS"
 fi
-# set IM_DISPLAY  (this if statement does nothing, as it is set to set in Menu)
-if [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]] ; then
-  IM_DISPLAY=true
-else
-  IM_DISPLAY=false
-fi
 # set WMCTRL_TIMEOUT default
 if [ "$WMCTRL_TIMEOUT" != "" ]; then
   WMCTRL_TIMEOUT="$WMCTRL_TIMEOUT"
@@ -277,6 +284,13 @@ checkRequirements() {
     err "This is not a valid --wmctrl-timeout value: $WMCTRL_TIMEOUT"
     usage
     exit 1
+  fi
+  if [[ -n "$PREVIEW" ]]; then
+    if ! [[ "$PREVIEW" =~ (im|osx|none) ]]; then
+      err "This is not a valid --preview value: $PREVIEW"
+      usage
+      exit 1
+    fi
   fi
 }
 
@@ -339,7 +353,7 @@ programOutput(){
   # create tmp working file
   PREVIEW_TMPFILE="$(mktemp -q /tmp/${SCRIPTNAME}.XXXXXX)".png
   if [ $? -ne 0 ]; then
-       err "$0: Can't create temp file, exiting..."
+       err "$SCRIPTNAME: Can't create temp file, exiting..."
        exit 1
   fi  
   
@@ -363,29 +377,49 @@ programOutput(){
     usage
     exit 1
   fi
-  # show file using Preview or display
-  if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]] && ! [[ "$IM_DISPLAY" =~ (true|TRUE|YES|yes) ]];then
-    open -g -a Preview "$PREVIEW_TMPFILE"
-  else 
+
+  # display preview
+  if [[ -z "$PREVIEW" ]]; then # No preview found. Use im, of osx is not found.
+    "$PREVIEW"=im
+    if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]]; then
+      "$PREVIEW"="osx" # OS X Preview.app is available, use it.
+    fi
+  fi
+
+  # now the PREVIEW is set with im|osx|none
+  if [[ "$PREVIEW" == "im" ]];then
     # wmctrl makes sure the terminal stays active, and 'display' will open in the background.
     wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep "$WMCTRL_TIMEOUT" ; wmctrl -a master$$
     IM_DISPLAY_PID=$(ps ax | grep [d]isplay | grep "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
+  elif [[ "$PREVIEW" == "osx" ]];then
+    # close preview gently using applescript
+    open -g -a Preview "$PREVIEW_TMPFILE"
+  elif [[ "$PREVIEW" == "none" ]];then
+    PREVIEW="none" # do nothing really.
+    # echo "Preview is set to none." # tell user/log files what is going on.
   fi
 
-  echo "Current name: $FILENAME"
-  echo "Rename your slide. [ctrl-c to quit without saving]"
-  if [[ "" != "$OUTPUT_PREFIX" || "" != "$OUTPUT_SUFFIX" ]]; then
-    echo "Prefix: \"$OUTPUT_PREFIX\" Suffix: \"$OUTPUT_SUFFIX\""
+  # check if a slidename is already set (by --barcode-dmtx for example)
+  if [[ "$BARCODE"="BARCODE_DMTX" ]] ; then
+    # automatically rename file using datamatrix barcode?
+    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "No barcode found, using original filename ("$FILENAME")"
+    if [[ -z "$SLIDENAME_BARCODE" ]]; then
+      SLIDENAME_UNSAVE="$FILENAME" # No barcode found, use the input name
+    else
+      SLIDENAME_UNSAVE="$SLIDENAME_BARCODE" # barcode found, rename
+    fi
   fi
+  # ask for filename if non is existing (by typing or by barcode)
   while [ "$SLIDENAME_UNSAVE" == "" ]; do
     read -p "Enter slide name:" SLIDENAME_UNSAVE
     if [[ -z "$SLIDENAME_UNSAVE" ]] ; then
-      echo "Cancel slide..."
+      err "Cancel slide..."
       exit 1
     fi
   done
-  
-  SLIDENAME_UNSAVE=$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')  # fix barcodescanner output 
+
+#  fix this line.
+#  SLIDENAME_UNSAVE="$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')"  # fix strange hand-scanner output 
   SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
   SLIDEFILE="${SLIDENAME}.${EXTENSION}"
   # change case if needed
@@ -402,10 +436,8 @@ programOutput(){
     if [[ ! -a "$OUTPUTFILE" ]]; then
       # verbose rename file
       mv -v "$FILEFULL" "$OUTPUTFILE"
-      #       mv --interactive -v "$FILEFULL" "$OUTPUTFILE"
     else
       err "Filename exists: $OUTPUTFILE"
-      usage
       exit 1
     fi
   else
