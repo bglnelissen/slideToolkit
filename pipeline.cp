@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:1
 SVNRevision:11710
 
-LoadImages:[module_num:1|svn_version:\'Unknown\'|variable_revision_number:11|show_window:False|notes:\x5B\'# Pipeline created for HPC (b.g.l.nelissen@umcutrecht.nl)\', \'# Goal\x3A Measure total tissue area, DAB area and DAB positive cells\', \'# Outlines\x3A Tissue blue, DAB nuclei green\', \'\', \'# Testing oneliner\x3A find ./ -name "*tile-*" -not -path "*out*" -type d -exec  "$(command -v "slideJobsCellProfiler")"  -i "{}" -p "pipeline.cp" \\\\; \x7C parallel\'\x5D]
+LoadImages:[module_num:1|svn_version:\'Unknown\'|variable_revision_number:11|show_window:False|notes:\x5B\'# Pipeline created for HPC (b.g.l.nelissen@gmail.com)\', \'# Goal\x3A Measure total tissue area, DAB area and DAB positive cells\', \'# Outlines\x3A Tissue blue, DAB nuclei green\', \'\', \'# Testing oneliner\x3A find ./ -name "*tile-*" -not -path "*out*" -type d -exec  "$(command -v "slideJobsCellProfiler")"  -i "{}" -p "pipeline.cp" \\\\; \x7C parallel\'\x5D]
     File type to be loaded:individual images
     File selection method:Text-Exact match
     Number of images in each group?:3
