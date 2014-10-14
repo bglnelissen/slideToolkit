@@ -31,19 +31,16 @@ DESCRIPTIONSHORT="Extract SQL-file column names created by cellprofiler"
 DEPENDENCIES=("perl")
 SUFFIX=".head"
 
-#usage message
+# usage message
 usage() {
 cat <<- EOF
-usage:  
-$SCRIPTNAME [options] -f <filename>
-Try $SCRIPTNAME --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
 
-#Errors go to stderr
+# Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
-  usage
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
 
 #help message
@@ -60,7 +57,6 @@ options:
   [--add-head] <filename>   "file.csv" file 
 
   --help                    display this help
-  -h                        display usage
 
 examples:
   $SCRIPTNAME "SQL_SETUP.SQL"
@@ -133,11 +129,13 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE">&2;
+    usage
     exit 1
   fi
   if ! [[ -z "$ADDHEAD" ]]; then
     if ! [[ -f "$ADDHEAD" ]] ; then
       err "No such file: $ADDHEAD">&2;
+      usage
       exit 1
     fi  
   fi

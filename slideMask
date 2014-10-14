@@ -38,16 +38,16 @@ DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
+
 # usage message
 usage() {
 cat <<- EOF
-usage:  
-$SCRIPTNAME [options] -f <filename>
-Try $SCRIPTNAME --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -65,7 +65,6 @@ options:
   [--mask-args] <arguments>     mask arguments (imageMagick) ["$DEFAULT_MASKARGS"]
   
   --help                        display this help
-  -h                            display usage
 
 examples:
   $SCRIPTNAME "file.tif"
@@ -199,8 +198,7 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    echo
-    helpMessage
+    usage
     exit 1
   fi
 }

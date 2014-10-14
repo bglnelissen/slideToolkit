@@ -46,7 +46,7 @@ trap cleanup EXIT
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
 
 # Debug go to stdout
@@ -57,11 +57,10 @@ debug() {
 # usage message
 usage() {
 cat <<- EOF
-usage:  
-$SCRIPTNAME -i <dirname> -p <pipeline> [options]
-Try $SCRIPTNAME --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -83,7 +82,6 @@ qsub:
   [--qsub-args] <arguments>    qsub arguments ("$DEFAULT_QSUBARGS")
 
   --help                       display this help
-  -h                           display usage
 
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"
@@ -211,19 +209,19 @@ checkRequirements() {
   # input dir must exist
   if ! [[ -d "$INPUTDIR" ]] ; then
     err "No such inputdir: $INPUTDIR"
-    helpMessage
+    usage
     exit 1
   fi
   # pipeline must exist
   if ! [[ -f "$PIPELINE" ]] ; then
     err "No such pipeline: $PIPELINE"
-    helpMessage
+    usage
     exit 1
   fi
   # set HANDLER (parallel|qsub|etc)
   if ! [[ "$HANDLER" =~ (qsub|QSUB) || "$HANDLER" == "" ]] ; then
     err "No such job handler: $HANDLER"
-    helpMessage
+    usage
     exit 1
   fi
 }

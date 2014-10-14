@@ -40,14 +40,13 @@ SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done 
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
+
 # usage message
 usage() {
 cat <<- EOF
-usage:  
-$SCRIPTNAME [options] -f <filename>
-Try $SCRIPTNAME --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -69,7 +68,6 @@ options:
   [--resize] <widthxheight>   maximum output dimentions ["$DEFAULT_RESIZE"]
   
   --help                      display this help
-  -h                          display usage
 
 examples:
   $SCRIPTNAME "file.svs"
@@ -211,8 +209,7 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    echo
-    helpMessage
+    usage
     exit 1
   fi
 }

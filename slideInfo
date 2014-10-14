@@ -34,15 +34,13 @@ DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 
 # Errors go to stderr
 err() {
-  echo "ERROR: $@" >&2
+  echo "${SCRIPTNAME} ERROR: $@" >&2
 }
 
 # usage message
 usage() {
 cat <<- EOF
-usage:  
-$SCRIPTNAME -f <filename>
-Try $SCRIPTNAME --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -58,7 +56,6 @@ options:
   -f, --file <filename>       Fetch slide metadata
 
   --help                      display this help
-  -h                          display usage
 
 examples:
   $SCRIPTNAME "file.tif"
@@ -126,8 +123,7 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    echo
-    helpMessage
+    usage
     exit 1
   fi
 }
