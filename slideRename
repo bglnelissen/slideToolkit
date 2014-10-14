@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Batch rename slides"
-DEPENDENCIES=("awk" "convert" "dmtxread" "grep" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl")
+DEPENDENCIES=("awk" "convert" "dmtxread" "grep" "identify" "display" "parallel" "perl" "tiffinfo" "wmctrl" "zbarimg")
 SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
@@ -36,6 +36,9 @@ DEFAULT_OUTPUT_SUFFIX="" # empty by default
 DEFAULT_IM_ARGS="+dither -colors 2 -colorspace gray" # imagemagick arguments # +dither -colors 2 -colorspace gray
 DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
 DEFAULT_DMTXREAD_ARGS="--stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10" # options for dmtxread. See man dmtxread for details
+DEFAULT_ZBARIMG_ARGS="--quiet " # options for zbarimg. --quiet for barcode only. See man dmtxread for details
+
+
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -117,7 +120,10 @@ identified, use the --layer flag. Using a slow system can cause the
 focus switching to fail, if so, set the '--wmctrl-timeout' to a higher
 number (e.g. 1.0). On OS X, by default, Preview.app is used for thumb
 previews. The '--preview' option only works properly from an X11
-terminal (on a Mac use '/Applications/Utilities/XQuartz.app').
+terminal (on a Mac use '/Applications/Utilities/XQuartz.app'). Using the
+--barcode flag, different libraries can be used to rename slides using
+barcodes, dmtx (for Data Matrix 2D barcodes), and zlib (for
+EAN-13/UPC-A, UPC-E, EAN-8, Code 128, Code 39, Interleaved 2 of 5 and QR Code).
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -135,7 +141,7 @@ OUTPUT_SUFFIX=""
 RESIZE=""
 IM_DISPLAY=""
 WMCTRL_TIMEOUT=""
-BARCODE_DMTX=""
+BARCODE=""
 PREVIEW=""
 # illegal option
 illegalOption() {
@@ -298,12 +304,6 @@ checkRequirements() {
       usage
       exit 1
     fi
-    if [[ "$BARCODE" =~ (zbar) ]]; then # remove this when zbar is fixed
-      err "Sorry, but the 'zbar' barcode library is not yet implemented."
-      err "This is not a valid --barcode value: $BARCODE"
-      usage
-      exit 1
-    fi
   fi
 }
 
@@ -411,10 +411,19 @@ programOutput(){
     # echo "Preview is set to none." # tell user/log files what is going on.
   fi
 
-  # check if a slidename is already set
+  # check barcodes
   if [[ "$BARCODE" == "dmtx" ]] ; then
     # automatically rename file using datamatrix barcode?
-    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL")"
+    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL""
+    if [[ -z "$SLIDENAME_BARCODE" ]]; then
+      exit 1 # No barcode found. Exit (Message is already printed)
+    else
+      SLIDENAME_UNSAVE="$SLIDENAME_BARCODE" # barcode found, rename
+    fi
+  fi
+  if [[ "$BARCODE" == "zbar" ]] ; then
+    # automatically rename file using zbar's barcodes?
+    SLIDENAME_BARCODE="$(zbarimg $DEFAULT_ZBARIMG_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL""
     if [[ -z "$SLIDENAME_BARCODE" ]]; then
       exit 1 # No barcode found. Exit (Message is already printed)
     else

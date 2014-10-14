@@ -55,6 +55,11 @@ After a `brew` installation, it is wise to do a `brew doctor` and follow the ins
 ```
 brew doctor
 ```
+A final update and upgrade for your `brew` packages
+
+```
+brew update && brew upgrade
+```
 
 From now on, we asume your `brew` package manager is good to go.
 
@@ -62,7 +67,7 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl \
+brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar \
     imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
@@ -88,7 +93,7 @@ Add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools 
 
 ```
 printf "\n# Add the BioFormats directory to the PATH \
-    \nPATH=\"$HOME/usr/bftools:\$PATH\" \n\n" \
+    \nexport PATH=\"$HOME/usr/bftools:\$PATH\" \n\n" \
 	>> ~/.bash_profile
 ```
 
@@ -150,7 +155,7 @@ Add the slideToolkit directory to your PATH (in `.bash_profile`). Adding the sli
 
 ```
 printf "\n# Add the slideToolkit directory to the PATH \
-    \nPATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
+    \nexport PATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
 	>> ~/.bash_profile
 ```
 
