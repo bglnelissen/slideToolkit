@@ -33,9 +33,9 @@ SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica"
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
-DEFAULT_IM_ARGS=" +dither -colors 2 -colorspace gray " # imagemagick arguments # +dither -colors 2 -colorspace gray
+DEFAULT_IM_ARGS="+dither -colors 2 -colorspace gray" # imagemagick arguments # +dither -colors 2 -colorspace gray
 DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
-DEFAULT_DMTXREAD_ARGS=" --stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10 " # options for dmtxread. See man dmtxread for details
+DEFAULT_DMTXREAD_ARGS="--stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10" # options for dmtxread. See man dmtxread for details
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -67,9 +67,7 @@ err() {
 # usage message
 usage() {
 cat <<- EOF
-usage:
-$SCRIPTNAME [options] -f <filename>
-Try slideThumb --help for more information.
+$SCRIPTNAME --help for more information.
 EOF
 }
 
@@ -89,40 +87,37 @@ options:
   [--suffix] <text>             filename suffix
   [--to-lower]                  filename output is transformed to lower cases
   [--to-upper]                  filename output is transformed to upper cases
-  [--barcode-dmtx]              find datamatrix barcode and rename accordingly
+  [--barcode dmtx|zbar]         find barcode (by library) and rename accordingly. 
   [--resize] <widthxheight>     preview dimentions ["$DEFAULT_RESIZE"]
-  [--convert-args] <arguments>  imagemagick convert arguments ["DEFAULT_IM_ARGS"]
+  [--convert-args] <arguments>  imagemagick convert arguments ["$DEFAULT_IM_ARGS"]
   [--preview im|osx|none]       display preview miniature (imageMagick, OS X Preview.app, none)
   [--wmctrl-timeout] <seconds>  window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
 
   --help                        display this help
-  -h                            display this help
-  
+
 examples:
   $SCRIPTNAME "file.tif"
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
   $SCRIPTNAME  --layer=5 --convert-args="-rotate 90" -f "file.tif"
 
 print a job list:
-  find "\$(pwd)" -iname "*tif" -exec "$(command -v "${SCRIPTNAME}")" --file="{}" \;
+  find "\$(pwd)" -iname "*tif" \\
+      -exec "$(command -v "${SCRIPTNAME}")" \\
+      --barcode dmtx --to-upper --preview none -f="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
 
 This script displays a miniture of the whole slide and asks for a  new
-name. The theshold argument can be used to increase the contrast and make
-unreadable barcodes readable again, you can use --convert-args="-threshold 90%"
-for example. The --convert-args overrides all other arguments that are
+name. The --convert-args overrides all other convert arguments that are
 already set (like --resize). For some slides, the virtual slide format
 is not known. For these instances you need to run slideInfo to find the
 correct layer manually. When the layer containing the label is
-identified, use the --layer flag. When you use --preview (default on
-linux) to preview the slide, the focus must switch back to the terminal
-for optimal usage. Using slow drives can cause the focus switching to
-fail, if so, set the '--wmctrl-timeout' to a higher number (e.g. 1.0).
-On OS X, the Preview.app is used for thumb previews, the '--preview'
-option only works properly from an X11 terminal
-('/Applications/Utilities/XQuartz.app').
+identified, use the --layer flag. Using a slow system can cause the
+focus switching to fail, if so, set the '--wmctrl-timeout' to a higher
+number (e.g. 1.0). On OS X, by default, Preview.app is used for thumb
+previews. The '--preview' option only works properly from an X11
+terminal (on a Mac use '/Applications/Utilities/XQuartz.app').
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -163,6 +158,9 @@ do
     -f | --file)
       FILE=$2
       shift 2 ;;
+    -f=* | --file=*)
+      FILE=${1#*=}
+      shift ;;
     -l | --layer)
       LAYER=$2
       shift 2 ;;
@@ -214,9 +212,12 @@ do
     --extension=*)
       OUTPUT_EXTENSION=${1#*=}
       shift ;;
-    --barcode-dmtx)
-      BARCODE="BARCODE_DMTX"
+    --barcode=*)
+      BARCODE=${1#*=}
       shift ;;
+    --barcode)
+      BARCODE=$2
+      shift 2 ;;
     --) # End of all options
       shift
       break ;;
@@ -269,8 +270,7 @@ fi
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
-    echo
-    helpMessage
+    usage
     exit 1
   fi
   regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 or 234x must also be possible
@@ -288,6 +288,19 @@ checkRequirements() {
   if [[ -n "$PREVIEW" ]]; then
     if ! [[ "$PREVIEW" =~ (im|osx|none) ]]; then
       err "This is not a valid --preview value: $PREVIEW"
+      usage
+      exit 1
+    fi
+  fi
+  if [[ -n "$BARCODE" ]]; then
+    if ! [[ "$BARCODE" =~ (dmtx|zbar) ]]; then
+      err "This is not a valid --barcode value: $BARCODE"
+      usage
+      exit 1
+    fi
+    if [[ "$BARCODE" =~ (zbar) ]]; then # remove this when zbar is fixed
+      err "Sorry, but the 'zbar' barcode library is not yet implemented."
+      err "This is not a valid --barcode value: $BARCODE"
       usage
       exit 1
     fi
@@ -311,7 +324,7 @@ checkDependencies(){
   fi
 }
 
-# show thumbs per scanner type (-filter box is best for barcodes [...I think...])
+# show thumbs per scanner type (-filter box is best for resizing and text)
 getThumb(){
   # get thumb by layer id
   LAYER="$LAYER"
@@ -324,21 +337,20 @@ getThumbiScanHT(){
 getThumbAperio(){
   NR_LAYERS=`identify "$FILE" | wc -l`
   LAYER="$(($NR_LAYERS - 2))"   # the last 2 layers contain thumb and the tissue (couning starts at 0)
-  convert "$FILEFULL[$LAYER]" $IM_ARGS --filter box resize "$RESIZE" "$PREVIEW_TMPFILE"
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbLeica(){
   LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" $IM_ARGS -rotate 180 -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+  convert "$FILEFULL[$LAYER]" -rotate 180 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbHamamatsu(){
   LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" $IM_ARGS -rotate 90 -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+  convert "$FILEFULL[$LAYER]" -rotate 90 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbiScan(){
   LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" $IM_ARGS -filter box -resize "$RESIZE" "$PREVIEW_TMPFILE"
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
-
 
 programOutput(){
   # set variables
@@ -378,8 +390,8 @@ programOutput(){
     exit 1
   fi
 
-  # display preview
-  if [[ -z "$PREVIEW" ]]; then # No preview found. Use im, of osx is not found.
+  # display preview, im by default or Preview.app if it exists
+  if [[ -z "$PREVIEW" ]]; then
     PREVIEW="im"
     if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]]; then
       PREVIEW="osx" # OS X Preview.app is available, use it.
@@ -399,12 +411,12 @@ programOutput(){
     # echo "Preview is set to none." # tell user/log files what is going on.
   fi
 
-  # check if a slidename is already set (by --barcode-dmtx for example)
-  if [[ "$BARCODE" == "BARCODE_DMTX" ]] ; then
+  # check if a slidename is already set
+  if [[ "$BARCODE" == "dmtx" ]] ; then
     # automatically rename file using datamatrix barcode?
-    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "No barcode found, using original filename ("$FILENAME")"
+    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL")"
     if [[ -z "$SLIDENAME_BARCODE" ]]; then
-      SLIDENAME_UNSAVE="$FILENAME" # No barcode found, use the input name
+      exit 1 # No barcode found. Exit (Message is already printed)
     else
       SLIDENAME_UNSAVE="$SLIDENAME_BARCODE" # barcode found, rename
     fi
@@ -420,7 +432,7 @@ programOutput(){
 
 #  fix this line.
 #  SLIDENAME_UNSAVE="$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\[B//g')"  # fix strange hand-scanner output 
-  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # printf keeps it all on one line
+  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # Only OS save characters. printf keeps it all on one line
   SLIDEFILE="${SLIDENAME}.${EXTENSION}"
   # change case if needed
   if [[ "CASE_LOWER" = "$CASE" ]]; then
