@@ -67,6 +67,7 @@ dependencies: ${DEPENDENCIES[@]}
 Extract SQL-file column names created by cellprofiler. These headers
 can be added to a .csv file using the --add-head option, a copy
 (.head.csv) will be created
+
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
@@ -143,12 +144,13 @@ checkRequirements() {
 
 # actual program
 programOutput(){
-  # convert to 1 line
-  # perl -p -e 'CREATE TABLE Per_Image' '))'; remove data types; clean spaces and comma's
-  HEAD=$(cat "$FILE" | tr '\n' ' ' \
-  | perl -p -e 's/.*CREATE\ TABLE\ Per_Image\ (\(.*\)PRIMARY\ KEY\ (ImageNumber)\ ).*/\1/' \
-  | perl -p -e 's/float//g' | perl -p -e 's/INTEGER//g' | perl -p -e 's/TEXT//g' \
-  | perl -p -e 's/\ \,\ /\,\ /g' | perl -p -e 's/\.*,\ $//' | perl -p -e 's/^\ //')
+  # Find line with "CREATE TABLE Per_Image (" and print this and '9999' lines after)
+  # Find line with "PRIMARY KEY (ImageNumber) )" and print this and '9999' lines before)
+  # Remove First and last line, fetch 1st column only, replace newlines with comma's. Remove trailing comma
+  HEAD=$(cat "$FILE" | \
+      grep -A 9999 -w "CREATE TABLE Per_Image (" | \
+      grep -B 9999 -w "PRIMARY KEY (ImageNumber) )" | \
+      tail -n+2 | head -n-1 | awk '{print $1}' | tr '\n' ',' | perl -p -e 's/^(.*).$/\1/'
   # add head, yes -> do it, no -> echo head to stdout
   if ! [[ -z "$ADDHEAD" ]]; then
     echo "$(echo $HEAD; cat $ADDHEAD)" > "${ADDHEAD%.*}${SUFFIX}.${ADDHEAD##*.}"
