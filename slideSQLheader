@@ -146,11 +146,13 @@ checkRequirements() {
 programOutput(){
   # Find line with "CREATE TABLE Per_Image (" and print this and '9999' lines after)
   # Find line with "PRIMARY KEY (ImageNumber) )" and print this and '9999' lines before)
-  # Remove First and last line, fetch 1st column only, replace newlines with comma's. Remove trailing comma
+  # Remove First and last line, fetch 1st column only, replace newlines with comma's.
+  # Remove trailing comma
   HEAD=$(cat "$FILE" | \
       grep -A 9999 -w "CREATE TABLE Per_Image (" | \
       grep -B 9999 -w "PRIMARY KEY (ImageNumber) )" | \
-      tail -n+2 | head -n-1 | awk '{print $1}' | tr '\n' ',' | perl -p -e 's/^(.*).$/\1/'
+      tail -n+2 | head -n-1 | awk '{print $1}' | tr '\n' ',' | \
+      perl -p -e 's/^(.*).$/\1/')
   # add head, yes -> do it, no -> echo head to stdout
   if ! [[ -z "$ADDHEAD" ]]; then
     echo "$(echo $HEAD; cat $ADDHEAD)" > "${ADDHEAD%.*}${SUFFIX}.${ADDHEAD##*.}"
