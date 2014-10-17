@@ -33,7 +33,7 @@ SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica"
 DEFAULT_RESIZE="512x1024"
 DEFAULT_OUTPUT_PREFIX="" # empty by default
 DEFAULT_OUTPUT_SUFFIX="" # empty by default
-DEFAULT_IM_ARGS=" " # imagemagick arguments # +dither -colors 2 -colorspace gray
+DEFAULT_IM_ARGS="" # imagemagick arguments # +dither -colors 2 -colorspace gray
 DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
 DEFAULT_DMTXREAD_ARGS="--stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10" # options for dmtxread. See man dmtxread for details
 DEFAULT_ZBARIMG_ARGS="--quiet " # options for zbarimg. --quiet for barcode only. See man dmtxread for details
@@ -92,7 +92,7 @@ options:
   [--to-upper]                    filename output is transformed to upper cases
   [--barcode dmtx|zbar]           find barcode (by library) and rename accordingly. 
   [--resize] <widthxheight>       preview dimentions ["$DEFAULT_RESIZE"]
-  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required) ["$DEFAULT_IM_ARGS"]
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
   [--preview im|osx|none]         display preview miniature (imageMagick, OS X Preview.app, none)
   [--wmctrl-timeout] <seconds>    window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
 
