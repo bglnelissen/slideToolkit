@@ -83,20 +83,20 @@ usage:
   $SCRIPTNAME [options] -f <filename>
 
 options:
-  -f, --file <filename>         virtual slide to rename
+  -f, --file <filename>           virtual slide to rename
 
-  [-l, --layer] <integer>       force specific layer by layer id
-  [--prefix] <text>             filename prefix
-  [--suffix] <text>             filename suffix
-  [--to-lower]                  filename output is transformed to lower cases
-  [--to-upper]                  filename output is transformed to upper cases
-  [--barcode dmtx|zbar]         find barcode (by library) and rename accordingly. 
-  [--resize] <widthxheight>     preview dimentions ["$DEFAULT_RESIZE"]
-  [--convert-args] <arguments>  imagemagick convert arguments ["$DEFAULT_IM_ARGS"]
-  [--preview im|osx|none]       display preview miniature (imageMagick, OS X Preview.app, none)
-  [--wmctrl-timeout] <seconds>  window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
+  [-l, --layer] <integer>         force specific layer by layer id
+  [--prefix] <text>               filename prefix
+  [--suffix] <text>               filename suffix
+  [--to-lower]                    filename output is transformed to lower cases
+  [--to-upper]                    filename output is transformed to upper cases
+  [--barcode dmtx|zbar]           find barcode (by library) and rename accordingly. 
+  [--resize] <widthxheight>       preview dimentions ["$DEFAULT_RESIZE"]
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required) ["$DEFAULT_IM_ARGS"]
+  [--preview im|osx|none]         display preview miniature (imageMagick, OS X Preview.app, none)
+  [--wmctrl-timeout] <seconds>    window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
 
-  --help                        display this help
+  --help                          display this help
 
 examples:
   $SCRIPTNAME "file.tif"
@@ -106,7 +106,7 @@ examples:
 print a job list:
   find "\$(pwd)" -iname "*tif" \\
       -exec "$(command -v "${SCRIPTNAME}")" \\
-      --barcode dmtx --to-upper --preview none -f="{}" \;
+      --barcode="dmtx" --to-upper --preview="none" -f="{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
@@ -123,7 +123,10 @@ previews. The '--preview' option only works properly from an X11
 terminal (on a Mac use '/Applications/Utilities/XQuartz.app'). Using the
 --barcode flag, different libraries can be used to rename slides using
 barcodes, dmtx (for Data Matrix 2D barcodes), and zlib (for
-EAN-13/UPC-A, UPC-E, EAN-8, Code 128, Code 39, Interleaved 2 of 5 and QR Code).
+EAN-13/UPC-A, UPC-E, EAN-8, Code 128, Code 39, Interleaved 2 of 5 and QR
+Code). Image manipulation can be done befor previewing the slide using
+the --convert-args flag, the equal sign ('=') and surrounding quotes "'"
+are required.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -206,7 +209,7 @@ do
     --preview)
       PREVIEW=$2
       shift 2 ;;
-    --convert-args=*)
+    --convert-args=*) # Equal sign and quotes are required for this option. If not, the convert arguments are seen as slideRename options.
       IM_ARGS=${1#*=}
       shift ;;
     --wmctrl-timeout)
