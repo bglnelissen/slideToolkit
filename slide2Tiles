@@ -34,6 +34,7 @@ DEFAULT_MASKSUFFIX=".mask.png"
 DEFAULT_LAYER=3 # 3
 DEFAULT_HEIGHT=2000  # 2000
 DEFAULT_WIDTH=2000   # 2000
+DEFAULT_OVERLAP=0    # 0
 DEFAULT_OUTPUTDIRSUFFIX=".tiles"
 DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
@@ -75,6 +76,7 @@ options:
   [-l, --layer] <integer>   force specific layer ["$DEFAULT_LAYER"]
   [--height] <pixels>       tile height in pixels ["$DEFAULT_HEIGHT"]
   [--width] <pixels>        tile width in pixels ["$DEFAULT_WIDTH"]
+  [--overlap] <pixels>      image overlap of adjacent tiles ["$DEFAULT_OVERLAP"]
   [--keep-empty]            do not delete empty tiles when found
   [--outputsuffix] <text>   output directory suffix
   [--ignore-dependencies]   ignores all dependencies
@@ -129,6 +131,11 @@ MASK=""
 LAYER=""
 KEEPEMPTYTILES=""
 VERBOSE=""
+OUTPUTDIRSUFFIX=""
+HEIGHT=""
+WIDTH=""
+OVERLAP=""
+IGNOREDEPENDENCIES=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -229,6 +236,12 @@ if [ "$WIDTH" != "" ]; then
 else
   WIDTH="$DEFAULT_WIDTH"
 fi
+# set OVERLAP 
+if [ "$OVERLAP" != "" ]; then
+  OVERLAP="$OVERLAP"
+else
+  OVERLAP="$DEFAULT_OVERLAP"
+fi
 # set KEEPEMPTYTILES  (this if statement does nothing, as it is set to set in Menu)
 if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
   KEEPEMPTYTILES=true
@@ -273,17 +286,22 @@ checkRequirements() {
   fi
   regexnumeric='^[0-9]+$'
   if ! [[ "$LAYER" =~ $regexnumeric ]] ; then
-    err "Layer is not an integer: $LAYER"
+    err "Invalid format for --layer: $LAYER"
     usage
     exit 1
   fi
   if ! [[ "$HEIGHT" =~ $regexnumeric ]] ; then
-    err "Height is not valid: $HEIGHT"
+    err "Invalid format for --height: $HEIGHT"
     usage
     exit 1
   fi
   if ! [[ "$WIDTH" =~ $regexnumeric ]] ; then
-    err "Width is not valid: $WIDTH"
+    err "Invalid format for --width: $WIDTH"
+    usage
+    exit 1
+  fi
+  if ! [[ "$OVERLAP" =~ $regexnumeric ]] ; then
+    err "Invalid format for --overlap: $OVERLAP"
     usage
     exit 1
   fi
@@ -297,7 +315,6 @@ checkRequirements() {
   FILENAMESCAN="${S##*/}"
   SHORTNAME="$(basename $INPUTFILENAME)"
   FILENAMEMASK="${M##*/}"
-#   TMPSTORAGE="$TMPSTORAGE"                    # CAREFUL THIS FOLDER GETS DELETED! # CAREFUL WITH THIS MOTHERFUCKER
   LAYER="$LAYER"                             # layer 3 is 20x (for Roche scanner)
   TILESWIDTH="$WIDTH"
   TILESHEIGHT="$HEIGHT"
@@ -308,7 +325,7 @@ checkRequirements() {
     usage
     exit 1
   fi
-	# check file extensions, aperio svs is similar as tif and should work fine.
+  # check file extensions, aperio svs is similar as tif and should work fine.
   if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF|svs|SVS) ]] ; then
     err "TIF or SVS extension expected."
     err "Extension found: $INPUTSCANEXT"
