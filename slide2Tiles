@@ -115,7 +115,9 @@ used. The fast and efficient 'openslide-write-png' is used when no mask
 is used. Pipe the 'job list' output in 'parallel' for parallel
 processing. For some slides, the virtual slide format is not known. For
 these instances you need to run slideInfo to find the correct layer
-manually. Use the --layer flag to set the correct layer.
+manually. Use the --layer flag to set the correct layer. The amount
+--overlap is only affective on one side, the left tile overlaps the tile
+on the right, and the top tile overlaps the tile below.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
 The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
@@ -181,9 +183,15 @@ do
     --height=*)
       HEIGHT=${1#*=}
       shift ;;
+    --height)
+      HEIGHT=$2
+      shift 2 ;;
     --width=*)
       WIDTH=${1#*=}
       shift ;;
+    --width)
+      WIDTH=$2
+      shift 2 ;;
      --ignore-dependencies)
       IGNOREDEPENDENCIES=TRUE
       shift ;;
@@ -327,8 +335,7 @@ checkRequirements() {
   fi
   # check file extensions, aperio svs is similar as tif and should work fine.
   if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF|svs|SVS) ]] ; then
-    err "TIF or SVS extension expected."
-    err "Extension found: $INPUTSCANEXT"
+    err "TIF or SVS extension expected. Extension found: $INPUTSCANEXT"
     usage
     exit 1
   fi
@@ -388,8 +395,8 @@ createTilesConvert(){
     for x in $(seq 0 "$limit_w"); do
       # one tile
       tile="${SHORTNAME}.X${y}.Y${x}.tile.png"
-      w="$((x * $TILESWIDTH))"
-      h="$((y * $TILESHEIGHT))"
+      w="$(( (x * $TILESWIDTH) + $OVERLAP ))"
+      h="$(( (y * $TILESHEIGHT) + $OVERLAP ))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
       # convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
@@ -445,14 +452,18 @@ createTilesOpenslide(){
     for x in $(seq 0 "$limit_w"); do
       # one tile
       tile="${SHORTNAME}.X${y}.Y${x}.tile.png"
-      w="$((x * $TILESWIDTH))"
-      h="$((y * $TILESHEIGHT))"
+      w="$(( (x * $TILESWIDTH) + $OVERLAP ))"
+      h="$(( (y * $TILESHEIGHT) + $OVERLAP ))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
       
       # openslide-write-png [OPTION...] slide x y layer width height output.png
       openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" # >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
-
+      if [ $? -ne 0 ]; then
+        err "openslide-write-png exit error"
+        exit 1
+      fi
+      
       # find tissue, needs improvement
       if [[ "$(wc -c < "$FILE" )" -ge "$MINBYTESIZE" ]]; then
         # more than MINBYTESIZE bytes... tissue found
