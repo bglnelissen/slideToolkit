@@ -305,11 +305,20 @@ wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.z
     unzip -o bftools.zip && \
     rm bftools.zip
 ```
+Add symbolic links in `/usr/local/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
+
 ```
-printf "\n# Add the bfconvert directory to the PATH \
-    \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" \
-	>> ~/.profile
+sudo ln -s -f -v ~/usr/bftools/bfconvert /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/domainlist /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/formatlist /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/ijview /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/mkfake /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/showinf /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/tiffcomment /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/xmlindent /usr/local/bin/ && \
+    sudo ln -s -f -v ~/usr/bftools/xmlvalid /usr/local/bin/
 ```
+
 #### Step 8 - Install datamatrix barcode libraries
 Here we install the `dmtx` libraries and binairies. First the libraries:
 
@@ -364,10 +373,11 @@ if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
 	fi
 ```
+
+Add symbolic links in `/usr/local/bin/`. Now the slideToolkit will be availabe in your PATH. Adding the slideToolkit tools to your PATH makes it easier to acces the slideToolkit commands.
+
 ```
-printf "\n# Add the slideToolkit directory to the PATH \
-    \nPATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
-	>> ~/.profile
+sudo ln -s -f -v ~/git/slideToolkit/slide* /usr/local/bin/
 ```
 
 #### Step 10 - Cleanup, restart & you're done!
