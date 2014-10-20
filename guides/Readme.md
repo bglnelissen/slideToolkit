@@ -67,8 +67,12 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar \
-    imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
+brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
+```
+Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
+
+```
+brew uninstall --force imagemagick && brew install imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
 #### Step 5 - Disable parallel bibtex warning
