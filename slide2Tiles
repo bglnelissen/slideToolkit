@@ -177,6 +177,9 @@ do
     --layer=*)
       LAYER=${1#*=}
       shift ;;
+    --outputsuffix)
+      OUTPUTDIRSUFFIX=$2
+      shift 2 ;;
     --outputsuffix=*)
       OUTPUTDIRSUFFIX=${1#*=}
       shift ;;
@@ -191,6 +194,12 @@ do
       shift ;;
     --width)
       WIDTH=$2
+      shift 2 ;;
+    --overlap=*)
+      OVERLAP=${1#*=}
+      shift ;;
+    --overlap)
+      OVERLAP=$2
       shift 2 ;;
      --ignore-dependencies)
       IGNOREDEPENDENCIES=TRUE
@@ -389,18 +398,19 @@ createTilesConvert(){
   limit_w="$(($width / $TILESWIDTH))"
   limit_h="$(($height / $TILESHEIGHT))"
 
-  verbose_debug "Dimensions [$dimensionsbuffer]; tile size [${TILESWIDTH}x${TILESHEIGHT}]"
+  verbose_debug "Dimensions [$dimensionsbuffer]; tile size [${TILESWIDTH}x${TILESHEIGHT}], overlap [${OVERLAP}]"
   date1="$(date +'%s')"
   for y in $(seq 0 "$limit_h"); do
     for x in $(seq 0 "$limit_w"); do
       # one tile
       tile="${SHORTNAME}.X${y}.Y${x}.tile.png"
-      w="$(( (x * $TILESWIDTH) + $OVERLAP ))"
-      h="$(( (y * $TILESHEIGHT) + $OVERLAP ))"
+      TILESWIDTH_OVERLAP="$(( $TILESWIDTH + $OVERLAP ))"
+      TILESHEIGHT_OVERLAP="$(( $TILESHEIGHT + $OVERLAP ))"
+      w="$(( x * $TILESWIDTH ))"
+      h="$(( y * $TILESHEIGHT ))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
-      # convert -limit area "$MEMORYLIMIT" "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
-      convert "$buffer" -crop "${TILESWIDTH}x${TILESHEIGHT}+$w+$h" +repage "$FILE"
+      convert "$buffer" -crop "${TILESWIDTH_OVERLAP}x${TILESHEIGHT_OVERLAP}+$w+$h" +repage "$FILE"
       # find tissue, needs improvement
       if [[ "$(wc -c < "$FILE" )" -ge "$MINBYTESIZE" ]]; then
         # more than MINBYTESIZE bytes... tissue found
@@ -452,13 +462,16 @@ createTilesOpenslide(){
     for x in $(seq 0 "$limit_w"); do
       # one tile
       tile="${SHORTNAME}.X${y}.Y${x}.tile.png"
-      w="$(( (x * $TILESWIDTH) + $OVERLAP ))"
-      h="$(( (y * $TILESHEIGHT) + $OVERLAP ))"
+      TILESWIDTH_OVERLAP="$(( $TILESWIDTH + $OVERLAP ))"
+      TILESHEIGHT_OVERLAP="$(( $TILESHEIGHT + $OVERLAP ))"
+      w="$(( x * $TILESWIDTH ))"
+      h="$(( y * $TILESHEIGHT ))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
       
       # openslide-write-png [OPTION...] slide x y layer width height output.png
-      openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH" "$TILESHEIGHT" "$FILE" # >/dev/null 2>/dev/null # suppress 'JPEGFixupTagsSubsamplingSec' warnings
+      verbose_debug "openslide-write-png" "$SLIDE" "$w" "$h" 0 "$TILESWIDTH_OVERLAP" "$TILESHEIGHT_OVERLAP" "$FILE"
+      openslide-write-png "$SLIDE" "$w" "$h" 0 "$TILESWIDTH_OVERLAP" "$TILESHEIGHT_OVERLAP" "$FILE" >/dev/null 2>/dev/null # suppress thousands of 'JPEGFixupTagsSubsamplingSec' warnings
       if [ $? -ne 0 ]; then
         err "openslide-write-png exit error"
         exit 1
