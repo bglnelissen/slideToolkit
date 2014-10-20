@@ -63,7 +63,7 @@ brew update && brew upgrade
 
 From now on, we asume your `brew` package manager is good to go.
 
-#### Step 4 - Install packages using brew
+#### Step 4 - Install packages using brew 🍺
 We install most packages using brew.
 
 ```
