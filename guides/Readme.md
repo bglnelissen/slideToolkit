@@ -82,7 +82,6 @@ On each run, `parallel` asks you to cite it when you use GNU parallel to process
 ```
 parallel --bibtex
 ```
-
 Respect the auther, and please cite when appropriate. 
 
 #### Step 6 - Install the bioformat tools
@@ -96,12 +95,18 @@ wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.z
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
-Add the BioFormats directory to your PATH (`.bash_profile`). Adding the bftools folder to your PATH is obligatory for the slideToolkit to find its dependencies. You only have to do this once.
+Add symbolic links in `/usr/local/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
 
 ```
-printf "\n# Add the BioFormats directory to the PATH \
-    \nexport PATH=\"$HOME/usr/bftools:\$PATH\" \n\n" \
-	>> ~/.bash_profile
+ln -s -f -v ~/usr/bftools/bfconvert /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/domainlist /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/formatlist /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/ijview /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/mkfake /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/showinf /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/tiffcomment /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/xmlindent /usr/local/bin/ && \
+    ln -s -f -v ~/usr/bftools/xmlvalid /usr/local/bin/
 ```
 
 #### Step 7 - Install datamatrix barcode libraries
@@ -112,11 +117,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/libdmtx/.git ]; then \
-		cd ~/git/libdmtx && \
-		git pull; \
+		cd ~/git/libdmtx && git pull; \
 	else \
-		cd ~/git/ && \
-    	git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
+		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
 	fi
 ```
 ```
@@ -158,12 +161,10 @@ if [ -d ~/git/slideToolkit/.git ]; then \
 	fi
 ```
 
-Add the slideToolkit directory to your PATH (in `.bash_profile`). Adding the slideToolkit folder to your PATH makes it easier to acces the slideToolkit commands. You only have to do this once.
+Add symbolic links in `/usr/local/bin/`. Now the slideToolkit will be availabe in your PATH. Adding the slideToolkit tools to your PATH makes it easier to acces the slideToolkit commands.
 
 ```
-printf "\n# Add the slideToolkit directory to the PATH \
-    \nexport PATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" \
-	>> ~/.bash_profile
+ln -s -f -v ~/git/slideToolkit/slide* /usr/local/bin/
 ```
 
 #### Step 9 - Reboot
@@ -358,11 +359,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/slideToolkit/.git ]; then \
-		cd ~/git/slideToolkit && \
-		git pull; \
+		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
 	fi
 ```
 ```
