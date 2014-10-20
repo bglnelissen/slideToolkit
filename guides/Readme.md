@@ -84,8 +84,10 @@ Respect the auther, and please cite when appropriate.
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-    wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+mkdir -p ~/usr && cd ~/usr
+```
+```
+wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
@@ -222,13 +224,7 @@ Install the latest libtiff library using cvs. When asked for a password, just pr
 mkdir -p ~/cvs && cd ~/cvs
 ```
 ```
-export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
-```
-```
-cvs login # no password, just press enter
-```
-```
-cvs checkout libtiff
+cvs -d :pserver:cvsanon:@cvs.maptools.org:/cvs/maptools/cvsroot checkout libtiff
 ```
 Install libtiff.
 
@@ -244,6 +240,8 @@ Download the latest ImageMagick source from there website:
 
 ```
 mkdir -p ~/src/ && cd ~/src
+```
+```
 wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.gz && \
 	tar xzfv ImageMagick.tar.gz && \
 	rm ImageMagick.tar.gz
@@ -294,10 +292,12 @@ autoreconf -i
 Install the latest version of bfconvert:
 
 ```
-mkdir -p ~/usr && cd ~/usr && \
-	wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
-	unzip -o bftools.zip && \
-	rm bftools.zip
+mkdir -p ~/usr && cd ~/usr
+```
+```
+wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+    unzip -o bftools.zip && \
+    rm bftools.zip
 ```
 ```
 printf "\n# Add the bfconvert directory to the PATH \
@@ -306,6 +306,7 @@ printf "\n# Add the bfconvert directory to the PATH \
 ```
 #### Step 8 - Install datamatrix barcode libraries
 Here we install the `dmtx` libraries and binairies. First the libraries:
+
 ```
 mkdir -p ~/git/ && cd ~/git
 ```
