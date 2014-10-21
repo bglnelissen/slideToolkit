@@ -171,7 +171,15 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 #### Step 11 - CellProfiler
-Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml).
+Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Install CellProfiler on the default location.
+
+Now create a link in your `~/bin` to make cellprofiler accessible for the commandline.
+
+```
+printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app/Contents/MacOS/CellProfiler "$@"\n' \
+    > ~/bin/cellprofiler && chmod 755 ~/bin/cellprofiler
+
+```
 
 #### Step 10 - Reboot
 Restart and you're done.

@@ -19,7 +19,7 @@ if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
 if [[ $? != 0 ]]; then echo "Error in step 1. Exit."; exit 1;else echo "Succes - step 1"; fi
 
 echo "Starting with step 2"
-open -R -a XQuartx
+open -R -a XQuartz
 if [[ $? != 0 ]]; then
     echo "XQuartz not found. You need to install XQuartz yourself"
     echo "Go go http://xquartz.macosforge.org"
