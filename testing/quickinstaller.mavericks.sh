@@ -41,7 +41,7 @@ brew uninstall --force imagemagick && \
 if [[ $? != 0 ]]; then echo "Error in step 4. Exit."; exit 1;else echo "Succes - step 4"; fi
 
 echo "Starting with step 5"
-parallel --bibtex
+echo "Run this once the install script is done: parallel --bibtex"
 if [[ $? != 0 ]]; then echo "Error in step 5. Exit."; exit 1;else echo "Succes - step 5"; fi
 
 echo "Starting with step 6"
