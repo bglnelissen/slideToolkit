@@ -32,7 +32,7 @@ OS X 10.9 Mavericks - slideToolkit installation instructions
 --------------
 
 #### Step 1 - Preparations
-The system must be up-to-date. Go to the Apple menu on the top left, click "Softeware Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
+The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. Make shure you stay on 'OS X 10.9 Mavericks'. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
 Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
 
