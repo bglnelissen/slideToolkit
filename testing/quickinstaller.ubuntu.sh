@@ -11,49 +11,46 @@ fi
 
 # Let's roll
 echo Step 1
-sudo apt-get --yes update && \
-sudo apt-get --yes upgrade && \
-sudo apt-get --yes dist-upgrade && \
-sudo apt-get --yes autoremove
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 1"; echo "Continue..."; fi
+sudo apt-get --yes update && sudo apt-get --yes upgrade && sudo \
+    apt-get --yes dist-upgrade && sudo apt-get --yes autoremove && \
+    if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
+    mkdir -p ~/bin && \
+    printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
+    fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 1"; fi
 
 echo Step 2
-sudo apt-get --yes update && \
-sudo apt-get --yes install autoconf automake "build-essential" cvs gimp git "libgtk2.0-dev" "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl "zbar-tools"
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 2"; echo "Continue..."; fi
+sudo apt-get --yes update && sudo apt-get --yes install autoconf \
+    automake "build-essential" cvs gimp git "libgtk2.0-dev" \
+    "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
+    libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl \
+    "zbar-tools"
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 2"; fi
 
 echo Step 3
-mkdir -p ~/src && cd ~/src && \
-wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
-tar xzvf zlib-1.2.8.tar.gz && \
-rm zlib-1.2.8.tar.gz
-cd ~/src/zlib-1.2.8 && \
-./configure && \
-make && \
-sudo make install && \
-make clean
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 3"; echo "Continue..."; fi
+mkdir -p ~/src && cd ~/src && \\
+    wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
+    tar xzvf zlib-1.2.8.tar.gz && \
+    rm zlib-1.2.8.tar.gz && \
+    cd ~/src/zlib-1.2.8 && \
+    ./configure && make && sudo make install && make clean
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 3"; fi
 
 echo Step 4
 mkdir -p ~/cvs && \
 cd ~/cvs && \
 cvs -d :pserver:cvsanon:@cvs.maptools.org:/cvs/maptools/cvsroot checkout libtiff && \
-cd ~/cvs/libtiff && \
-./configure && \
-make && \
-sudo make install && \
-make clean
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 4"; echo "Continue..."; fi
+./configure && make && sudo make install && make clean
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 4"; fi
 
 echo Step 5
 mkdir -p ~/src/ && cd ~/src
 wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.gz && \
     tar xzfv ImageMagick.tar.gz && \
-    rm ImageMagick.tar.gz
-cd ~/src/ImageMagick*
-./configure && make && sudo make install && make clean
+    rm ImageMagick.tar.gz && \
+cd ~/src/ImageMagick* && ./configure && make && sudo make install && make clean && \
 sudo ldconfig /usr/local/lib
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 5"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 5"; fi
 
 echo Step 6
 mkdir -p ~/git/ && cd ~/git && \
@@ -70,7 +67,7 @@ autoreconf -i && \
 make && \
 sudo make install && \
 make clean
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 6"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 6"; fi
 
 echo Step 7
 mkdir -p ~/usr && \
@@ -79,7 +76,7 @@ wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.z
 unzip -o bftools.zip && \
 rm bftools.zip && \
 printf "\n# Add the bfconvert directory to the PATH \nPATH=\"$HOME/usr/bfconvert:\$PATH\" \n\n" >> ~/.profile
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 7"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 7"; fi
 
 echo Step 8
 mkdir -p ~/git/ && \
@@ -114,7 +111,7 @@ autoreconf --force --install && \
 make && \
 sudo make install && \
 make clean
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 8"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 8"; fi
 
 echo Step 9
 mkdir -p ~/git/ && \
@@ -127,10 +124,10 @@ if [ -d ~/git/slideToolkit/.git ]; then \
         git clone https://github.com/bglnelissen/slideToolkit.git
     fi
 printf "\n# Add the slideToolkit directory to the PATH \nPATH=\"$HOME/git/slideToolkit:\$PATH\" \n\n" >> ~/.profile
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 9"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 9"; fi
 
 echo Step 10
 sudo ldconfig && \
 sudo reboot
-if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 10"; echo "Continue..."; fi
+if [[ $? != 0 ]]; then echo "Error. Stop."; exit 1;else echo "Succes - step 10"; fi
 

@@ -140,11 +140,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && \
-		git pull; \
+		cd ~/git/dmtx-utils && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
+		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
 	fi
 ```
 ```
@@ -160,11 +158,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/slideToolkit/.git ]; then \
-		cd ~/git/slideToolkit && \
-		git pull; \
+		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
 	fi
 ```
 
@@ -290,11 +286,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/openslide/.git ]; then \
-		cd ~/git/openslide && \
-		git pull; \
+		cd ~/git/openslide && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone git://github.com/openslide/openslide.git && \
+		cd ~/git/ && git clone git://github.com/openslide/openslide.git && \
 	fi
 ```
 
@@ -343,11 +337,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/libdmtx/.git ]; then \
-		cd ~/git/libdmtx && \
-		git pull; \
+		cd ~/git/libdmtx && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
+		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
 	fi
 ```
 ```
@@ -363,11 +355,9 @@ mkdir -p ~/git/ && cd ~/git
 ```
 ```
 if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && \
-		git pull; \
+		cd ~/git/dmtx-utils && git pull; \
 	else \
-		cd ~/git/ && \
-		git clone git://git.code.sf.net/p/libdmtx/dmtx-utils; \
+		cd ~/git/ && git clone git://git.code.sf.net/p/libdmtx/dmtx-utils; \
 	fi
 ```
 ```
