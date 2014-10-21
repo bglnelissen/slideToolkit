@@ -40,7 +40,7 @@ echo "Starting with step 4"
 mkdir -p ~/cvs && \
 cd ~/cvs && \
 cvs -d :pserver:cvsanon:@cvs.maptools.org:/cvs/maptools/cvsroot checkout libtiff && \
-./configure && make && sudo make install && make clean
+cd ~/cvs/libtiff && ./configure && make && sudo make install && make clean
 if [[ $? != 0 ]]; then echo "Error in step 4. Exit."; exit 1;else echo "Succes - step 4"; fi
 
 echo "Starting with step 5"
