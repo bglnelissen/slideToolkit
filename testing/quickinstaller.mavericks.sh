@@ -11,6 +11,7 @@ fi
 
 # Let's roll
 echo "Starting with step 1"
+echo "create ~/bin and add PATH if needed."
 if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
     mkdir -p ~/bin && \
     printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.bash_profile

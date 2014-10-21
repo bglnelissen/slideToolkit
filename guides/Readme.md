@@ -170,7 +170,10 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 9 - Reboot
+#### Step 11 - CellProfiler
+Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml).
+
+#### Step 10 - Reboot
 Restart and you're done.
 
 ---
@@ -386,7 +389,32 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 10 - Cleanup, restart & you're done!
+#### Step 11 - CellProfiler
+Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml).
+
+As root, create a file called /etc/yum.repos.d/cellprofiler.repo with the following contents:
+
+```
+[cellprofiler]
+name=CellProfiler for CentOS 6
+baseurl=http://www.cellprofiler.org/linux/centos6/
+enabled=1
+gpgcheck=0
+```
+	
+As root:
+
+```
+yum install cellprofiler
+````
+As a regular user, type `cellprofiler` to start CellProfiler. If the DISPLAY environment variable is set, CellProfiler will run in GUI mode.
+
+```
+cellprofiler
+```
+
+
+#### Step 11 - Cleanup, restart & you're done!
 Fix linked libraries.
 
 ```
