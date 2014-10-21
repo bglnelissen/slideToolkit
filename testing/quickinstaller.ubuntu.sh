@@ -57,7 +57,7 @@ mkdir -p ~/git/ && cd ~/git && \
 if [ -d ~/git/openslide/.git ]; then \
         cd ~/git/openslide && git pull; \
     else \
-        cd ~/git/ && git clone git://github.com/openslide/openslide.git && \
+        cd ~/git/ && git clone git://github.com/openslide/openslide.git; \
     fi
 cd ~/git/openslide && \
 autoreconf -i && \
@@ -118,6 +118,6 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 if [[ $? != 0 ]]; then echo "Error in step 9. Exit."; exit 1;else echo "Succes - step 9"; fi
 
 echo "Starting with step 10"
-sudo ldconfig && echo "All done. Restart in 10 seconds" && sleep 10 && sudo reboot
+sudo ldconfig && read -p "All done. Press [Enter] to reboot" && sudo reboot
 if [[ $? != 0 ]]; then echo "Error in step 10. Exit."; exit 1;else echo "Succes - step 10"; fi
 
