@@ -31,17 +31,24 @@ Multiline commands end with a dash \
 OS X 10.9 Mavericks - slideToolkit installation instructions
 --------------
 
-#### Step 1 - Make shure you have the 'latest & greatest'
+#### Step 1 - Preparations
 The system must be up-to-date. Go to the Apple menu on the top left, click "Softeware Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
-Now we are up to date, and ready to continue the installation.
+Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
+
+```
+if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
+	mkdir -p ~/bin && \
+	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.bash_profile
+	fi
+```
 
 #### Step 2 - Install XQuartz, a version of the X.Org X Window System that runs on OS X
 XQuartz is needed. Go to [xquartz.macosforge.org](http://xquartz.macosforge.org), download and install the latest stable version of XQuartz (about 70mb). You can find it under "Quick Download".
 
 On the end of the installation you are asked to log out and log back in, and of course you comply.
 
-#### Step 3 - Install brew, the missing package manager for OS X
+#### Step 3 - Install brew 🍺, the missing package manager for OS X
 We install [brew](http://brew.sh) using the following one-liner. You need administrator rights for the installation. No characters will appear on the screen when you type in your password. Paste the following oneliner in your the terminal.
 
 ```
@@ -63,7 +70,7 @@ brew update && brew upgrade
 
 From now on, we asume your `brew` package manager is good to go.
 
-#### Step 4 - Install packages using brew 🍺
+#### Step 4 - Install packages using brew
 We install most packages using brew.
 
 ```
@@ -95,18 +102,18 @@ wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.z
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
-Add symbolic links in `/usr/local/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
+Add symbolic links in `~/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
 
 ```
-ln -s -f -v ~/usr/bftools/bfconvert /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/domainlist /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/formatlist /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/ijview /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/mkfake /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/showinf /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/tiffcomment /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlindent /usr/local/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlvalid /usr/local/bin/
+mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/domainlist ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/formatlist ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/ijview ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/mkfake ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/showinf ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/tiffcomment ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/xmlindent ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
 #### Step 7 - Install datamatrix barcode libraries
@@ -164,7 +171,7 @@ if [ -d ~/git/slideToolkit/.git ]; then \
 Add symbolic links in `/usr/local/bin/`. Now the slideToolkit will be availabe in your PATH. Adding the slideToolkit tools to your PATH makes it easier to acces the slideToolkit commands.
 
 ```
-ln -s -f -v ~/git/slideToolkit/slide* /usr/local/bin/
+mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 #### Step 9 - Reboot
@@ -182,6 +189,15 @@ The system must be up-to-date. Install updates, answer --yes to everything. Make
 ```
 sudo apt-get --yes update && sudo apt-get --yes upgrade && sudo \
 	apt-get --yes dist-upgrade && sudo apt-get --yes autoremove
+```
+
+Binairies are executed from your local `bin` folder. Create your `~/bin` and add it to your PATH if needed.
+
+```
+if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
+	mkdir -p ~/bin && \
+	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
+	fi
 ```
 
 Reboot.
