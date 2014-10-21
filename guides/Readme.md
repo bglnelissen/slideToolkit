@@ -83,15 +83,7 @@ brew uninstall --force imagemagick && \
     brew install imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
 ```
 
-#### Step 5 - Disable parallel bibtex warning
-On each run, `parallel` asks you to cite it when you use GNU parallel to process data for publication. To disable this warning you need to run the following command once and follow instructions on the screen. 
-
-```
-parallel --bibtex
-```
-Respect the auther, and please cite when appropriate. 
-
-#### Step 6 - Install the bioformat tools
+#### Step 5 - Install the bioformat tools
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
@@ -116,7 +108,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
     ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Step 7 - Install datamatrix barcode libraries
+#### Step 6 - Install datamatrix barcode libraries
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
@@ -150,7 +142,7 @@ cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
-#### Step 8 - Download the slideToolkit
+#### Step 7 - Download the slideToolkit
 Download and setup the latest version of the slideToolkit.
 
 ```
@@ -170,7 +162,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 9 - CellProfiler
+#### Step 8 - CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Install CellProfiler on the default location.
 
 Now create a link in your `~/bin` to make cellprofiler accessible for the commandline.
@@ -181,7 +173,7 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app
 
 ```
 
-#### Step 10 - Reboot
+#### Step 9 - Reboot
 Restart and you're done.
 
 ---
