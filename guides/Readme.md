@@ -343,7 +343,7 @@ if [ -d ~/git/libdmtx/.git ]; then \
 	fi
 ```
 ```
- cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
+cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
 ```
 ```
 ./configure && make && sudo make install && make clean
@@ -361,7 +361,7 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 	fi
 ```
 ```
- cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
+cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 ```
 ./configure && make && sudo make install && make clean
@@ -387,10 +387,14 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 #### Step 10 - Cleanup, restart & you're done!
-Fix linked libraries and restart.
+Fix linked libraries.
 
 ```
 sudo ldconfig
+```
+Restart.
+
+```
 sudo reboot
 ```
 
