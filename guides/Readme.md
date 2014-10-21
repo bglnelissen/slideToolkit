@@ -170,7 +170,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 11 - CellProfiler
+#### Step 9 - CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Install CellProfiler on the default location.
 
 Now create a link in your `~/bin` to make cellprofiler accessible for the commandline.
@@ -397,7 +397,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 11 - CellProfiler
+#### Step 10 - CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml).
 
 As root, create a file called /etc/yum.repos.d/cellprofiler.repo with the following contents:
