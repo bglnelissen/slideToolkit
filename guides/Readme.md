@@ -3,16 +3,22 @@ Installation instructions & dependency's
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. It is likely you do not need all of them. Here we explain the dependencies and show instructions on how to install these dependencies. Please tell us if you run into problems, we have done this before, it is likely we can help you out.
 
-#### Programs and libraries the slideToolkit depends on:
+#### Programs and libraries:
 
-- perl
-- bash
-- etc etc add more alphabetically
+- [Bio-Formats Library](http://www.openmicroscopy.org/site/products/bio-formats)
+- [CellProfiler](http://cellprofiler.org)
+- [GNU Bash](https://www.gnu.org/software/bash/)
+- [GNU Parallel](https://www.gnu.org/software/parallel/)
+- [ImageMagick](http://www.imagemagick.org)
+- [Libtiff](http://www.remotesensing.org/libtiff/)
+- [Openslide](http://openslide.org)
+- [Perl](http://www.perl.org)
+- [slideToolkit](https://github.com/bglnelissen/slideToolkit)
 
-#### These programs and libraries:
 
-- parallel
-- etc etc add more alphabetically
+Tell why we need certain versions.
+
+Tell install can be a pain.
 
 
 Most steps make use of the commandline. We tried to create as few steps as possible with code fragments that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste and run each code block. For some steps you need administrator privileges.
@@ -35,8 +41,8 @@ To make it easier to read, long commands stretch over multiple lines:
 #### Installation instructions for:
 
 
-- [OS X 10.9 Mavericks](OSX-10.9-Mavericks.md)
-- [Linux Ubuntu 12.04](Ubuntu 12.04-LTS.md)
+- [OS X 10.9 Mavericks](OSX 10.9 - Mavericks.md)
+- [Linux Ubuntu 12.04](Ubuntu 12.04 LTS - Precise Pangolin.md)
 - We have not planned to create installation instructions for Windows in the near future
 
 ---
