@@ -23,8 +23,8 @@ To make it easier to read, long commands stretch over multiple lines:
 #### Installation instructions for:
 
 
-- [OS X 10.9 Mavericks](#OS X 10.9 - Mavericks.md)
-- [Linux Ubuntu 12.04](#ubuntu_12.04)
+- [OS X 10.9 Mavericks](#OSX-10.9-Mavericks.md)
+- [Linux Ubuntu 12.04](#Ubuntu-12.04-LTS.md)
 - We have not planned to create installation instructions for Windows in the near future
 
 ---
