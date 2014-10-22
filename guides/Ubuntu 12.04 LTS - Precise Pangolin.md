@@ -1,29 +1,27 @@
 Installation instructions & dependency's
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. It is likely you do not need all of them. Here we explain the dependencies and show instructions on how to install these dependencies. Please tell us if you run into problems, we have done this before, it is likely we can help you out.
+The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. Please tell us if you run into problems, it is likely we can help you out.
 
-Most steps make use of the commandline. We tried to create as few steps as possible with code fragments that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste and run each code block. For some steps you need administrator privileges.
-
-Code fragments look like this:
+I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
 ```
-# this is an example of code fragment. You can copy/paste and run these lines.
+these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
 ```
 
-To make it easier to read, long commands stretch over multiple lines:
+To make it easier to copy and paste, long commands that stretch over multiple lines are structed as follows:
 
 ```
-# Multiline commands end with a dash \
-#	indent 4 spaces, and continue on the next line. \
-#	Copy & paste these whole blocks of code.
+Multiline commands end with a dash \
+	indent 4 spaces, and continue on the next line. \
+	Copy & paste these whole blocks of code.
 ```
 
 
 #### Installation instructions for:
 
 
-- [OS X 10.9 Mavericks](#OS X 10.9 - Mavericks.md)
+- [OS X 10.9 Mavericks](#osx_10.9)
 - [Linux Ubuntu 12.04](#ubuntu_12.04)
 - We have not planned to create installation instructions for Windows in the near future
 
