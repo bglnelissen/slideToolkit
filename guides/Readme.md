@@ -3,6 +3,18 @@ Installation instructions & dependency's
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. It is likely you do not need all of them. Here we explain the dependencies and show instructions on how to install these dependencies. Please tell us if you run into problems, we have done this before, it is likely we can help you out.
 
+#### Programs and libraries the slideToolkit depends on:
+
+- perl
+- bash
+- etc etc add more alphabetically
+
+#### These programs and libraries:
+
+- parallel
+- etc etc add more alphabetically
+
+
 Most steps make use of the commandline. We tried to create as few steps as possible with code fragments that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste and run each code block. For some steps you need administrator privileges.
 
 Code fragments look like this:
