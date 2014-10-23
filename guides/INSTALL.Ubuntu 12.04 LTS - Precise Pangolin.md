@@ -237,20 +237,9 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
+
 #### Step 10 - Install CellProfiler
-We install CellProfiler following instructions on their [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux), on this same page we find a link to an install script for Ubuntu ([ubuntubuild.sh](http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh)). We download the CellProfiler install script for Ubuntu Linux, save it as `cellprofiler.ubuntubuild.sh`.
-
-```
-mkdir -p ~/src/ && cd ~/src
-```
-```
-wget http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh -O cellprofiler.ubuntubuild.sh 
-```
-
-Install CellProfiler using the downloaded installation script. This script requires your `sudo` password.
-
-```
-cd ~/src && chmod u+x cellprofiler.ubuntubuild.sh && ./cellprofiler.ubuntubuild.sh
+We install CellProfiler following instructions on their [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux). You can also try the 'Docker' version of CellProfiler, which can be found [here](https://github.com/hajaalin/docker-cellprofiler)
 ```
 
 #### Step 11 - Cleanup, restart & you're done!
