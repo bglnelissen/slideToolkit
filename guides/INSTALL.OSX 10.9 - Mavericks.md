@@ -136,7 +136,7 @@ cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
 ```
 The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
-#### Step 7 - Download the slideToolkit
+#### Step 7 - Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -156,7 +156,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 8 - CellProfiler
+#### Step 8 - Install CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
