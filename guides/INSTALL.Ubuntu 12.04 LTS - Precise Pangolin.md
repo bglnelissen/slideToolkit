@@ -1,7 +1,9 @@
 Ubuntu 12.04 - slideToolkit installation instructions
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. Please tell us if you run into problems, it is likely we can help you out.
+The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. 
+
+Please tell us if you run into problems, it is likely we can help you out, we have done this before ;)
 
 I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
@@ -25,8 +27,8 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on version 12.04 and do not upgrade to Ubuntu 14 (Trusty Tar). This can take a while.
 
 ```
-sudo apt-get --yes update && sudo apt-get --yes upgrade && sudo \
-	apt-get --yes dist-upgrade && sudo apt-get --yes autoremove
+sudo apt-get --yes update && sudo apt-get --yes upgrade && \ 
+    sudo apt-get --yes dist-upgrade && sudo apt-get --yes autoremove
 ```
 
 Binairies are executed from your local `bin` folder. Create your `~/bin` and add it to your PATH if needed.
