@@ -16,9 +16,12 @@ Multiline commands end with a dash \
 	indent 4 spaces, and continue on the next line. \
 	Copy & paste these whole blocks of code.
 ```
+
+Although we have commented most of the commands/code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
+
 ------------
 
-#### Step 1 - Make shure you have the 'latest & greatest'
+#### Step 1 - Update and prepare
 The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on version 12.04 and do not upgrade to Ubuntu 14 (Trusty Tar). This can take a while.
 
 ```
@@ -35,7 +38,7 @@ if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
 	fi
 ```
 
-Reboot.
+On Ubuntu Linux you need to reboot for the PATH to be found.
 
 ```
 sudo reboot
@@ -57,7 +60,7 @@ sudo apt-get --yes update && sudo apt-get --yes install autoconf \
 Most dependcies are now installed, but we need some more.
 
 #### Step 3 - Install zlib
-Install the latest zlib compression libraries. First create and go to the src directory, download and extract zlib.
+Install the latest zlib compression libraries. First create and go to the src directory, then download and extract zlib.
 
 ```
 mkdir -p ~/src && cd ~/src && \\
@@ -75,7 +78,7 @@ cd ~/src/zlib-1.2.8
 ```
 
 #### Step 4 - Install libtiff
-Install the latest libtiff library using cvs. When asked for a password, just press enter. The funny thing is, sudo apt-get install libtiff4 does install libtiff 3.9.* We need libtiff 4.* for BigTIFF support.! Download the latest source:
+Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. The funny thing is, `apt-get install libtiff4` does install libtiff 3.9.* . But we need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
 
 ```
 mkdir -p ~/cvs && cd ~/cvs
@@ -93,7 +96,7 @@ cd ~/cvs/libtiff
 ```
 
 #### Step 5 - Install ImageMagick
-Download the latest ImageMagick source from there website:
+Download and install the latest version ImageMagick from there website. First create and go to the src directory, then download and extract ImageMagick.
 
 ```
 mkdir -p ~/src/ && cd ~/src
@@ -112,13 +115,15 @@ cd ~/src/ImageMagick*
 ```
 ./configure && make && sudo make install && make clean
 ```
+
+After the ImageMagick installation we need to examine the libraries, update links and cache where necessary. Else ImageMagick would work properly.
+
 ```
 sudo ldconfig /usr/local/lib
 ```
 
 #### Step 6 - Install openslide
-Download the latest version of openslide from github. Pull if already exists; clone if none existing.
-
+Download the latest version of openslide from github. Pull if already exists; clone if none existing. First create and go to the git directory, then download the source.
 
 ```
 mkdir -p ~/git/ && cd ~/git
@@ -144,7 +149,7 @@ autoreconf -i
 ```
 
 #### Step 7 - Install bfconvert
-Install the latest version of bfconvert:
+Download and install the latest version of bfconvert. First create and go to the usr directory, then download and extract bftools.
 
 ```
 mkdir -p ~/usr && cd ~/usr
@@ -154,7 +159,7 @@ wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.z
     unzip -o bftools.zip && \
     rm bftools.zip
 ```
-Add symbolic links in `/usr/local/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
+No need to configure the bftools. We only need to add symbolic links in `~/bin`, this will make the BioFormats availabe within your PATH. Adding the bftools to your PATH is obligatory for the slideToolkit to find its dependencies.
 
 ```
 mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
@@ -169,7 +174,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
 ```
 
 #### Step 8 - Install datamatrix barcode libraries
-Here we install the `dmtx` libraries and binairies. First the libraries:
+Download and install the latest version of the datamatrix barcode libraries and binairies (`dmtx`) from sourceforge using git. First create and go to the git directory, then download and extract the libraries.
 
 ```
 mkdir -p ~/git/ && cd ~/git
@@ -181,13 +186,15 @@ if [ -d ~/git/libdmtx/.git ]; then \
 		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
 	fi
 ```
+Install the datamatrix barcode libraries
+
 ```
 cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
 ```
 ```
 ./configure && make && sudo make install && make clean
 ```
-Now the binairies:
+Now the binairies. First create and go to the git directory, then download and extract the binairies.
 
 ```
 mkdir -p ~/git/ && cd ~/git
@@ -199,6 +206,9 @@ if [ -d ~/git/dmtx-utils/.git ]; then \
 		cd ~/git/ && git clone git://git.code.sf.net/p/libdmtx/dmtx-utils; \
 	fi
 ```
+
+Install the datamatrix barcode binairies.
+
 ```
 cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
@@ -206,7 +216,7 @@ cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ./configure && make && sudo make install && make clean
 ```
 #### Step 9 - Download the slideToolkit
-Download the latest version of the slideToolkit from github. And add it to your PATH.
+Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
 mkdir -p ~/git/ && cd ~/git
@@ -226,29 +236,20 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 #### Step 10 - CellProfiler
-Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml).
-
-As root, create a file called /etc/yum.repos.d/cellprofiler.repo with the following contents:
+We install CellProfiler following instructions on their [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux), on this same page we find a link to an install script for Ubuntu ([ubuntubuild.sh](http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh)). We download the CellProfiler install script for Ubuntu Linux, save it as `cellprofiler.ubuntubuild.sh`.
 
 ```
-[cellprofiler]
-name=CellProfiler for CentOS 6
-baseurl=http://www.cellprofiler.org/linux/centos6/
-enabled=1
-gpgcheck=0
+mkdir -p ~/src/ && cd ~/src
 ```
-	
-As root:
-
 ```
-yum install cellprofiler
-````
-As a regular user, type `cellprofiler` to start CellProfiler. If the DISPLAY environment variable is set, CellProfiler will run in GUI mode.
-
-```
-cellprofiler
+wget http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh -O cellprofiler.ubuntubuild.sh 
 ```
 
+Install CellProfiler using the downloaded installation script. This script requires `sudo` rights.
+
+```
+cd ~/src && && chmod u+x cellprofiler.ubuntubuild.sh && ./cellprofiler.ubuntubuild.sh
+```
 
 #### Step 11 - Cleanup, restart & you're done!
 Fix linked libraries.

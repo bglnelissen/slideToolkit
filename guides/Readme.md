@@ -1,4 +1,4 @@
-*For installation instructions regarding your specific platform also see the INSTALL.xxx file in this directory that matches your system (e.g., INSTALL.linux, INSTALL.osx, etc...).*
+*For installation instructions regarding your specific platform also see the INSTALL.xxx file in this directory that matches your system.
 
 ---
 
@@ -107,8 +107,8 @@ Although the installation of these dependencies can be a hassle, we have provide
 ### Installation instructions:
 
 
-- [OS X 10.9 Mavericks](OSX 10.9 - Mavericks.md)
-- [Linux Ubuntu 12.04](Ubuntu 12.04 LTS - Precise Pangolin.md)
+- [INSTALL - OSX 10.9 - Mavericks](INSTALL.OSX 10.9 - Mavericks.md)
+- [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu 12.04 LTS - Precise Pangolin.md)
 
 *We have not planned to create installation instructions for Microsoft Windows. Try to run Ubuntu 12.04 within [VirtualBox](https://www.virtualbox.org) instead.*
 
