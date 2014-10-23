@@ -53,7 +53,7 @@ This apt-get oneliner will install most of the important packages we need and ta
 
 ```
 sudo apt-get --yes update && sudo apt-get --yes install autoconf \
-    automake "build-essential" cvs gimp git "libgtk2.0-dev" \
+    automake "build-essential" curl cvs gimp git "libgtk2.0-dev" \
     "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
     libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl \
     "zbar-tools"
@@ -217,7 +217,7 @@ cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 ./configure && make && sudo make install && make clean
 ```
-#### Step 9 - Download the slideToolkit
+#### Step 9 - Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -237,7 +237,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 10 - CellProfiler
+#### Step 10 - Install CellProfiler
 We install CellProfiler following instructions on their [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux), on this same page we find a link to an install script for Ubuntu ([ubuntubuild.sh](http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh)). We download the CellProfiler install script for Ubuntu Linux, save it as `cellprofiler.ubuntubuild.sh`.
 
 ```
