@@ -245,10 +245,10 @@ mkdir -p ~/src/ && cd ~/src
 wget http://cellprofiler.org/linked_files/CPPackageHost/ubuntubuild.sh -O cellprofiler.ubuntubuild.sh 
 ```
 
-Install CellProfiler using the downloaded installation script. This script requires `sudo` rights.
+Install CellProfiler using the downloaded installation script. This script requires your `sudo` password.
 
 ```
-cd ~/src && && chmod u+x cellprofiler.ubuntubuild.sh && ./cellprofiler.ubuntubuild.sh
+cd ~/src && chmod u+x cellprofiler.ubuntubuild.sh && ./cellprofiler.ubuntubuild.sh
 ```
 
 #### Step 11 - Cleanup, restart & you're done!
