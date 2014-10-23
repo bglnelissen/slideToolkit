@@ -17,7 +17,7 @@ Multiline commands end with a dash \
 	Copy & paste these whole blocks of code.
 ```
 
-Although we have commented most of the commands/code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
+Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
 
 ------------
 
