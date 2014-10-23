@@ -33,7 +33,7 @@ In the first step, “acquisition”, whole slide images are collected and conve
 
 A set of tools is designed for each step. Instructions on how to use each tool can be found running the `--help` flag (e.g. `slideConvert --help`).
 
-Here you can find a [graphical workflow](slideToolkit.workflow.tif) for the slideToolkit.
+Here you can find a [graphical workflow](slideToolkit.workflow.tif?raw=true) for the slideToolkit.
 
 ##### Step 1 - acquisition
 Most slide scanners are, in addition to their own proprietary format, capable of storing the digital slides in pyramid TIFF files. The slideToolkit uses the Bio-Formats library to convert other microscopy formats (Bio-Formats supports over 120 different file formats, [openmicroscopy.org](www.openmicroscopy.org)) into the compatible pyramid TIFF format if needed. TIFF is a tag-based file format for raster images. A TIFF file can hold multiple images in a single file, this is known as a multi-layered TIFF. The term "Pyramid TIFF" is used to describe a multi-layered TIFF file that wraps a sequence of raster images that each represents the same image at increasing resolutions (figure 2). The different layers contain, among others, the slide label and multiple enlargements of the tissue on the slide.
