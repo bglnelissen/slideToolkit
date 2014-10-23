@@ -86,7 +86,7 @@ The slideToolkit depends heavily on the *NIX architecture. For this reason we ha
 
 A library is a collection of sources and that a computer program can use to add functionality. The libraries we use in this project are mainly open source. Some programs bring there own libraries, some depend on other libraries. This is a list of the programs and libraries the slideToolkit depends on.
 
-For example, the LibTIFF library makes it possible for `ImageMagick` and for `tiffinfo` to handle TIFF files correctly.
+For example, the LibTIFF library makes it possible for ImageMagick and for tiffinfo to handle TIFF files correctly.
 
 The programs and libraries:
 
