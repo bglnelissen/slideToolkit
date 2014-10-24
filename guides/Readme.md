@@ -229,6 +229,7 @@ Although the installation of these dependencies can be a hassle, we have provide
 
 
 - [INSTALL - OS X 10.9 - Mavericks](INSTALL.OSX 10.9 - Mavericks.md)
+- [INSTALL - OS X 10.10 - Yosemite](INSTALL.OSX 10.10 - Yosemite.md) *(We have no installation instructions for OS X 10.10 Yosemite yet)*
 - [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu 12.04 LTS - Precise Pangolin.md)
 
 *We have not planned to create installation instructions for Microsoft Windows. Try to run Ubuntu 12.04 within [VirtualBox](https://www.virtualbox.org) instead.*
