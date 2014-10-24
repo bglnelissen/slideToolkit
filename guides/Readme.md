@@ -1,4 +1,4 @@
-*For installation instructions regarding your specific platform also see the INSTALL.xxx file in this directory that matches your system.
+*For installation instructions regarding your specific platform also see the INSTALL.xxx file in this directory that matches your system.*
 
 ---
 
@@ -36,20 +36,24 @@ A set of tools is designed for each step. Instructions on how to use each tool c
 Here you can find a [graphical workflow](slideToolkit.workflow.tif?raw=true) for the slideToolkit.
 
 ##### Step 1 - acquisition
-Most slide scanners are, in addition to their own proprietary format, capable of storing the digital slides in pyramid TIFF files. The slideToolkit uses the Bio-Formats library to convert other microscopy formats (Bio-Formats supports over 120 different file formats, [openmicroscopy.org](www.openmicroscopy.org)) into the compatible pyramid TIFF format if needed. TIFF is a tag-based file format for raster images. A TIFF file can hold multiple images in a single file, this is known as a multi-layered TIFF. The term "Pyramid TIFF" is used to describe a multi-layered TIFF file that wraps a sequence of raster images that each represents the same image at increasing resolutions (figure 2). The different layers contain, among others, the slide label and multiple enlargements of the tissue on the slide.
+Most slide scanners are, in addition to their own proprietary format, capable of storing the digital slides in pyramid TIFF files. The slideToolkit uses the Bio-Formats library to convert other microscopy formats (Bio-Formats supports over 120 different file formats, [openmicroscopy.org](www.openmicroscopy.org)) into the compatible pyramid TIFF format if needed. TIFF is a tag-based file format for raster images. A TIFF file can hold multiple images in a single file, this is known as a multi-layered TIFF. The term "Pyramid TIFF" is used to describe a multi-layered TIFF file that wraps a sequence of raster images that each represents the same image at increasing resolutions. The different layers contain, among others, the slide label and multiple enlargements of the tissue on the slide.
+
+Some slides do not have the proper filenames. Sometimes you want the filename to be exactly like the content of the barcode, sometimes you want all your slides to start with the project name (e.g. MyProject.original.slide.name.TIF). slideRename makes it easy to rename multiple slides at once.
 To read whole slide images, the open-source libTIFF libraries and the OpenSlide libraries are used. These libraries are also applied to extract metadata (e.g. scan time, magnification and image compression) of the scanned slides. Descriptive information about the slide is stored as metadata and contains, for example, pixels per micrometer, presence of different layers, and scan date. For image processing we use ImageMagick. ImageMagick is a command-line image manipulation tool that is fast, highly adjustable and capable of handling big pyramid TIFF files.
 
 The tools designed for step 1:
 
-- slideConvert, converts any whole slide image file to TIFF format
-- slideRename, Batch rename files. Supports barcodes.
-- slideInfo, fetch slide metadata (resolution, dates, magnification, etc)
+- slideConvert, convert different file types of whole slide images to TIFF format.
+- slideRename, Rename virtual slides, this methods supports auto-renaming using barcodes.
+- slideInfo, fetch slide metadata (resolution, dates, magnification, etc).
 
 
 ##### Step 2 - preparation
-In the following steps multiple output files for each slide are created. For each digital slide, a staging directory is constructed in which the slide, and all output data concerning the slide are stored. In digital image manipulation, a mask defines what part of the image will be analyzed and what part will be hidden. Usually a mask can be defined as black (hidden) or white (not hidden). The slideToolkit creates a mask using convert (ImageMagick) and a miniature version of the whole slide image. To create the maks: the image is blurred, this will remove dust and speckles. Now, the white background is identified using a fuzzy, non-stringent selection and then background is replaced with black. Settings for blur and fuzziness can be found and changed in the slideMask tool.
+In the following steps multiple output files for each slide are created. For each digital slide, a staging directory is constructed in which the slide, and all output data concerning the slide are stored.
 
-Generated masks can be adjusted manually in an image editor of choice (such as the freely available GNU Image Manipulation Program; [GIMP](http://www.gimp.org)). Sometimes this is necessary to remove unwanted areas on the whole slide image (like marker stripes or air bubbles under the coverslip).
+Thumbnails contain a photo of the whole slide, including the label. This makes it easy to identify your slides.
+
+In digital image manipulation, a mask defines what part of the image will be analyzed and what part will be hidden. Usually a mask can be defined as black (hidden) or white (not hidden). The slideToolkit creates a mask and a miniature version of the whole slide image using convert (from the ImageMagick library). To create the maks: the image is blurred, this will remove dust and speckles. Now, the white background is identified using a fuzzy, non-stringent selection and then background is replaced with black. Settings for blur and fuzziness can be found and changed in the slideMask tool. Generated masks can be adjusted manually in an image editor of choice (such as the freely available GNU Image Manipulation Program; [GIMP](http://www.gimp.org)). Sometimes this is necessary to remove unwanted areas on the whole slide image (like marker stripes or air bubbles under the coverslip).
 
 The tools designed for step 2:
 
@@ -65,9 +69,11 @@ The tools designed for step 3:
 - slide2Tiles, cut virtual slide into tiles.
 
 ##### Step 4 - analysis
-At this step, multiple tiles containing tissue data have been made, and the different objects in this tissue will be identified. CellProfiler is designed to quantitatively measure phenotypes from thousands of images automatically without training in computer vision or programming. CellProfiler can run using a graphical user interface (GUI) or a command-line interface (CLI). Using the CellProfiler’s GUI, different algorithms for image analysis are available as individual modules that can be modified and placed in sequential order to form a pipeline. Such a pipeline can be used to identify and measure biological objects and features in images. Pipelines can be stored and reused in future projects. The CLI can be used to run the pipeline for actual image analysis.
+At this step, multiple tiles containing tissue data have been made. And now the different objects in this tissue can be identified. Although you can use any image analysis program from now on, we prefer [CellProfiler](http://www.cellprofiler.org). CellProfiler is designed to quantitatively measure phenotypes from thousands of images automatically without training in computer vision or programming. CellProfiler can run using a graphical user interface (GUI) or a command-line interface (CLI). Using the CellProfiler’s GUI, different algorithms for image analysis are available as individual modules that can be modified and placed in sequential order to form a pipeline. Such a pipeline can be used to identify and measure biological objects and features in images. Pipelines can be stored and reused in future projects. The CLI can be used to run the pipeline for actual image analysis.
 
 An illustrated example on how to create pipelines in CellProfiler is described by Vokes and Carpenter in their manuscript "[Using CellProfiler for Automatic Identification and Measurement of Biological Objects in Images](http://onlinelibrary.wiley.com/doi/10.1002/0471142727.mb1417s82/abstract)".
+
+CellProfiler is able to output its measurements in SQL/CSV format. Were the SQL file contains the structure of the data and the CSV file contains the actual measurements. With slideSQLheader you can extract the SQL structure and add it as a header row to the CSV file. CSV files are commenly used data files and can be imported in nearly every statistical program.
 
 The tools designed for step 4:
 
@@ -84,31 +90,30 @@ The slideToolkit depends heavily on the *NIX architecture. For this reason we ha
  
 ### Programs and libraries:
 
-A library is a collection of sources and that a computer program can use to add functionality. The libraries we use in this project are mainly open source. Some programs bring there own libraries, some depend on other libraries. This is a list of the programs and libraries the slideToolkit depends on.
+A library is a collection of sources and that a computer program can use to add functionality. The libraries we use in this project are mainly open source. The license used for the different programs and libraries can be found on the accompanying websites. Some programs bring there own libraries, some depend on other libraries. This is a list of the programs and libraries the slideToolkit depends on.
 
 For example, the LibTIFF library makes it possible for ImageMagick and for tiffinfo to handle TIFF files correctly.
 
-The programs and libraries:
+The programs and libraries you need to run the slideToolkit:
 
-- [Bio-Formats Library](http://www.openmicroscopy.org/site/products/bio-formats)
-- [CellProfiler](http://cellprofiler.org)
+- [Bio-Formats Library](http://www.openmicroscopy.org/site/products/bio-formats) >= version 5
+- [CellProfiler](http://cellprofiler.org) >= version 2
 - [GNU Bash](https://www.gnu.org/software/bash/)
 - [GNU Parallel](https://www.gnu.org/software/parallel/)
-- [ImageMagick](http://www.imagemagick.org)
-- [LibTIFF](http://www.remotesensing.org/libtiff/), >=  Version 4
-- [Openslide](http://openslide.org)
-- [Perl](http://www.perl.org)
+- [ImageMagick](http://www.imagemagick.org) >= version 6.8
+- [LibTIFF](http://www.remotesensing.org/libtiff/), >=  version 4
+- [Openslide](http://openslide.org) >= version 3.4
+- [Perl](http://www.perl.org) >= version 5
 - [slideToolkit](https://github.com/bglnelissen/slideToolkit)
 
 *The latest stable version of these programs and libraries should be sufficient. There is one catch, the Lib TIFF library supports the TIFF64 (aka BigTIFF) format since version 4.*
 
-Although the installation of these dependencies can be a hassle, we have provided installation instructions for OS X and Linux.
+
 
 ### Installation instructions:
-
+Although the installation of the dependencies can be a hassle, we have provided installation instructions for OS X and Linux.
 
 - [INSTALL - OS X 10.9 - Mavericks](INSTALL.OSX 10.9 - Mavericks.md)
 - [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu 12.04 LTS - Precise Pangolin.md)
-
-*We have not planned to create installation instructions for Microsoft Windows. Try to run Ubuntu 12.04 within [VirtualBox](https://www.virtualbox.org) instead.*
+- *We have not planned to create installation instructions for Microsoft Windows. Try to run Ubuntu 12.04 within [VirtualBox](https://www.virtualbox.org) instead.*
 
