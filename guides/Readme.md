@@ -99,7 +99,7 @@ The programs and libraries you need to run the slideToolkit:
 
 - [Bio-Formats Library](http://www.openmicroscopy.org/site/products/bio-formats) >= version 5
 - [CellProfiler](http://cellprofiler.org) >= version 2
-- [GNU Bash](https://www.gnu.org/software/bash/)
+- [GNU Bash](https://www.gnu.org/software/bash/) >= version 3
 - [GNU Parallel](https://www.gnu.org/software/parallel/)
 - [ImageMagick](http://www.imagemagick.org) >= version 6.8
 - [LibTIFF](http://www.remotesensing.org/libtiff/), >=  version 4
