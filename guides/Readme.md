@@ -1,5 +1,4 @@
 *For installation instructions regarding your specific platform also see the INSTALL.xxx file in this directory that matches your system.*
-<<<<<<< HEAD
 
 ---
 
@@ -234,4 +233,3 @@ Although the installation of these dependencies can be a hassle, we have provide
 
 *We have not planned to create installation instructions for Microsoft Windows. Try to run Ubuntu 12.04 within [VirtualBox](https://www.virtualbox.org) instead.*
 
->>>>>>> FETCH_HEAD
