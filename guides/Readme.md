@@ -43,9 +43,9 @@ Some slides do not have the proper filenames. Sometimes you want the filename to
 
 The tools designed for step 1:
 
-- slideConvert, convert different file types of whole slide images to TIFF format.
-- slideRename, Rename virtual slides, this methods supports auto-renaming using barcodes.
-- slideInfo, fetch slide metadata (resolution, dates, magnification, etc).
+- `slideConvert`, convert different file types of whole slide images to TIFF format.
+- `slideRename`, Rename virtual slides, this methods supports auto-renaming using barcodes.
+- `slideInfo`, fetch slide metadata (resolution, dates, magnification, etc).
 
 
 ##### Step 2 - preparation
@@ -57,16 +57,16 @@ In digital image manipulation, a mask defines what part of the image will be ana
 
 The tools designed for step 2:
 
-- slideDirectory, create a staging directory per slide.
-- slideThumb, create slide thumbnail, including label.
-- slideMask, create a scaled mask and macro version from a slide.
+- `slideDirectory`, create a staging directory per slide.
+- `slideThumb`, create slide thumbnail, including label.
+- `slideMask`, create a scaled mask and macro version from a slide.
 
 ##### Step 3 - tiles
 Image analysis of memory intensive, whole 20x representations of the digitized slides is currently impossible due to hardware and software limitations. The goal of this step is to create multiple smaller images (i.e. tiles) from the 20x whole slide image. An upscaled version of the mask is placed over the 20x whole slide image (in our example this is layer 3 of the multi layered TIFF). Image manipulation on 20x sized whole slide images requires large amounts of computer RAM. To make it possible for computers without sufficient RAM to handle these files, the slideToolkit uses a memory-mapped disk file of the program memory. Using disk mapped memory files (ImageMagick .mpc files), the slideToolkit can efficiently extract all tiles. Without a mask, a faster and more memory efficient method is used using the openslide library.
 
 The tools designed for step 3:
 
-- slide2Tiles, cut virtual slide into tiles.
+- `slide2Tiles`, cut virtual slide into tiles.
 
 ##### Step 4 - analysis
 At this step, multiple tiles containing tissue data have been made. And now the different objects in this tissue can be identified. Although you can use any image analysis program from now on, we prefer [CellProfiler](http://www.cellprofiler.org). CellProfiler is designed to quantitatively measure phenotypes from thousands of images automatically without training in computer vision or programming. CellProfiler can run using a graphical user interface (GUI) or a command-line interface (CLI). Using the CellProfiler’s GUI, different algorithms for image analysis are available as individual modules that can be modified and placed in sequential order to form a pipeline. Such a pipeline can be used to identify and measure biological objects and features in images. Pipelines can be stored and reused in future projects. The CLI can be used to run the pipeline for actual image analysis.
@@ -77,8 +77,8 @@ CellProfiler is able to output its measurements in SQL/CSV format. Were the SQL 
 
 The tools designed for step 4:
 
- - slideJobsCellProfiler, outputs a list of jobs for CellProfiler
- - slideSQLheader, fetch table headers from CellProfiler SQL output for CSV file
+ - `slideJobsCellProfiler`, outputs a list of jobs for CellProfiler
+ - `slideSQLheader`, fetch table headers from CellProfiler SQL output for CSV file
 
 ---
 
