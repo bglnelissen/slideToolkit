@@ -239,7 +239,11 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 
 
 #### Step 10 - Install CellProfiler
-We install CellProfiler following instructions on [cellprofiler.org](http://www.cellprofiler.org), or on the CellProfiler [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux). You can also try the 'Docker' version of CellProfiler, which is known to work with Ubuntu and can be found [here](https://github.com/hajaalin/docker-cellprofiler).
+We install CellProfiler following instructions on [cellprofiler.org](http://www.cellprofiler.org), or on the CellProfiler [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux)
+
+Use the yum install instructions using yum in Ubuntu: `sudo aptitude install yum` 
+
+You can also try the 'Docker' version of CellProfiler, which is known to work with Ubuntu and can be found [here](https://github.com/hajaalin/docker-cellprofiler).
 
 #### Step 11 - Cleanup, restart & you're done!
 Fix linked libraries.
