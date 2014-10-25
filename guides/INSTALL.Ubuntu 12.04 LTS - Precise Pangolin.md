@@ -36,7 +36,7 @@ Binairies are executed from your local `bin` folder. Create your `~/bin` and add
 ```
 if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
 	mkdir -p ~/bin && \
-	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
+	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.bash_profile
 	fi
 ```
 
