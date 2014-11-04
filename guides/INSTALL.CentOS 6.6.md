@@ -101,7 +101,7 @@ Install zlib.
 cd ~/src/zlib-1.2.8
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
 #### Step 4 - Install libtiff
@@ -119,7 +119,7 @@ Install libtiff.
 cd ~/cvs/libtiff
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
 #### Step 5 - Install ImageMagick
