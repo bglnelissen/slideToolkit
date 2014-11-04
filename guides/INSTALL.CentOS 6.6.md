@@ -51,7 +51,7 @@ Now we are up to date, and ready to continue the installation.
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-su -c 'yum -y install autoconf automake  curl cvs gimp git \
+su -c 'yum -y install autoconf automake  curl cvs gcc gimp git \
     libtool  perl  vim wget  '
 
 # build-essential
@@ -104,8 +104,8 @@ cd ~/src/zlib-1.2.8
 ./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 4 - Install libtiff
-Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. The funny thing is, `apt-get install libtiff4` does install libtiff 3.9.* . But we need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
+#### Install libtiff
+Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. We need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
 
 ```
 mkdir -p ~/cvs && cd ~/cvs
