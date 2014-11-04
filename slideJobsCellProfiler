@@ -110,6 +110,8 @@ qsub:
   [--qsub-args] <arguments>    qsub arguments ("$DEFAULT_QSUBARGS")
 
   --help                       display this help
+  --version                    display version and license information
+
 
 examples:
   $SCRIPTNAME -i "./" -p "pipeline.cp"

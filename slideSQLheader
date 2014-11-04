@@ -85,6 +85,8 @@ options:
   [--ignore-dependencies]   ignores all dependencies, but gives warning
 
   --help                    display this help
+  --version                 display version and license information
+
 
 examples:
   $SCRIPTNAME "SQL_SETUP.SQL"

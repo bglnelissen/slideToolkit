@@ -86,7 +86,8 @@ options:
   [--bfconvert-args] <arguments>  bfconvert arguments ["$DEFAULT_BFCONVERTARGS"]
   [--ignore-dependencies]         ignores all dependencies, but gives warning
 
-  --help                    display this help
+  --help                          display this help
+  --version                       display version and license information
 
 examples:
   $SCRIPTNAME "file.ext"
