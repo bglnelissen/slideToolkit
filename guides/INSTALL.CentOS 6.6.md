@@ -282,7 +282,8 @@ Create repository file.
 ```
 mkdir -p /etc/yum.repos.d && \
 if ! [[ -f /etc/yum.repos.d/cellprofiler.repo ]] ; then \
-    su -c 'printf "\n[cellprofiler]\nname=CellProfiler for CentOS 6\nbaseurl=http://www.cellprofiler.org/linux/centos6/\nenabled=1\ngpgcheck=0" > /etc/yum.repos.d/cellprofiler.repo'
+    su -c 'printf "\n[cellprofiler]\nname=CellProfiler for CentOS 6\nbaseurl=http://www.cellprofiler.org/linux/centos6/\nenabled=1\ngpgcheck=0" > /etc/yum.repos.d/cellprofiler.repo';
+    fi
 ```
 
 ```
