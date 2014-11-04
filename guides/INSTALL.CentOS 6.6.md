@@ -51,7 +51,7 @@ Now we are up to date, and ready to continue the installation.
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-su -c 'yum -y install autoconf automake  curl cvs gcc gcc-c++ \
+su -c 'yum -y install autoconf automake cmake curl cvs gcc gcc-c++ \
     gimp git libtool openjpeg perl svn vim wget  \
     giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 ```
@@ -120,10 +120,17 @@ cd ~/cvs/libtiff
 mkdir -p ~/svn && cd ~/svn
 ```
 ```
-svn checkout http://openjpeg.googlecode.com/svn/trunk/ openjpeg-read-only
+svn checkout http://openjpeg.googlecode.com/svn/trunk/ openjpeg
 ```
 Install openjpeg.
 
+```
+cd ~/svn/openjpeg
+```
+
+```
+cmake . && make && su -c "make install" && make clean
+```
 
 
 #### Install ImageMagick
