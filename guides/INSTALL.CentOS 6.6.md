@@ -140,7 +140,7 @@ Install ImageMagick.
 cd ~/src/ImageMagick*
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
 After the ImageMagick installation we need to examine the libraries, update links and cache where necessary. Else ImageMagick would work properly.
