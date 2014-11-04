@@ -45,11 +45,7 @@ Now we are up to date, and ready to continue the installation.
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-su -c 'yum -y update && yum -y install autoconf \
-    automake "build-essential" curl cvs gimp git "libgtk2.0-dev" \
-    "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
-    libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl \
-    "zbar-tools"'
+su -c 'yum -y install autoconf automake build-essential curl cvs gimp git libgtk2.0-dev libjpeg-dev libopenjpeg-dev libopenslide-dev libsqlite3-dev libtool libxml2-dev parallel perl pkg-config vim wget wmctrl zbar-tools'
 ```
 
 Most dependcies are now installed, but we need some more.
