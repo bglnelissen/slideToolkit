@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a staging directorie per slide"
-DEPENDENCIES=("parallel")
+DEPENDENCIES=()
 
 # Errors go to stderr
 err() {
@@ -42,6 +42,33 @@ $SCRIPTNAME --help for more information.
 EOF
 }
 
+# version info
+version() {
+cat << EOF
+slideToolkit 0.1 beta
+($SCRIPTNAME is part of the slideToolkit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas Nelissen.
+EOF
+}
+
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -52,6 +79,8 @@ usage:
 
 options:
   -f, --file <filename>     Move file into a similar named directory 
+
+  [--ignore-dependencies]   ignores all dependencies, but gives warning
 
   --help                    display this help
 
@@ -92,11 +121,17 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
     -f | --file)
       FILE=$2
       shift 2 ;;
     --file=*)
       FILE=${1#*=}
+      shift ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
       shift
@@ -114,6 +149,12 @@ if [ "$FILE" != "" ]; then
   FILE="$FILE"
 else
   FILE="$1"
+fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
 fi
 
 # requirements
@@ -136,11 +177,17 @@ checkDependencies(){
     fi
   done
   if [[ "$DEPS_FAIL" > 0 ]]; then
-    err "Fix missing dependencies (${DEPS_FAIL})"
-    usage
-    exit 1
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
   fi
 }
+
 # actual program
 programOutput(){
   FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL

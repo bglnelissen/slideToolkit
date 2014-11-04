@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Cut whole virtual slide into tiles"
-DEPENDENCIES=("convert" "identify" "parallel" "perl"  "openslide-write-png") # must exist in PATH
+DEPENDENCIES=("convert" "identify" "perl"  "openslide-write-png") # must exist in PATH
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask.png"
 DEFAULT_LAYER=3 # 3
@@ -61,6 +61,33 @@ $SCRIPTNAME --help for more information.
 EOF
 }
 
+# version info
+version() {
+cat << EOF
+slideToolkit 0.1 beta
+($SCRIPTNAME is part of the slideToolkit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas Nelissen.
+EOF
+}
+
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -79,7 +106,7 @@ options:
   [--overlap] <pixels>      image overlap of adjacent tiles ["$DEFAULT_OVERLAP"]
   [--keep-empty]            do not delete empty tiles when found
   [--outputsuffix] <text>   output directory suffix
-  [--ignore-dependencies]   ignores all dependencies
+  [--ignore-dependencies]   ignores all dependencies, but gives warning
   [--verbose]               verbose output (for debugging)
   
   --help                    display this help
@@ -152,6 +179,9 @@ do
   case $1 in
     --help | -\?)
       helpMessage
+      exit 0 ;;
+    --version )
+      version
       exit 0 ;;
     -h )
       usage
@@ -265,7 +295,7 @@ if [[ "$KEEPEMPTYTILES" =~ (true|TRUE|YES|yes) ]] ; then
 else
   KEEPEMPTYTILES=false
 fi
-# set IGNOREDEPENDENCIES  (this if statement does nothing, as it is set to set in Menu)
+# set IGNOREDEPENDENCIES
 if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
   IGNOREDEPENDENCIES=true
 else
@@ -361,9 +391,14 @@ checkDependencies(){
     fi
   done
   if [[ "$DEPS_FAIL" > 0 ]]; then
-    err "Fix missing dependencies (${DEPS_FAIL})"
-    usage
-    exit 1
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
   fi
 }
 
@@ -508,9 +543,7 @@ programOutput(){
 
 # all check?
 checkRequirements
-if ! [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
-  checkDependencies
-fi
+checkDependencies
 
 # lets go!
 programOutput

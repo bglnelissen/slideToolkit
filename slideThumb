@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create slide thumbnail, including label"
-DEPENDENCIES=("convert" "parallel" "perl")
+DEPENDENCIES=("convert" "perl")
 SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
@@ -50,6 +50,33 @@ $SCRIPTNAME --help for more information.
 EOF
 }
 
+# version info
+version() {
+cat << EOF
+slideToolkit 0.1 beta
+($SCRIPTNAME is part of the slideToolkit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas Nelissen.
+EOF
+}
+
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -66,6 +93,7 @@ options:
   [--extension] <text>        thumbnail output extension ["$DEFAULT_OUTPUT_EXTENSION"]
   [--output-dir] <path>       path to output directory
   [--resize] <widthxheight>   maximum output dimentions ["$DEFAULT_RESIZE"]
+  [--ignore-dependencies]     ignores all dependencies, but gives warning
   
   --help                      display this help
 
@@ -124,6 +152,9 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
     --h)
       usage
       exit 0 ;;
@@ -162,6 +193,9 @@ do
       shift 2;;
     --output-dir=*)
       OUTPUT_DIRECTORY=${1#*=}
+      shift ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
       shift
@@ -205,6 +239,13 @@ if [ "$RESIZE" != "" ]; then
 else
   RESIZE="$DEFAULT_RESIZE"
 fi
+# set IGNOREDEPENDENCIES  (this if statement does nothing, as it is set to set in Menu)
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
+fi
+
 # requirements
 checkRequirements() {
   if ! [[ -f "$FILE" ]] ; then
@@ -225,12 +266,16 @@ checkDependencies(){
     fi
   done
   if [[ "$DEPS_FAIL" > 0 ]]; then
-    err "Fix missing dependencies (${DEPS_FAIL})"
-    usage
-    exit 1
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
   fi
 }
-
 # get thumb for each scanner type
 getThumb(){
   # get thumb by layer id

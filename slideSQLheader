@@ -38,6 +38,33 @@ $SCRIPTNAME --help for more information.
 EOF
 }
 
+# version info
+version() {
+cat << EOF
+slideToolkit 0.1 beta
+($SCRIPTNAME is part of the slideToolkit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas Nelissen.
+EOF
+}
+
+
 # Errors go to stderr
 err() {
   echo "${SCRIPTNAME} ERROR: $@" >&2
@@ -55,6 +82,7 @@ options:
   -f, --file <filename>     "SQL_SETUP.SQL" file 
   
   [--add-head] <filename>   "file.csv" file 
+  [--ignore-dependencies]   ignores all dependencies, but gives warning
 
   --help                    display this help
 
@@ -96,6 +124,9 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
     -f | --file)
       FILE=$2
       shift 2 ;;
@@ -107,6 +138,9 @@ do
       shift 2 ;;
     --add-head=*)
       ADDHEAD=${1#*=}
+      shift ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
       shift
@@ -125,6 +159,12 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
+fi
 
 #requirements
 checkRequirements() {
@@ -139,6 +179,28 @@ checkRequirements() {
       usage
       exit 1
     fi  
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
   fi
 }
 
@@ -162,6 +224,7 @@ programOutput(){
 }
 #all check?
 checkRequirements
+checkDependencies
 
 #lets go!
 programOutput

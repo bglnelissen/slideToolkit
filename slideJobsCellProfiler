@@ -30,7 +30,7 @@ SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Create a joblist to analyse multiple tiles using CellProfiler."
 CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
-DEPENDENCIES=("$CPBIN" "convert" "parallel") # these scripts/binaries must be in your path: `command -v binary`
+DEPENDENCIES=("$CPBIN" "convert") # these scripts/binaries must be in your path: `command -v binary`
 DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
 QSUBARGS="-pe threaded 3 -q short"
 DEFAULT_QSUBNAME="$SCRIPTNAME"
@@ -61,6 +61,33 @@ $SCRIPTNAME --help for more information.
 EOF
 }
 
+# version info
+version() {
+cat << EOF
+slideToolkit 0.1 beta
+($SCRIPTNAME is part of the slideToolkit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas Nelissen.
+EOF
+}
+
+
 # help message
 helpMessage() {
 cat <<- EOF
@@ -76,6 +103,7 @@ options:
   [--output-suffix] <text>     suffix for output directory ("$DEFAULT_OUTPUT_SUFFIX")
   [--handler] <jobhandler>     specify the job handler
   [--mkdir-output] <dirname>   create output directory before running CellProfiler
+  [--ignore-dependencies]      ignores all dependencies, but gives warning
 
 qsub:
   [-N, --name] <text>          qsub job identification name ("$DEFAULT_QSUBNAME")
@@ -134,6 +162,9 @@ do
     --help | -\?)
       helpMessage
       exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
     --handler=*)
       HANDLER=${1#*=}
       shift ;;
@@ -161,6 +192,9 @@ do
     --qsub-args)
       QSUBARGS=$2
       shift 2 ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
+      shift ;;
     --) # End of all options
       shift
       break ;;
@@ -202,6 +236,12 @@ if [ "$HANDLER" != "" ]; then
   HANDLER="$HANDLER"
 else
   HANDLER="$DEFAULT_HANDLER"
+fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
 fi
 
 # requirements
