@@ -160,7 +160,7 @@ After the ImageMagick installation we need to examine the libraries, update link
 sudo ldconfig /usr/local/lib
 ```
 
-#### Install openslide
+#### Install openslide [openjpeg not found error]
 Download the latest version of openslide from github. Pull if already exists; clone if none existing. First create and go to the git directory, then download the source.
 
 ```
@@ -211,7 +211,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
     ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Install datamatrix barcode libraries
+#### Install datamatrix barcode libraries [error: dmtx lib not found]
 Download and install the latest version of the datamatrix barcode libraries and binairies (`dmtx`) from sourceforge using git. First create and go to the git directory, then download and extract the libraries.
 
 ```
@@ -275,7 +275,19 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 
 
 #### Install CellProfiler
-We have no step-by-step installation instructions for CellProfiler yet. But you can follow the instructions for CentOS on [cellprofiler.org](http://www.cellprofiler.org).
+Instructions for CentOS 6 taken from on [cellprofiler.org](http://www.cellprofiler.org).
+
+Create repository file.
+
+```
+mkdir -p /etc/yum.repos.d && \
+if ! [[ -f /etc/yum.repos.d/cellprofiler.repo ]] ; then \
+    su -c 'printf "\n[cellprofiler]\nname=CellProfiler for CentOS 6\nbaseurl=http://www.cellprofiler.org/linux/centos6/\nenabled=1\ngpgcheck=0" > /etc/yum.repos.d/cellprofiler.repo'
+```
+
+```
+su -c 'yum install cellprofiler'
+```
 
 #### Cleanup, restart & you're done!
 Fix linked libraries.
