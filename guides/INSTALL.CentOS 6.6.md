@@ -65,6 +65,7 @@ su -c 'yum -y install autoconf automake  curl cvs gimp git \
 # wmctrl
 # zbar-tools
 
+```
 
 #### Install parallel
 Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
@@ -75,7 +76,9 @@ mkdir -p ~/src && cd ~/src && \\
 	tar jxf parallel-latest.tar.bz2 && \
 	rm parallel-latest.tar.bz2
 ```
+
 Install parallel
+
 ```
 cd ~/src/parallel-*
 ```
