@@ -134,7 +134,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/openslide/.git ]; then \
 		cd ~/git/openslide && git pull; \
 	else \
-		cd ~/git/ && git clone git://github.com/openslide/openslide.git \
+		cd ~/git/ && git clone git://github.com/openslide/openslide.git; \
 	fi
 ```
 

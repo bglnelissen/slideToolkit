@@ -52,14 +52,13 @@ This apt-get oneliner will install most of the important packages we need and ta
 
 ```
 su -c 'yum -y install autoconf automake  curl cvs gcc gcc-c++ \
-    gimp git libtool  perl vim wget  \
+    gimp git libtool openjpeg perl svn vim wget  \
     giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
-
+```
 
 # wmctrl
 # zbar-tools
 
-```
 
 #### Install parallel
 Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
@@ -116,6 +115,17 @@ cd ~/cvs/libtiff
 ./configure && make && su -c "make install" && make clean
 ```
 
+#### Install JPEG2000
+```
+mkdir -p ~/svn && cd ~/svn
+```
+```
+svn checkout http://openjpeg.googlecode.com/svn/trunk/ openjpeg-read-only
+```
+Install openjpeg.
+
+
+
 #### Install ImageMagick
 Download and install the latest version ImageMagick from there website. First create and go to the src directory, then download and extract ImageMagick.
 
@@ -153,7 +163,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/openslide/.git ]; then \
 		cd ~/git/openslide && git pull; \
 	else \
-		cd ~/git/ && git clone git://github.com/openslide/openslide.git \
+		cd ~/git/ && git clone git://github.com/openslide/openslide.git; \
 	fi
 ```
 
