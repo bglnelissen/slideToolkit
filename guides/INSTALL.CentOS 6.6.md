@@ -1,4 +1,4 @@
-Ubuntu 12.04 - slideToolkit installation instructions
+CentOS 6.6 - slideToolkit installation instructions
 ============
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. 
@@ -23,45 +23,63 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 
 ------------
 
-#### Step 1 - Update and prepare
-The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on version 12.04 and do not upgrade to Ubuntu 14 (Trusty Tar). This can take a while.
+#### Update and prepare
+To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
 
 ```
-sudo apt-get --yes update && sudo apt-get --yes upgrade && \ 
-    sudo apt-get --yes dist-upgrade && sudo apt-get --yes autoremove
+sudo adduser USERNAME sudo
+```
+
+The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on CentOS version 6.6 as this guide is meant for CentOS 6.6 only. This can take a while.
+
+```
+su -c 'yum -y update'
 ```
 
 Binairies are executed from your local `bin` folder. Create your `~/bin` and add it to your PATH if needed.
 
 ```
-if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
-	mkdir -p ~/bin && \
+mkdir -p ~/bin && \
+if ! [[ "$PATH" =~ ($HOME/bin:|~/bin:) ]] ; then \
 	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
 	fi
 ```
 
-On Ubuntu Linux you need to reboot for the PATH to be found.
-
-```
-sudo reboot
-```
-
 Now we are up to date, and ready to continue the installation.
 
-#### Step 2 - Install required libraries and packages using apt-get
+#### Install required libraries and packages using apt-get
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-sudo apt-get --yes update && sudo apt-get --yes install autoconf \
-    automake "build-essential" curl cvs gimp git "libgtk2.0-dev" \
-    "libjpeg-dev" "libopenjpeg-dev" "libopenslide-dev" "libsqlite3-dev" \
-    libtool "libxml2-dev" parallel perl "pkg-config" vim wget wmctrl \
-    "zbar-tools"
+su -c 'yum -y install autoconf automake cmake curl cvs gcc gcc-c++ \
+    gimp git libtool openjpeg perl svn vim wget  \
+    giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 ```
 
-Most dependcies are now installed, but we need some more.
+# wmctrl
+# zbar-tools
 
-#### Step 3 - Install zlib
+
+#### Install parallel
+Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
+
+```
+mkdir -p ~/src && cd ~/src && \\
+    wget http://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 && \
+	tar jxf parallel-latest.tar.bz2 && \
+	rm parallel-latest.tar.bz2
+```
+
+Install parallel
+
+```
+cd ~/src/parallel-*
+```
+```
+./configure && make && su -c "make install" && make clean
+```
+
+#### Install zlib
 Install the latest zlib compression libraries. First create and go to the src directory, then download and extract zlib.
 
 ```
@@ -76,11 +94,11 @@ Install zlib.
 cd ~/src/zlib-1.2.8
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 4 - Install libtiff
-Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. The funny thing is, `apt-get install libtiff4` does install libtiff 3.9.* . But we need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
+#### Install libtiff
+Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. We need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
 
 ```
 mkdir -p ~/cvs && cd ~/cvs
@@ -94,10 +112,28 @@ Install libtiff.
 cd ~/cvs/libtiff
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 5 - Install ImageMagick
+#### Install JPEG2000
+```
+mkdir -p ~/svn && cd ~/svn
+```
+```
+svn checkout http://openjpeg.googlecode.com/svn/trunk/ openjpeg
+```
+Install openjpeg.
+
+```
+cd ~/svn/openjpeg
+```
+
+```
+cmake . && make && su -c "make install" && make clean
+```
+
+
+#### Install ImageMagick
 Download and install the latest version ImageMagick from there website. First create and go to the src directory, then download and extract ImageMagick.
 
 ```
@@ -115,7 +151,7 @@ Install ImageMagick.
 cd ~/src/ImageMagick*
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
 After the ImageMagick installation we need to examine the libraries, update links and cache where necessary. Else ImageMagick would work properly.
@@ -124,7 +160,7 @@ After the ImageMagick installation we need to examine the libraries, update link
 sudo ldconfig /usr/local/lib
 ```
 
-#### Step 6 - Install openslide
+#### Install openslide [openjpeg not found error]
 Download the latest version of openslide from github. Pull if already exists; clone if none existing. First create and go to the git directory, then download the source.
 
 ```
@@ -147,10 +183,10 @@ cd ~/git/openslide
 autoreconf -i
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 7 - Install bfconvert
+#### Install bfconvert
 Download and install the latest version of bfconvert. First create and go to the usr directory, then download and extract bftools.
 
 ```
@@ -175,7 +211,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
     ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Step 8 - Install datamatrix barcode libraries
+#### Install datamatrix barcode libraries [error: dmtx lib not found]
 Download and install the latest version of the datamatrix barcode libraries and binairies (`dmtx`) from sourceforge using git. First create and go to the git directory, then download and extract the libraries.
 
 ```
@@ -194,7 +230,7 @@ Install the datamatrix barcode libraries
 cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 Now the binairies. First create and go to the git directory, then download and extract the binairies.
 
@@ -215,9 +251,9 @@ Install the datamatrix barcode binairies.
 cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
-#### Step 9 - Install slideToolkit
+#### Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -238,12 +274,27 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 
-#### Step 10 - Install CellProfiler
-We have no step-by-step installation instructions for CellProfiler yet. But you can follow the instructions on [cellprofiler.org](http://www.cellprofiler.org), or on the CellProfiler [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux).
+#### Install CellProfiler
+Instructions for CentOS 6 taken from on [cellprofiler.org](http://www.cellprofiler.org).
 
-You can also try the 'Docker' version of CellProfiler, which is known to work with Ubuntu and can be found [here](https://github.com/hajaalin/docker-cellprofiler).
+Create repository file for yum.
 
-#### Step 11 - Cleanup, restart & you're done!
+```
+mkdir -p /etc/yum.repos.d && \
+if ! [[ -f /etc/yum.repos.d/cellprofiler.repo ]] ; then \
+    su -c 'printf "\n[cellprofiler]\n\
+name=CellProfiler for CentOS 6\n\
+baseurl=http://www.cellprofiler.org/linux/centos6/\n\
+enabled=1\n\
+gpgcheck=0\n" > /etc/yum.repos.d/cellprofiler.repo';
+    fi
+```
+Install CellProfiler using yum.
+```
+su -c 'yum -y install cellprofiler'
+```
+
+#### Cleanup, restart & you're done!
 Fix linked libraries.
 
 ```
