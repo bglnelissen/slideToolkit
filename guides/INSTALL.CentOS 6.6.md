@@ -277,7 +277,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 #### Install CellProfiler
 Instructions for CentOS 6 taken from on [cellprofiler.org](http://www.cellprofiler.org).
 
-Create repository file.
+Create repository file for yum.
 
 ```
 mkdir -p /etc/yum.repos.d && \
@@ -289,9 +289,9 @@ enabled=1\n\
 gpgcheck=0\n" > /etc/yum.repos.d/cellprofiler.repo';
     fi
 ```
-
+Install CellProfiler using yum.
 ```
-su -c 'yum install cellprofiler'
+su -c 'yum -y install cellprofiler'
 ```
 
 #### Cleanup, restart & you're done!
