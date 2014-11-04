@@ -286,7 +286,7 @@ if ! [[ -f /etc/yum.repos.d/cellprofiler.repo ]] ; then \
     name=CellProfiler for CentOS 6\n\
     baseurl=http://www.cellprofiler.org/linux/centos6/\n\
     enabled=1\n\
-    gpgcheck=0" > /etc/yum.repos.d/cellprofiler.repo';
+    gpgcheck=0\n" > /etc/yum.repos.d/cellprofiler.repo';
     fi
 ```
 
