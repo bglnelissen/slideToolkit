@@ -51,8 +51,9 @@ Now we are up to date, and ready to continue the installation.
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-su -c 'yum -y install autoconf automake  curl cvs gcc gimp git \
-    libtool  perl  vim wget  '
+su -c 'yum -y install autoconf automake  curl cvs gcc gcc-c++ \
+    gimp git libtool  perl vim wget  \
+    giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 
 # build-essential
 # libgtk2.0-dev
