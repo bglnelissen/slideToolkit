@@ -24,6 +24,12 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 ------------
 
 #### Step 1 - Update and prepare
+To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
+
+```
+sudo adduser USERNAME sudo
+```
+
 The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on CentOS version 6.6 as this guide is meant for CentOS 6.6 only. This can take a while.
 
 ```
@@ -45,14 +51,39 @@ Now we are up to date, and ready to continue the installation.
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
-su -c 'yum -y install autoconf automake build-essential curl cvs gimp git \
-    libgtk2.0-dev libjpeg-dev libopenjpeg-dev libopenslide-dev libsqlite3-dev \
-    libtool libxml2-dev parallel perl pkg-config vim wget wmctrl zbar-tools'
+su -c 'yum -y install autoconf automake  curl cvs gimp git \
+    libtool  perl  vim wget  '
+
+# build-essential
+# libgtk2.0-dev
+# libjpeg-dev
+# libopenjpeg-dev
+# libopenslide-dev
+# libsqlite3-dev
+# libxml2-dev
+# pkg-config
+# wmctrl
+# zbar-tools
+
+
+#### Install parallel
+Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
+
+```
+mkdir -p ~/src && cd ~/src && \\
+    wget http://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 && \
+	tar jxf parallel-latest.tar.bz2 && \
+	rm parallel-latest.tar.bz2
+```
+Install parallel
+```
+cd ~/src/parallel-*
+```
+```
+./configure && make && su -c "make install" && make clean
 ```
 
-Most dependcies are now installed, but we need some more.
-
-#### Step 3 - Install zlib
+#### Install zlib
 Install the latest zlib compression libraries. First create and go to the src directory, then download and extract zlib.
 
 ```
