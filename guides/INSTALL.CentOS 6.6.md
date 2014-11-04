@@ -23,7 +23,7 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 
 ------------
 
-#### Step 1 - Update and prepare
+#### Update and prepare
 To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
 
 ```
@@ -47,7 +47,7 @@ if ! [[ "$PATH" =~ ($HOME/bin:|~/bin:) ]] ; then \
 
 Now we are up to date, and ready to continue the installation.
 
-#### Step 2 - Install required libraries and packages using apt-get
+#### Install required libraries and packages using apt-get
 This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
 
 ```
@@ -55,14 +55,7 @@ su -c 'yum -y install autoconf automake  curl cvs gcc gcc-c++ \
     gimp git libtool  perl vim wget  \
     giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 
-# build-essential
-# libgtk2.0-dev
-# libjpeg-dev
-# libopenjpeg-dev
-# libopenslide-dev
-# libsqlite3-dev
-# libxml2-dev
-# pkg-config
+
 # wmctrl
 # zbar-tools
 
@@ -123,7 +116,7 @@ cd ~/cvs/libtiff
 ./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 5 - Install ImageMagick
+#### Install ImageMagick
 Download and install the latest version ImageMagick from there website. First create and go to the src directory, then download and extract ImageMagick.
 
 ```
@@ -150,7 +143,7 @@ After the ImageMagick installation we need to examine the libraries, update link
 sudo ldconfig /usr/local/lib
 ```
 
-#### Step 6 - Install openslide
+#### Install openslide
 Download the latest version of openslide from github. Pull if already exists; clone if none existing. First create and go to the git directory, then download the source.
 
 ```
@@ -173,10 +166,10 @@ cd ~/git/openslide
 autoreconf -i
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 
-#### Step 7 - Install bfconvert
+#### Install bfconvert
 Download and install the latest version of bfconvert. First create and go to the usr directory, then download and extract bftools.
 
 ```
@@ -201,7 +194,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
     ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Step 8 - Install datamatrix barcode libraries
+#### Install datamatrix barcode libraries
 Download and install the latest version of the datamatrix barcode libraries and binairies (`dmtx`) from sourceforge using git. First create and go to the git directory, then download and extract the libraries.
 
 ```
@@ -220,7 +213,7 @@ Install the datamatrix barcode libraries
 cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
 Now the binairies. First create and go to the git directory, then download and extract the binairies.
 
@@ -241,9 +234,9 @@ Install the datamatrix barcode binairies.
 cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
 ```
 ```
-./configure && make && sudo make install && make clean
+./configure && make && su -c "make install" && make clean
 ```
-#### Step 9 - Install slideToolkit
+#### Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -264,12 +257,10 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 
-#### Step 10 - Install CellProfiler
-We have no step-by-step installation instructions for CellProfiler yet. But you can follow the instructions on [cellprofiler.org](http://www.cellprofiler.org), or on the CellProfiler [github wiki page](https://github.com/CellProfiler/CellProfiler/wiki/CellProfiler-Developer%27s-version-installation-for-Linux).
+#### Install CellProfiler
+We have no step-by-step installation instructions for CellProfiler yet. But you can follow the instructions for CentOS on [cellprofiler.org](http://www.cellprofiler.org).
 
-You can also try the 'Docker' version of CellProfiler, which is known to work with Ubuntu and can be found [here](https://github.com/hajaalin/docker-cellprofiler).
-
-#### Step 11 - Cleanup, restart & you're done!
+#### Cleanup, restart & you're done!
 Fix linked libraries.
 
 ```
