@@ -13,11 +13,12 @@ If you do not know where to start, this should be the right place. In this file 
 
 A little introduction first. The demand for accurate and reproducible phenotyping of a disease trait increases with the rising number of biobanks and genome wide association studies. Detailed analysis of histology is a powerful way of phenotyping human tissues. Nonetheless, purely visual assessment of histological slides is time-consuming and liable to sampling variation and optical illusions and thereby observer variation, and external validation may be cumbersome.
 
-Therefore computerised quantification of digitized histological slides is often preferred as a more precise and reproducible, and sometimes more sensitive approach. Relatively few free toolkits are, however, available for fully digitized microscopic slides, usually known as whole slides images.In order to comply with this need, we developed the slideToolkit as a fast method to handle large quantities of low contrast whole slides images using advanced cell detecting algorithms. The slideToolkit has been developed for modern personal computers and high-performance clusters (HPCs) and is a set of scripts that requires other programs and libraries to run.
+Therefore computerised quantification of digitized histological slides is often preferred as a more precise and reproducible, and sometimes more sensitive approach. Relatively few free toolkits are, however, available for fully digitized microscopic slides, usually known as whole slides images.
+In order to comply with this need, we developed the slideToolkit as a fast method to handle large quantities of low contrast whole slides images using advanced cell detecting algorithms. The slideToolkit has been developed for modern personal computers and high-performance clusters (HPCs) and is a set of scripts that requires other programs and libraries to run.
 
 Our goal is to provide a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic data sets.
 
-The paper were we introduce the slideToolkit can be found on PlosONE (link). Please cite to this paper when using the slideToolkit for your research.
+The paper were we introduce the slideToolkit can be found on [PlosONE](http://dx.plos.org/10.1371/journal.pone.0110289). Please cite to this paper when using the slideToolkit for your research.
 
 Good luck,
 
@@ -39,7 +40,8 @@ Here you can find a [graphical workflow](slideToolkit.workflow.tif?raw=true) for
 Most slide scanners are, in addition to their own proprietary format, capable of storing the digital slides in pyramid TIFF files. The slideToolkit uses the Bio-Formats library to convert other microscopy formats (Bio-Formats supports over 120 different file formats, [openmicroscopy.org](www.openmicroscopy.org)) into the compatible pyramid TIFF format if needed. TIFF is a tag-based file format for raster images. A TIFF file can hold multiple images in a single file, this is known as a multi-layered TIFF. The term "Pyramid TIFF" is used to describe a multi-layered TIFF file that wraps a sequence of raster images that each represents the same image at increasing resolutions. The different layers contain, among others, the slide label and multiple enlargements of the tissue on the slide.
 
 Some slides do not have the proper filenames. Sometimes you want the filename to be exactly like the content of the barcode, sometimes you want all your slides to start with the project name (e.g. MyProject.original.slide.name.TIF). slideRename makes it easy to rename multiple slides at once.
-To read whole slide images, the open-source libTIFF libraries and the OpenSlide libraries are used. These libraries are also applied to extract metadata (e.g. scan time, magnification and image compression) of the scanned slides. Descriptive information about the slide is stored as metadata and contains, for example, pixels per micrometer, presence of different layers, and scan date. For image processing we use ImageMagick. ImageMagick is a command-line image manipulation tool that is fast, highly adjustable and capable of handling big pyramid TIFF files.
+
+To read whole slide images, the open-source libTIFF libraries and the OpenSlide libraries are used. These libraries are also applied to extract metadata (e.g. scan time, magnification and image compression) of the scanned slides. Descriptive information about the slide is stored as metadata and contains, for example, pixels per micrometer, presence of different layers, and scan date. For image processing we use ImageMagick. ImageMagick is a command-line image manipulation tool that is fast, highly adjustable and capable of handling big pyramid TIFF files.
 
 The tools designed for step 1:
 
@@ -119,3 +121,4 @@ Although the installation of the dependencies can be a hassle, we have provided 
 - [INSTALL - CentOS 6.6](INSTALL.CentOS 6.6.md) *(In progress)*
 - *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6 within [VirtualBox](https://www.virtualbox.org) instead.*
 
+*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software*
