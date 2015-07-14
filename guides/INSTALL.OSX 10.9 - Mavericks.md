@@ -24,7 +24,7 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 --------------
 
 #### Step 1 - Update and prepare
-The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. Make shure you stay on 'OS X 10.9 Mavericks'. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
+The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. Make sure you stay on 'OS X 10.9 Mavericks'. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
 Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
 
