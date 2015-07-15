@@ -3,7 +3,7 @@
 # Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014, UMC Utrecht, B.G.L. Nelissen
+# Copyright (c) 2014-2015, UMC Utrecht, B.G.L. Nelissen
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014, UMC Utrecht, Bas Nelissen
+Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -128,7 +128,7 @@ slideInfo to find the correct layer manually. When the mask layer is
 identified (approximately 2000x2000 pixels), use the --layer flag.
 
 The slideToolkit and all its tools are released under the terms of the MIT license
-The slideToolkit (C) 2014, UMC Utrecht, B.G.L. Nelissen
+The slideToolkit (C) 2014-2015, UMC Utrecht, B.G.L. Nelissen
 Report issues at https://github.com/bglnelissen/slideToolkit/issues
 
 EOF
