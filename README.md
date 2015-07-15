@@ -11,10 +11,12 @@ A workflow consists of four consecutive steps. In the first step (acquisition), 
 
 In conclusion, slideToolkit provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
 
-Citation: Nelissen BGL, van Herwaarden JA, Moll FL, van Diest PJ, Pasterkamp G (2014) <i>SlideToolkit: An Assistive Toolset for the Histological Quantification of Whole Slide Images.</i> PLoS ONE 9(11): e110289. doi:10.1371/journal.pone.0110289. 
+Citation: Nelissen BGL, van Herwaarden JA, Moll FL, van Diest PJ, Pasterkamp G (2014) <i>SlideToolkit: An Assistive Toolset for the Histological Quantification of Whole Slide Images.</i> <b>PLoS ONE 9(11): e110289</b>. doi:10.1371/journal.pone.0110289. 
+
 Direct link: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0110289.
 
 The MIT License (MIT): <http://opensource.org/licenses/MIT>.
+
 Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
 
 -----------------------------------------------
