@@ -27,7 +27,7 @@
 
 # Variables
 SCRIPTNAME="$(basename $0)"
-DESCRIPTIONSHORT="Create a staging directorie per slide"
+DESCRIPTIONSHORT="Create a staging directory per slide"
 DEPENDENCIES=()
 
 # Errors go to stderr
