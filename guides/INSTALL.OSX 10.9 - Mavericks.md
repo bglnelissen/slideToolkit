@@ -81,10 +81,10 @@ brew uninstall --force imagemagick && \
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
-mkdir -p ~/usr && cd ~/usr
+mkdir -p ~/usr
 ```
 ```
-wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+cd ~/usr && wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
