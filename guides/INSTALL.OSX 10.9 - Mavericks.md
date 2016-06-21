@@ -1,4 +1,4 @@
-OS X 10.9 Mavericks - slideToolkit installation instructions
+OS X slideToolkit installation instructions
 ============
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation.
@@ -21,10 +21,11 @@ Multiline commands end with a dash \
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
 
+We have tested slideToolkit on Mac OS X 10.9 Mavericks, OS X 10.10 Yosemite, and OS X 10.11 El Capitan. The only issue is with the `wmctrl` package - please refer to the "Issues" for more information.
 --------------
 
 #### Step 1 - Update and prepare
-The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. Make sure you stay on 'OS X 10.9 Mavericks'. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
+The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
 Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
 
