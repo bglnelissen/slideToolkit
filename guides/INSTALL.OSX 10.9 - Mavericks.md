@@ -21,7 +21,7 @@ Multiline commands end with a dash \
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
 
-We have tested slideToolkit on Mac OS X 10.9 Mavericks, OS X 10.10 Yosemite, and OS X 10.11 El Capitan. The only issue is with the `wmctrl` package - please refer to the "Issues" for more information.
+We have tested slideToolkit on Mac OS X 10.9 Mavericks, OS X 10.10 Yosemite, and OS X 10.11 El Capitan. The only issue is with the `wmctrl` package - please refer to the "Issues" for more information: https://github.com/bglnelissen/slideToolkit/issues/24.
 
 --------------
 
