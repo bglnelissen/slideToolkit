@@ -11,7 +11,7 @@ I tried to create as few steps as possible with one-liners that are *easy* to re
 these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
 ```
 
-To make it easier to copy and paste, long commands that stretch over multiple lines are structed as follows:
+To make it easier to copy and paste, long commands that stretch over multiple lines are structered as follows:
 
 ```
 Multiline commands end with a dash \
@@ -83,10 +83,10 @@ brew uninstall --force imagemagick && \
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
-mkdir -p ~/usr && cd ~/usr
+mkdir -p ~/usr
 ```
 ```
-wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
+cd ~/usr && wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
