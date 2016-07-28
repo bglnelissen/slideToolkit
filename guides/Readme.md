@@ -107,7 +107,7 @@ The programs and libraries you need to run the slideToolkit:
 - [LibTIFF](http://www.remotesensing.org/libtiff/), >=  version 4
 - [Openslide](http://openslide.org) >= version 3.4
 - [Perl](http://www.perl.org) >= version 5
-- [slideToolkit](https://github.com/bglnelissen/slideToolkit)
+- [slideToolkit](https://github.com/swvanderlaan/slideToolkit)
 
 *The latest stable version of these programs and libraries should be sufficient. There is one catch, the Lib TIFF library supports the TIFF64 (aka BigTIFF) format since version 4.*
 
@@ -115,10 +115,9 @@ The programs and libraries you need to run the slideToolkit:
 ### Installation instructions:
 Although the installation of the dependencies can be a hassle, we have provided installation instructions for OS X and Linux.
 
-- [INSTALL - OS X 10.9 - Mavericks](INSTALL.OSX 10.9 - Mavericks.md)
-- [INSTALL - OS X 10.10 - Yosemite](INSTALL.OSX 10.10 - Yosemite.md) *(We have no installation instructions for OS X 10.10 Yosemite yet)*
-- [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu 12.04 LTS - Precise Pangolin.md) *(CellProfiler instructions incomplete)*
-- [INSTALL - CentOS 6.6](INSTALL.CentOS 6.6.md) *(In progress)*
-- *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6 within [VirtualBox](https://www.virtualbox.org) instead.*
+- [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan](INSTALL.OSX.md) *(Completely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
+- [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu.12.04.LTS-PrecisePangolin.md) *(CellProfiler instructions incomplete)*
+- [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
+- *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
 
-*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software*
+*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software.*

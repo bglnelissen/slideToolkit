@@ -158,6 +158,13 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
+We also have to make all the `bftools` available in your path.
+
+```
+mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bf.sh ~/bin/
+```
+
+
 #### Step 8 - Install CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
