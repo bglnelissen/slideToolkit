@@ -90,7 +90,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 print a job list:
-  find "\$(pwd)" -iname "*tif" -exec echo "$(command -v "$SCRIPTNAME")" -f \""{}"\" \;
+  find "\$(pwd)" -iname "*.TIF" -exec $(command -v "$SCRIPTNAME") -f "{}" \;
 
 dependencies: ${DEPENDENCIES[@]}
 
