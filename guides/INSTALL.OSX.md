@@ -70,8 +70,15 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
+brew install automake wget jpeg libpng libtiff parallel openslide zbar
 ```
+
+Install `wmctrl` for windows control.
+
+```
+brew install homebrew/x11/wmctrl
+```
+
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
 ```
@@ -161,7 +168,7 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 We also have to make all the `bftools` available in your path.
 
 ```
-mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bf.sh ~/bin/
+mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/* ~/bin/
 ```
 
 
