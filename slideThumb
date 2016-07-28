@@ -104,7 +104,7 @@ examples:
   $SCRIPTNAME  --layer=5 --suffix=".suffix" --extension="jpg" "file.tif"
 
 print a job list:
-  find "\$(pwd)" -iname "*tif" -exec "$(command -v "$SCRIPTNAME")" -f "{}" \;
+  find "\$(pwd)" -iname "*.TIF" -exec "$(command -v "$SCRIPTNAME")" -f "{}" \;
 
 print a job list for 'qsub':
   for i in \$(find ./ -iname "*tif"); do
