@@ -7,16 +7,12 @@ Please tell us if you run into problems, it is likely we can help you out, we ha
 
 I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
-```
-these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
-```
-
-To make it easier to copy and paste, long commands that stretch over multiple lines are structed as follows:
+Mono-type font illustrates commands, to make it easier to copy and paste these commands  stretch over multiple lines as follows:
 
 ```
-Multiline commands end with a dash 
-indent 4 spaces, and continue on the next line. 
-Copy & paste these whole blocks of code.
+Multiline commands end with a dash  \\
+    indent 4 spaces, and continue on the next line.  \\
+    Copy & paste these whole blocks of code.
 ```
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
