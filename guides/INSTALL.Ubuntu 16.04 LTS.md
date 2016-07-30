@@ -1,6 +1,10 @@
 Ubuntu 16.04 - slideToolkit installation instructions
 ============
 
+---
+This setup guide was tested on [VirtualBox 5](https://www.virtualbox.org) with a default Ubuntu 16.04 Desktop installation.
+---
+
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. 
 
 Please tell us if you run into problems, it is likely we can help you out, we have done this before ;)
@@ -12,13 +16,11 @@ Mono-type font illustrates commands, to make it easier to copy and paste these c
 ```
 Multiline commands end with a dash  \
     indent 4 spaces, and continue on the next line.  \
-    Copy & paste these whole blocks of code.
+    You can copy & paste these whole blocks of code.
 ```
 
-Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
+*Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.*
 
----
-Make shure you are running [Ubuntu 16.04](http://www.ubuntu.com/download/desktop).
 ---
 
 #### Step 1 - Update and prepare
@@ -253,3 +255,23 @@ Restart.
 sudo reboot
 ```
 
+---
+
+## All in one go:
+
+```
+#!/bin/bash
+
+# update
+sudo apt-get --yes update && sudo apt-get --yes upgrade && sudo apt-get --yes dist-upgrade && sudo apt-get --yes autoremove
+
+# add ~/bin to the local enviroment within ~/.profile
+if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
+	mkdir -p ~/bin && \
+	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
+	fi
+# add ~/bin to the current enviroment PATH variable
+PATH="~/bin:$PATH"
+export PATH
+
+```
