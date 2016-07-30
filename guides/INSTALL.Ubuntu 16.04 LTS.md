@@ -10,8 +10,8 @@ I tried to create as few steps as possible with one-liners that are *easy* to re
 Mono-type font illustrates commands, to make it easier to copy and paste these commands  stretch over multiple lines as follows:
 
 ```
-Multiline commands end with a dash  \\
-    indent 4 spaces, and continue on the next line.  \\
+Multiline commands end with a dash  \
+    indent 4 spaces, and continue on the next line.  \
     Copy & paste these whole blocks of code.
 ```
 
