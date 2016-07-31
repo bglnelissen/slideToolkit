@@ -115,35 +115,22 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/libdmtx/.git ]; then \
-		cd ~/git/libdmtx && git pull; \
-	else \
-		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
-	fi
-```
-```
-cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
+brew install libdmtx
 ```
 
-Now we install the binairies:
+Make sure to link them properly -- if needed a warning is given by `brew` and suggests to forcefully link these libraries:
 
 ```
-mkdir -p ~/git/ && cd ~/git
+brew link --overwrite libdmtx
 ```
+
+Then continue installing the binaries: 
+
 ```
-if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && git pull; \
-	else \
-		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
-	fi
+brew install dmtx-utils
 ```
-```
-cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
-```
-The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
+
+The dmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 7 - Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
