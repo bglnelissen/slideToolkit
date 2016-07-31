@@ -37,3 +37,7 @@ if mkdir -p ~/usr && cd ~/usr && wget http://downloads.openmicroscopy.org/latest
 # slideToolkit
 MESSAGE="slideToolkit installer: slideToolkit scripts"
 if mkdir -p ~/git/ && cd ~/git && if [ -d ~/git/slideToolkit/.git ]; then cd ~/git/slideToolkit && git pull; else cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; fi && mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/ ; then echo "$MESSAGE" "(Succes)"; sleep 2; else read -n1 -rsp "$MESSAGE (Fail)" && echo; fi
+
+# CellProfiler
+echo "For CellProfiler installation instructions go to:"
+echo "https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-(Ubuntu-16.04-LTS)"
