@@ -7,7 +7,8 @@
 # The script will pause on errors or sudo password input.
 
 # add ~/bin to the local enviroment within ~/.profile
-if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then mkdir -p ~/bin && printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile; fi; PATH="~/bin:$PATH"; export PATH
+MESSAGE="slideToolkit installer: Create ~/bin and add to PATH"
+if if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then mkdir -p ~/bin && printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile; fi; PATH="~/bin:$PATH"; export PATH ; then echo "$MESSAGE" "(Succes)"; sleep 2; else read -n1 -rsp "$MESSAGE (Fail)" && echo; fi
 
 # update
 MESSAGE="slideToolkit installer: apt-get update & upgrade"
@@ -35,5 +36,4 @@ if mkdir -p ~/usr && cd ~/usr && wget http://downloads.openmicroscopy.org/latest
 
 # slideToolkit
 MESSAGE="slideToolkit installer: slideToolkit scripts"
-if mkdir -p ~/git/ && cd ~/git && if [ -d ~/git/slideToolkit/.git ]; then cd ~/git/slideToolkit && git pull; else cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; fi && mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
-RESULT=$?; PACKAGENAME="slideToolkit" if [ $RESULT -eq 0 ]; then echo "$MESSAGE" "(Succes)"; sleep 2; else read -n1 -rsp "$MESSAGE (Fail)" && echo; fi
+if mkdir -p ~/git/ && cd ~/git && if [ -d ~/git/slideToolkit/.git ]; then cd ~/git/slideToolkit && git pull; else cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; fi && mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/ ; then echo "$MESSAGE" "(Succes)"; sleep 2; else read -n1 -rsp "$MESSAGE (Fail)" && echo; fi
