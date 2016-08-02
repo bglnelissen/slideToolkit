@@ -118,13 +118,9 @@ Install the latest version of libdmtx, including `dmtxread`. First we install th
 brew install libdmtx
 ```
 
-Make sure to link them properly -- if needed a warning is given by `brew` and suggests to forcefully link these libraries:
+Note: make sure to link them properly. If needed a warning is given by `brew` and suggests to forcefully link these libraries. In that case you should do: `brew link --overwrite libdmtx`.
 
-```
-brew link --overwrite libdmtx
-```
-
-Then continue installing the binaries: 
+But most likely you can just continue installing the binaries: 
 
 ```
 brew install dmtx-utils
