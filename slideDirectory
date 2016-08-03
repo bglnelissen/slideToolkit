@@ -90,7 +90,11 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 print a job list:
+<<<<<<< HEAD
   find "\$(pwd)" -iname "*.tif" -exec "$(command -v "$SCRIPTNAME")" -f "{}" \;
+=======
+  find "\$(pwd)" -iname "*.TIF" -exec $(command -v "$SCRIPTNAME") -f "{}" \;
+>>>>>>> origin/master
 
 dependencies: ${DEPENDENCIES[@]}
 
