@@ -99,7 +99,7 @@ dependencies: ${DEPENDENCIES[@]}
 Move file into a similar named directory at the same location. Pipe the
 'job list' output in 'parallel' for parallel processing.
 
-The slideToolkit and all its tools are released under the terms of the MIT license
+The slideToolkit and all its tools are released under the terms of the MIT license.
 The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 Report issues at https://github.com/bglnelissen/slideToolkit/issues.
 

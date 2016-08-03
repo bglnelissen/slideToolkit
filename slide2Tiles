@@ -3,7 +3,7 @@
 # Description: Cut whole virtual slide into tiles
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2015, UMC Utrecht, B.G.L. Nelissen
+# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -68,7 +68,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -83,7 +83,7 @@ in all copies or substantial portions of the Software.
 
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by Bas Nelissen.
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 EOF
 }
 
@@ -147,9 +147,9 @@ manually. Use the --layer flag to set the correct layer. The amount
 --overlap is only affective on one side, the left tile overlaps the tile
 on the right, and the top tile overlaps the tile below.
 
-The slideToolkit and all its tools are released under the terms of the MIT license
-The slideToolkit (C) 2014-2015, UMC Utrecht, B.G.L. Nelissen
-Report issues at https://github.com/bglnelissen/slideToolkit/issues
+The slideToolkit and all its tools are released under the terms of the MIT license.
+The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Report issues at https://github.com/bglnelissen/slideToolkit/issues.
 
 EOF
 }

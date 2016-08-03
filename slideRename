@@ -3,7 +3,7 @@
 # Description: Batch rename slides
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2015, UMC Utrecht, B.G.L. Nelissen
+# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -81,7 +81,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -96,7 +96,7 @@ in all copies or substantial portions of the Software.
 
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by Bas Nelissen.
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 EOF
 }
 
@@ -133,10 +133,16 @@ examples:
   $SCRIPTNAME --prefix="AE" --suffix=".CD68.\${RANDOM}" --file="file.tif"
   $SCRIPTNAME  --layer=5 --convert-args="-rotate 90" -f "file.tif"
 
-print a job list:
-  find "\$(pwd)" -iname "*tif" \\
+print a job list -- for automatic renaming:
+  find "\$(pwd)" -iname "*.tif" \\
       -exec "$(command -v "${SCRIPTNAME}")" \\
       --barcode="dmtx" --to-upper --preview="none" -f="{}" \;
+
+print a job list -- for manual renaming:
+  find "\$(pwd)" -iname "*.tif" \\
+      -exec "$(command -v "${SCRIPTNAME}")" \\
+      --to-upper --preview="osx" -f="{}" \;
+
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
@@ -158,9 +164,9 @@ Code). Image manipulation can be done befor previewing the slide using
 the --convert-args flag, the equal sign ('=') and surrounding quotes "'"
 are required.
 
-The slideToolkit and all its tools are released under the terms of the MIT license
-The slideToolkit (C) 2014-2015, UMC Utrecht, B.G.L. Nelissen
-Report issues at https://github.com/bglnelissen/slideToolkit/issues
+The slideToolkit and all its tools are released under the terms of the MIT license.
+The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Report issues at https://github.com/bglnelissen/slideToolkit/issues.
 
 EOF
 }
