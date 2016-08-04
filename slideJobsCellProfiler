@@ -170,6 +170,9 @@ do
     --handler=*)
       HANDLER=${1#*=}
       shift ;;
+    --handler)
+      HANDLER=$2
+      shift 2 ;;
     -i | --inputdir)
       INPUTDIR=$2
       shift 2 ;;
