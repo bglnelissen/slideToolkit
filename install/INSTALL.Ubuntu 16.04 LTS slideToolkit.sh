@@ -1,5 +1,6 @@
 #!/bin/bash
-# slideToolkit installer 16.04
+# slideToolkit installer for Ubuntu 16.04 LTS
+# tested in VirtualBox for Ubuntu and Lubuntu 16.04
 # B. Nelissen
 
 # A set of oneliners for different dependencies for the slideToolkit
@@ -40,4 +41,5 @@ if mkdir -p ~/git/ && cd ~/git && if [ -d ~/git/slideToolkit/.git ]; then cd ~/g
 
 # CellProfiler
 echo "For CellProfiler installation instructions go to:"
-echo "https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-(Ubuntu-16.04-LTS)"
+echo "- http://cellprofiler.org/releases/"
+echo "- or use the CellProfiler installation script found on https://github.com/bglnelissen/slideToolkit"
