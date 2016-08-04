@@ -1,5 +1,6 @@
 #!/bin/bash
 # install CellProfiler on Ubuntu 16.04 LTS
+# tested in VirtualBox for Ubuntu and Lubuntu 16.04
 
 # B. Nelissen
 # update apt-get

@@ -87,7 +87,7 @@ The tools designed for step 4:
 ### Hardware
 The slideToolkit is developed for any *NIX based operating system. We tested the slideToolkit on a MacMini (2GHz i7 and 16 GB RAM) running OS X - Mavericks 10.9, and the same machine running Linux - Ubuntu 12.04. We also tested the slideToolkit on a high-performance cluster (HPC) running Linux - CentOS 6.5 (8x Intel(R) Xeon(R) CPU E5-2630 0 @ 2.30GHz, 38x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz, 11x Intel(R) Xeon(R) CPU E5-2630 v2 @ 2.60GHz, all with 12 cores and 128 GB RAM per node).
 
-The slideToolkit depends heavily on the *NIX architecture. For this reason we have not planned to create installation instructions for Microsoft Windows. To get the slideToolkit running on Windows, or to create a portable slideToolkit installation, our advise is to run Linux CentOS 6.6 within [VirtualBox](https://www.virtualbox.org) (or any other virtualisation software).
+The slideToolkit depends heavily on the *NIX architecture. For this reason we have not planned to create installation instructions for Microsoft Windows. To get the slideToolkit running on Windows, or to create a portable slideToolkit installation, our advise is to run Linux Ubuntu 16.04 LTS within [VirtualBox](https://www.virtualbox.org) (or any other virtualisation software).
 
 ---
  
