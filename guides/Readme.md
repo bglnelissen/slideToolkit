@@ -113,12 +113,6 @@ The programs and libraries you need to run the slideToolkit:
 
 
 ### Installation instructions:
-Although the installation of the dependencies can be a hassle, we have provided installation instructions for OS X and Linux.
+Installation instructions for OS X and Linux can be found in this repo.
 
-- [INSTALL - OS X 10.9 - Mavericks](INSTALL.OSX 10.9 - Mavericks.md)
-- [INSTALL - OS X 10.10 - Yosemite](INSTALL.OSX 10.10 - Yosemite.md) *(We have no installation instructions for OS X 10.10 Yosemite yet)*
-- [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu 12.04 LTS - Precise Pangolin.md) *(CellProfiler instructions incomplete)*
-- [INSTALL - CentOS 6.6](INSTALL.CentOS 6.6.md) *(In progress)*
-- *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6 within [VirtualBox](https://www.virtualbox.org) instead.*
-
-*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software*
+*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packeges for there support and excelent software*

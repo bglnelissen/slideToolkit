@@ -30,7 +30,9 @@ sudo pip install --editable .
 sudo chmod -R o-w /usr/local/lib/python2.7/dist-packages /usr/local/bin
 
 # Check installation using 
+echo
 echo "To let you know, this installation used 'sudo' rights for the pip installs. This is a quick and dirty way to fix some errors during install but is also the wrong way for the long term. It should have no consequences for normal use of CellProfiler."
+echo
 command -v cellprofiler
 
 # How to delete:
