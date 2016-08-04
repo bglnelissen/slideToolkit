@@ -32,9 +32,9 @@ CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("$CPBIN" "convert") # these scripts/binaries must be in your path: `command -v binary`
 DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
-QSUBARGS="-pe threaded 3 -q short" # This part needs updating due to the new CentOS7 environment!
+QSUBARGS="" # leave empty. 
 DEFAULT_QSUBNAME="$SCRIPTNAME"
-DEFAULT_QSUBARGS="-pe threaded 3 -q short" # This part needs updating due to the new CentOS7 environment!
+DEFAULT_QSUBARGS="-l h_rt=04:00:00 -l h_vmem=36G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
 
 # Cleanup stage
 set -e
