@@ -63,6 +63,16 @@ The tools designed for step 2:
 - `slideThumb`, create slide thumbnail, including label.
 - `slideMask`, create a scaled mask and macro version from a slide.
 
+Sometimes `slideMask` will be unable to make proper masks, especially when the contrast between tissue and background is very low. One can than divert to `slideEntropyFilter.py` which takes a PNG-file and makes a mask off of it.
+
+###### Installation instructions for `slideEntropyFilter.py`:
+`pip install numpy && pip install matplotlib && pip install skimage`
+
+###### Usage of `slideEntropyFilter.py`:
+We assume that `slideMask` has been run, but all the *.mask.png are of bad quality.
+
+`for FILE in $(pwd)/*.macro.PNG ; do echo "* Processing [ "$FILE" ]..."; slideEntropyFilter.py "$FILE"; done`
+
 ##### Step 3 - tiles
 Image analysis of memory intensive, whole 20x representations of the digitized slides is currently impossible due to hardware and software limitations. The goal of this step is to create multiple smaller images (i.e. tiles) from the 20x whole slide image. An upscaled version of the mask is placed over the 20x whole slide image (in our example this is layer 3 of the multi layered TIFF). Image manipulation on 20x sized whole slide images requires large amounts of computer RAM. To make it possible for computers without sufficient RAM to handle these files, the slideToolkit uses a memory-mapped disk file of the program memory. Using disk mapped memory files (ImageMagick .mpc files), the slideToolkit can efficiently extract all tiles. Without a mask, a faster and more memory efficient method is used using the openslide library.
 
