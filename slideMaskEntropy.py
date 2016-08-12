@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "                             slideToolkit Entropy Filter"
@@ -8,21 +8,21 @@ print "* Written by         : Tim Bezemer"
 print "* E-mail             : t.bezemer-2@umcutrecht.nl"
 print "* Suggested for by   : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print "* Last update        : 2016-08-12"
-print "* Version            : 1.1.20160812"
+print "* Version            : 1.2.20160812"
 print ""
 print "* Description        : Makes maskers of PNG files using a entropy-filter. To be"
 print "                       used when the regular mask-making program (slideMask)"
 print "                       is insufficient."
 print ""
-print "* USAGE:               for FILE in $(pwd)/*.macro.PNG ; do echo \"* Processing [ \"$FILE\" ]...\"; slideEntropyFilter.py \"$FILE\"; done"
-print "                       slideEntropyFilter.py [FILE.png]"
+print "* USAGE:               for FILE in $(pwd)/*.macro.PNG ; do echo \"* Processing [ \"$FILE\" ]...\"; slideMaskEntropy.py \"$FILE\"; done"
+print "                       slideMaskEntropy.py [FILE.png]"
 print ""
 print ""
 print "* PREREQUISITES: The packages 'scikit-image', 'numpy', and 'matplotlib' are required."
 print "                 Installation instructions:"
 print "                 pip install numpy"
 print "                 pip install matplotlib"
-print "                 pip install skimage"
+print "                 pip install scikit-image"
 print ""
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -83,7 +83,7 @@ plt.axis('off')
 
 newfile = fn
 
-newfile = newfile.replace(".macro.png", ".mask.png")
+newfile = newfile.replace(".macro.png", ".newmask.png")
 
 #np.save(newfile, entropy_image)
 
