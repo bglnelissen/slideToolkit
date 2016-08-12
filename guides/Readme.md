@@ -87,7 +87,7 @@ The tools designed for step 4:
 ### Hardware
 The slideToolkit is developed for any *NIX based operating system. We tested the slideToolkit on a MacMini (2GHz i7 and 16 GB RAM) running OS X - Mavericks 10.9, and the same machine running Linux - Ubuntu 12.04. We also tested the slideToolkit on a high-performance cluster (HPC) running Linux - CentOS 6.5 (8x Intel(R) Xeon(R) CPU E5-2630 0 @ 2.30GHz, 38x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz, 11x Intel(R) Xeon(R) CPU E5-2630 v2 @ 2.60GHz, all with 12 cores and 128 GB RAM per node).
 
-The slideToolkit depends heavily on the *NIX architecture. For this reason we have not planned to create installation instructions for Microsoft Windows. To get the slideToolkit running on Windows, or to create a portable slideToolkit installation, our advise is to run Linux CentOS 6.6 within [VirtualBox](https://www.virtualbox.org) (or any other virtualisation software).
+The slideToolkit depends heavily on the *NIX architecture. For this reason we have not planned to create installation instructions for Microsoft Windows. To get the slideToolkit running on Windows, or to create a portable slideToolkit installation, our advise is to run Linux Ubuntu 16.04 LTS within [VirtualBox](https://www.virtualbox.org) (or any other virtualisation software).
 
 ---
  
@@ -113,11 +113,15 @@ The programs and libraries you need to run the slideToolkit:
 
 
 ### Installation instructions:
-Although the installation of the dependencies can be a hassle, we have provided installation instructions for OS X and Linux.
+Installation instructions for OS X and Linux can be found in this repo.
 
+<<<<<<< HEAD
 - [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan](INSTALL.OSX.md) *(Completely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
 - [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu.12.04.LTS-PrecisePangolin.md) *(CellProfiler instructions incomplete)*
 - [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
 - *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
 
 *Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software.*
+=======
+*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packeges for there support and excelent software*
+>>>>>>> bglnelissen/master
