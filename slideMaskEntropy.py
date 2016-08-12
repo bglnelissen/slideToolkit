@@ -14,7 +14,7 @@ print "* Description        : Makes maskers of PNG files using a entropy-filter.
 print "                       used when the regular mask-making program (slideMask)"
 print "                       is insufficient."
 print ""
-print "* USAGE:               for FILE in $(pwd)/*.macro.PNG ; do echo \"* Processing [ \"$FILE\" ]...\"; slideMaskEntropy.py \"$FILE\"; done"
+print "* USAGE:               for DIR in $(ls) ; do echo \"* Processing [ \"$DIR\" ]...\"; $(command -v slideMaskEntropy.py) \"$DIR\"/\"$DIR\".macro.png; done"
 print "                       slideMaskEntropy.py [FILE.png]"
 print ""
 print ""
