@@ -8,7 +8,7 @@ print "* Written by         : Tim Bezemer"
 print "* E-mail             : t.bezemer-2@umcutrecht.nl"
 print "* Suggested for by   : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print "* Last update        : 2016-08-12"
-print "* Version            : 1.0.20160812"
+print "* Version            : 1.1.20160812"
 print ""
 print "* Description        : Makes maskers of PNG files using a entropy-filter. To be"
 print "                       used when the regular mask-making program (slideMask)"
@@ -83,7 +83,7 @@ plt.axis('off')
 
 newfile = fn
 
-newfile = newfile.replace(".tile.tissue", ".mask")
+newfile = newfile.replace(".macro.png", ".mask.png")
 
 #np.save(newfile, entropy_image)
 
