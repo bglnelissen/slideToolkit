@@ -3,7 +3,7 @@
 # Description: Create a joblist to analyse multiple tiles using CellProfiler.
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2015, UMC Utrecht, B.G.L. Nelissen
+# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -32,9 +32,9 @@ CPBIN="cellprofiler" # command to run CellProfiler
 DEFAULT_HANDLER="" # default is empty [qsub]
 DEPENDENCIES=("$CPBIN" "convert") # these scripts/binaries must be in your path: `command -v binary`
 DEFAULT_OUTPUT_SUFFIX=".cellprofiler" # relative to input dir
-QSUBARGS="-pe threaded 3 -q short" # This part needs updating due to the new CentOS7 environment!
+QSUBARGS="" # leave empty. 
 DEFAULT_QSUBNAME="$SCRIPTNAME"
-DEFAULT_QSUBARGS="-pe threaded 3 -q short" # This part needs updating due to the new CentOS7 environment!
+DEFAULT_QSUBARGS="-l h_rt=04:00:00 -l h_vmem=36G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
 
 # Cleanup stage
 set -e
@@ -68,7 +68,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -83,7 +83,7 @@ in all copies or substantial portions of the Software.
 
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by Bas Nelissen.
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 EOF
 }
 
@@ -131,9 +131,9 @@ starting the pipeline.
 ${SCRIPTNAME} expects "$CPBIN" to exist as a script that redirects
 to your CellProfiler binairy.
 
-The slideToolkit is licensed under a MIT license
-The slideToolkit (C) 2014-2015, UMC Utrecht, B.G.L. Nelissen
-Report issues at https://github.com/bglnelissen/slideToolkit/issues
+The slideToolkit and all its tools are released under the terms of the MIT license.
+The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Report issues at https://github.com/bglnelissen/slideToolkit/issues.
 
 EOF
 }
@@ -170,6 +170,9 @@ do
     --handler=*)
       HANDLER=${1#*=}
       shift ;;
+    --handler)
+      HANDLER=$2
+      shift 2 ;;
     -i | --inputdir)
       INPUTDIR=$2
       shift 2 ;;

@@ -3,7 +3,7 @@
 # Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2015, UMC Utrecht, B.G.L. Nelissen
+# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -27,13 +27,13 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Create scaled mask and macro from a virtual slide"
+DESCRIPTIONSHORT="Create scaled *.mask.png and *.macro.png from a virtual slide."
 DEPENDENCIES=("convert")
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
-DEFAULT_QSUBARGS="-pe threaded 1 -q veryshort"
+DEFAULT_QSUBARGS="-pe threaded 1 -q veryshort" # THIS NEEDS UPDATING DUE TO THE NEW CENTOS7 SYSTEM
 DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
@@ -55,7 +55,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2015, UMC Utrecht, Bas Nelissen
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -70,7 +70,7 @@ in all copies or substantial portions of the Software.
 
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by Bas Nelissen.
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 EOF
 }
 
@@ -127,9 +127,9 @@ virtual slide format is not known. For these instances you need to run
 slideInfo to find the correct layer manually. When the mask layer is
 identified (approximately 2000x2000 pixels), use the --layer flag.
 
-The slideToolkit and all its tools are released under the terms of the MIT license
-The slideToolkit (C) 2014-2015, UMC Utrecht, B.G.L. Nelissen
-Report issues at https://github.com/bglnelissen/slideToolkit/issues
+The slideToolkit and all its tools are released under the terms of the MIT license.
+The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Report issues at https://github.com/bglnelissen/slideToolkit/issues.
 
 EOF
 }
@@ -331,10 +331,11 @@ programOutput(){
   # what am I doing here?
   # create mask, lay it ontop of the macro image.
   # a fuzz of 4% works well, but fails on very light slides
-  # a fuzz of 2% is mightby to easy on the selection
+  # a fuzz of 2% is might by to easy on the selection
   # a fuzz of 2.5% is possible (but still to stringend on some slides)
   # - we add a temporary border to the image of 100 pixels.
-  # - The image is blurred, the border will make sure the blur is applied to the borders as well. A blur will fill small holes in the tissue and will get rid of dust speckles.
+  # - The image is blurred, the border will make sure the blur is applied to the borders as well. 
+  #   A blur will fill small holes in the tissue and will get rid of dust speckles.
   # - Using fuzz, the background is selected and made transparent.
   # - the previous added border is removed
   # - the alpha makes all transparent parts of the image black, and the rest white.
