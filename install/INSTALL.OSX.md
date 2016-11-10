@@ -74,7 +74,11 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
+brew install automake wget jpeg libpng libtiff parallel openslide zbar
+```
+We need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way.
+```
+brew install homebrew/x11/wmctrl
 ```
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
