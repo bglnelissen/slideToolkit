@@ -156,7 +156,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolkit.git; \
 	fi
 ```
 
