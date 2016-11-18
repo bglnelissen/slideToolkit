@@ -83,7 +83,7 @@ plt.axis('off')
 
 newfile = fn
 
-newfile = newfile.replace(".macro.png", ".newmask.png")
+newfile = newfile.replace(".macro.png", ".emask.png")
 
 #np.save(newfile, entropy_image)
 
