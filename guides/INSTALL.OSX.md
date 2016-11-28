@@ -1,11 +1,17 @@
-OS X slideToolkit installation instructions
+macOS and OS X 10.9+ - slideToolkit installation instructions
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation.
+The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
 
-Please tell us if you run into problems, it is likely we can help you out, we have done this before ;)
+We have tested slideToolkit on CentOS6, CentOS7, OS X Mountain Lion (version 10.8.[x]), and macOS Sierra (version 10.12.[x]).
 
-I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
+Please tell us if you run into problems, it is likely we can help you out - we have done this before. ;)
+
+--------------
+
+#### Some installation basics
+
+We tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
 ```
 these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
@@ -19,9 +25,7 @@ Multiline commands end with a dash \
 	Copy & paste these whole blocks of code.
 ```
 
-Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
-
-We have tested slideToolkit on Mac OS X 10.9 Mavericks, OS X 10.10 Yosemite, and OS X 10.11 El Capitan. The only issue is with the `wmctrl` package - please refer to the "Issues" for more information: https://github.com/bglnelissen/slideToolkit/issues/24.
+Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
 
 --------------
 
@@ -72,13 +76,10 @@ We install most packages using brew.
 ```
 brew install automake wget jpeg libpng libtiff parallel openslide zbar
 ```
-
-Install `wmctrl` for windows control.
-
+We need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way.
 ```
 brew install homebrew/x11/wmctrl
 ```
-
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
 ```
@@ -115,18 +116,35 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-brew install libdmtx
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/libdmtx/.git ]; then \
+		cd ~/git/libdmtx && git pull; \
+	else \
+		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
+	fi
+```
+```
+cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
 ```
 
-Note: make sure to link them properly. If needed a warning is given by `brew` and suggests to forcefully link these libraries. In that case you should do: `brew link --overwrite libdmtx`.
-
-But most likely you can just continue installing the binaries: 
+Now we install the binairies:
 
 ```
-brew install dmtx-utils
+mkdir -p ~/git/ && cd ~/git
 ```
-
-The dmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
+```
+if [ -d ~/git/dmtx-utils/.git ]; then \
+		cd ~/git/dmtx-utils && git pull; \
+	else \
+		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
+	fi
+```
+```
+cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
+```
+The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 7 - Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
@@ -147,13 +165,6 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 ```
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
-
-We also have to make all the `bftools` available in your path.
-
-```
-mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/* ~/bin/
-```
-
 
 #### Step 8 - Install CellProfiler
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
