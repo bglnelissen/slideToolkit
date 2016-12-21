@@ -28,7 +28,7 @@
 # Variables
 SCRIPTNAME="$(basename $0)"
 DESCRIPTIONSHORT="Fetch slide metadata (resolution, dates, etc)"
-DEPENDENCIES=("identify" "tiffinfo" "openslide-show-properties" "perl" "awk")
+DEPENDENCIES=("identify" "tiffinfo" "openslide-show-properties" "perl" "awk" "file")
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 
@@ -225,6 +225,8 @@ programOutput(){
   identify "$FILEFULL" 2>&1 | \
     perl -p -e 's/^identify:\ Unknown\ field.*$//g'| \
     awk 'NF'
+  echo "### file ##########################################"
+    file "$FILEFULL"
 }
 
 # all check?

@@ -56,6 +56,7 @@ err() {
 
 # usage message
 usage() {
+verbose_debug "usage()"
 cat <<- EOF
 $SCRIPTNAME --help for more information.
 EOF
@@ -90,6 +91,7 @@ EOF
 
 # help message
 helpMessage() {
+verbose_debug "helpMessage()"
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 
@@ -320,6 +322,7 @@ verbose_debug() {
 
 # requirements
 checkRequirements() {
+verbose_debug "checkRequirements()"
   if ! [[ -f "$FILE" ]] ; then
     err "No such file: $FILE"
     usage
@@ -373,9 +376,9 @@ checkRequirements() {
     usage
     exit 1
   fi
-  # check file extensions, aperio svs is similar as tif and should work fine.
-  if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF|svs|SVS) ]] ; then
-    err "TIF or SVS extension expected. Extension found: $INPUTSCANEXT"
+  # check file extensions, aperio and svs and ndpi is quite similar as tif and should work fine.
+  if ! [[ "$INPUTSCANEXT" =~ (tif|tiff|TIF|TIFF|svs|SVS|ndpi|NDPI) ]] ; then
+    err "TIF or similar extension expected. Extension found: $INPUTSCANEXT"
     usage
     exit 1
   fi
@@ -405,6 +408,7 @@ checkDependencies(){
 
 # actual program
 createTilesConvert(){
+verbose_debug "createTilesConvert()"
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   buffer="${TMPSTORAGE}/${SHORTNAME}.mpc"
   verbose_debug "Virtual slide: $S"
@@ -471,6 +475,7 @@ createTilesConvert(){
 }
 
 createTilesOpenslide(){
+verbose_debug "createTilesOpenslide()"
   TMPSTORAGE="$(mktemp -d -t slide2Tiles_XXXXXXXXXXXX)" # -t relative to $TMPDIR, so it should be HPC save...
   AR_TIFFSPLIT_SUFFIX=($(echo aa{a..z}))  # this is the standard suffix of tiffsplit. # myArray=('red' 'orange' 'green')
   # declare -a AR_TIFFSPLIT_SUFFIX # declare array
@@ -535,6 +540,7 @@ createTilesOpenslide(){
 
 # programOutput
 programOutput(){
+verbose_debug "programOutput()"
   if ! [[ -f "$MASK" ]] ; then
     createTilesOpenslide
   else
