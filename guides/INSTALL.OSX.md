@@ -1,11 +1,17 @@
-OS X 10.9 Mavericks - slideToolkit installation instructions
+macOS and OS X 10.9+ - slideToolkit installation instructions
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation.
+The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
 
-Please tell us if you run into problems, it is likely we can help you out, we have done this before ;)
+We have tested slideToolkit on CentOS6, CentOS7, OS X Mountain Lion (version 10.8.[x]), and macOS Sierra (version 10.12.[x]).
 
-I tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
+Please tell us if you run into problems, it is likely we can help you out - we have done this before. ;)
+
+--------------
+
+#### Some installation basics
+
+We tried to create as few steps as possible with one-liners that are *easy* to read. Most of the installation is done using the commandline. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
 ```
 these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
@@ -24,7 +30,7 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 --------------
 
 #### Step 1 - Update and prepare
-The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. Make sure you stay on 'OS X 10.9 Mavericks'. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
+The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
 Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
 
@@ -46,8 +52,9 @@ On the end of the installation you are asked to log out and log back in, and of 
 We install [brew](http://brew.sh) using the following one-liner. You need administrator rights for the installation. No characters will appear on the screen when you type in your password.
 
 ```
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
+P.S. You can check out more handy Homebrew repositories here: https://github.com/Homebrew.
 
 When asked if you want to install the "command line developer tools", choose 'Install'. After the "command line developer tools" installation, continue the installation in the Terminal
 
@@ -68,7 +75,11 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
+brew install automake wget jpeg libpng libtiff parallel openslide zbar
+```
+We need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way.
+```
+brew install homebrew/x11/wmctrl
 ```
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
@@ -106,35 +117,10 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/libdmtx/.git ]; then \
-		cd ~/git/libdmtx && git pull; \
-	else \
-		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
-	fi
-```
-```
-cd ~/git/libdmtx && ./autogen.sh && ./configure && make && make install
+brew install libdmtx dmtx-utils
 ```
 
-Now we install the binairies:
-
-```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && git pull; \
-	else \
-		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/dmtx-utils; \
-	fi
-```
-```
-cd ~/git/dmtx-utils && ./autogen.sh && ./configure && make && make install
-```
-The dmtx binairies are installed in `/usr/local/bin`. This is the same folder `brew` uses for its installations and should already be in your PATH.
+The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 7 - Install slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
@@ -146,7 +132,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolkit.git; \
 	fi
 ```
 

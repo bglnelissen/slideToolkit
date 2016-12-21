@@ -1,7 +1,7 @@
-CentOS 6.6 - slideToolkit installation instructions
+CentOS 7 ~ HPC-version - slideToolkit installation instructions
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your curren slideToolkit installation. 
+The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation. 
 
 Please tell us if you run into problems, it is likely we can help you out, we have done this before ;)
 
@@ -20,6 +20,8 @@ Multiline commands end with a dash \
 ```
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so.
+
+NOTE: these instructions are for CentOS7 on a high-performance computer cluster, such as the HPC at the UMC Utrecht.
 
 ------------
 
@@ -48,12 +50,21 @@ if ! [[ "$PATH" =~ ($HOME/bin:|~/bin:) ]] ; then \
 Now we are up to date, and ready to continue the installation.
 
 #### Install required libraries and packages using apt-get
-This apt-get oneliner will install most of the important packages we need and takes take of most dependencies as well.
+Let's first check whether some packages are installed already.
 
 ```
-su -c 'yum -y install autoconf automake cmake curl cvs gcc gcc-c++ \
-    gimp git libtool openjpeg perl svn vim wget  \
-    giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
+for PACK in curl cvs gcc gcc-c++ gimp git libtool openjpeg perl svn vim wget giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel; do echo "* checking [ "$PACK" ]...."; command -v "$PACK"; echo "---------"; echo ""; done
+```
+
+Now you can just install the packages that returned empty. In our case, we will install the remaining important packages (and their dependencies) we need. First we update the `yum` `Repodata` cache.
+
+```
+yum makecache fast
+```
+
+```
+su -c 'yum -y install autoconf automake cmake gcc-c++ \
+    gimp openjpeg giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 ```
 
 # wmctrl

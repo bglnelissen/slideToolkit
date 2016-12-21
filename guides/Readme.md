@@ -63,6 +63,16 @@ The tools designed for step 2:
 - `slideThumb`, create slide thumbnail, including label.
 - `slideMask`, create a scaled mask and macro version from a slide.
 
+Sometimes `slideMask` will be unable to make proper masks, especially when the contrast between tissue and background is very low. One can than divert to `slideMaskEntropy.py` which takes a PNG-file and makes a mask off of it.
+
+###### Installation instructions for `slideMaskEntropy.py`:
+`pip install numpy matplotlib scikit-image`
+
+###### Usage of `slideMaskEntropy.py`:
+We assume that `slideMask` has been run, but all the *.mask.png are of bad quality.
+
+`for FILE in $(pwd)/*.macro.PNG ; do echo "* Processing [ "$FILE" ]..."; slideMaskEntropy.py "$FILE"; done`
+
 ##### Step 3 - tiles
 Image analysis of memory intensive, whole 20x representations of the digitized slides is currently impossible due to hardware and software limitations. The goal of this step is to create multiple smaller images (i.e. tiles) from the 20x whole slide image. An upscaled version of the mask is placed over the 20x whole slide image (in our example this is layer 3 of the multi layered TIFF). Image manipulation on 20x sized whole slide images requires large amounts of computer RAM. To make it possible for computers without sufficient RAM to handle these files, the slideToolkit uses a memory-mapped disk file of the program memory. Using disk mapped memory files (ImageMagick .mpc files), the slideToolkit can efficiently extract all tiles. Without a mask, a faster and more memory efficient method is used using the openslide library.
 
@@ -107,7 +117,7 @@ The programs and libraries you need to run the slideToolkit:
 - [LibTIFF](http://www.remotesensing.org/libtiff/), >=  version 4
 - [Openslide](http://openslide.org) >= version 3.4
 - [Perl](http://www.perl.org) >= version 5
-- [slideToolkit](https://github.com/bglnelissen/slideToolkit)
+- [slideToolkit](https://github.com/swvanderlaan/slideToolkit)
 
 *The latest stable version of these programs and libraries should be sufficient. There is one catch, the Lib TIFF library supports the TIFF64 (aka BigTIFF) format since version 4.*
 
@@ -115,4 +125,13 @@ The programs and libraries you need to run the slideToolkit:
 ### Installation instructions:
 Installation instructions for OS X and Linux can be found in this repo.
 
+<<<<<<< HEAD
+- [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan](INSTALL.OSX.md) *(Completely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
+- [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu.12.04.LTS-PrecisePangolin.md) *(CellProfiler instructions incomplete)*
+- [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
+- *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
+
+*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software.*
+=======
 *Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packeges for there support and excelent software*
+>>>>>>> bglnelissen/master
