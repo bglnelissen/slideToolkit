@@ -33,7 +33,7 @@ SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
-DEFAULT_QSUBARGS="-pe threaded 1 -q veryshort" # THIS NEEDS UPDATING DUE TO THE NEW CENTOS7 SYSTEM
+DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
 DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
