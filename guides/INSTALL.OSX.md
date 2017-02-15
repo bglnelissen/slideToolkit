@@ -77,10 +77,17 @@ We install most packages using brew.
 ```
 brew install automake wget jpeg libpng libtiff parallel openslide zbar
 ```
-We need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way.
+We also need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way. This package can control which open window (of a program) is 'active'.
+You should be able to install it via the following command. 
+```
+brew install wmctrl
+```
+
+If that doesn't work try this.
 ```
 brew install homebrew/x11/wmctrl
 ```
+
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
 ```
@@ -118,6 +125,15 @@ Install the latest version of libdmtx, including `dmtxread`. First we install th
 
 ```
 brew install libdmtx dmtx-utils
+```
+
+Unfortunately, `dmtx-utils` was moved to the `homebrew/boneyard`. We need to tap the `boneyard` before we can install `dmtx-utils`.
+
+```
+brew tap homebrew/boneyard
+```
+```
+brew install dmtx-utils
 ```
 
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
