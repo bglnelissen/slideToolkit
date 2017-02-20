@@ -98,6 +98,12 @@ cd ~/usr && wget https://www.imagemagick.org/download/releases/ImageMagick-6.9.4
 	make clean
 ```
 
+Now we can also install `zbar` -- an open-source barcode library.
+
+```
+brew install --ignore-dependencies zbar
+```
+
 #### Step 5 - Install the bioformat tools
 Install the latest version of BioFormats, including `bfconvert`.
 
