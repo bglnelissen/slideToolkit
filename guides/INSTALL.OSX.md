@@ -75,24 +75,27 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide zbar
-```
-We also need to install 'wmctrl' (https://linux.die.net/man/1/wmctrl) in a slightly different way. This package can control which open window (of a program) is 'active'.
-You should be able to install it via the following command. 
-```
-brew install wmctrl
-```
-
-If that doesn't work try this.
-```
-brew install homebrew/x11/wmctrl
+brew install automake wget jpeg libpng libtiff parallel openslide wmctrl
 ```
 
 Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
 
 ```
-brew uninstall --force imagemagick && \
-    brew install imagemagick --with-libpng --with-libtiff --with-x11 --build-from-source
+brew uninstall --ignore-dependencies imagemagick
+```
+
+We are going to install and build from source ImageMagick 6.9.4-10.
+
+```
+mkdir -p ~/usr
+```
+```
+cd ~/usr && wget https://www.imagemagick.org/download/releases/ImageMagick-6.9.4-10.tar.xz && \
+	tar xvzf ImageMagick-6.9.4-10.tar.xz && \ 
+	cd ImageMagick-6.9.4-10 && \
+	./configure && make && \
+	sudo make install && \
+	make clean
 ```
 
 #### Step 5 - Install the bioformat tools
@@ -109,7 +112,8 @@ cd ~/usr && wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifac
 Add symbolic links in `~/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
 
 ```
-mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
+mkdir -p ~/bin/ && \
+    ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
     ln -s -f -v ~/usr/bftools/domainlist ~/bin/ && \
     ln -s -f -v ~/usr/bftools/formatlist ~/bin/ && \
     ln -s -f -v ~/usr/bftools/ijview ~/bin/ && \
@@ -124,16 +128,39 @@ mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
-brew install libdmtx dmtx-utils
+brew install libdmtx 
 ```
 
-Unfortunately, `dmtx-utils` was moved to the `homebrew/boneyard`. We need to tap the `boneyard` before we can install `dmtx-utils`.
+Unfortunately, `dmtx-utils` was moved to the `homebrew/boneyard`, so we have to build from source using the Git-repository. 
 
 ```
-brew tap homebrew/boneyard
+mkdir -p ~/usr
 ```
 ```
-brew install dmtx-utils
+cd ~/usr &&  git clone https://github.com/dmtx/dmtx-utils.git && cd dmtx-utils
+```
+
+We need to make the `configure` script as it doesn't exist on Git; for this you might need to point to the location of `pkgconfig`. 
+
+```
+./autogen.sh && \
+./configure PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+```
+
+Now we are ready to make and install the applications.
+
+```
+make
+```
+
+```
+sudo make install
+```
+
+Be sure to clean up the installation directory:
+
+```
+make clean
 ```
 
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
