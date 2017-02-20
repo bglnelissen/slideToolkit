@@ -29,7 +29,7 @@ Although we made it easy to just select, copy and paste and run these blocks of 
 
 --------------
 
-#### Step 1 - Update and prepare
+#### Step 1 - Update and prepare.
 The system must be up-to-date. Go to the Apple menu on the top left, click "Software Update...", and click the "Update all" button. If the system asks you if you want to turn on automatic updates, select 'Turn on'. Restart your system if needed.
 
 Binairies are executed from your local `bin` folder. By default this folder does not exists and is not present in your PATH. Create your `~/bin` and add it to your PATH if needed.
@@ -43,12 +43,12 @@ if ! [[ "$PATH" =~ (:$HOME/bin:|:~/bin:) ]] ; then \
 
 Now we are up to date, and ready to continue the installation.
 
-#### Step 2 - Install XQuartz, a version of the X.Org X Window System that runs on OS X
+#### Step 2 - Install XQuartz, a version of the X.Org X Window System that runs on OS X.
 XQuartz is needed. Go to [xquartz.macosforge.org](http://xquartz.macosforge.org), download and install the latest stable version of XQuartz. You can find it under "Quick Download".
 
 On the end of the installation you are asked to log out and log back in, and of course you comply.
 
-#### Step 3 - Install brew 🍺, the missing package manager for OS X
+#### Step 3 - Install brew 🍺, the missing package manager for OS X.
 We install [brew](http://brew.sh) using the following one-liner. You need administrator rights for the installation. No characters will appear on the screen when you type in your password.
 
 ```
@@ -71,20 +71,21 @@ brew update && brew upgrade
 
 From now on, we asume your `brew` package manager is good to go.
 
-#### Step 4 - Install required libraries and packages using brew 🍺
+#### Step 4 - Install required libraries and packages using brew 🍺.
 We install most packages using brew.
 
 ```
 brew install automake wget jpeg libpng libtiff parallel openslide wmctrl
 ```
 
-Uninstall previous installations of imagemagick first before we build it from source, and it with the extra libraries.
+#### Step 5 - Install `ImageMagick`.
+Uninstall previous installations of `ImageMagick` first, before we build it from source.
 
 ```
 brew uninstall --ignore-dependencies imagemagick
 ```
 
-We are going to install and build from source ImageMagick 6.9.4-10.
+We are going to install and build from source `ImageMagick 6.9.4-10`. First we need to make a staging-directory, download and unzip the package.
 
 ```
 mkdir -p ~/usr
@@ -92,19 +93,24 @@ mkdir -p ~/usr
 ```
 cd ~/usr && wget https://www.imagemagick.org/download/releases/ImageMagick-6.9.4-10.tar.xz && \
 	tar xvzf ImageMagick-6.9.4-10.tar.xz && \ 
-	cd ImageMagick-6.9.4-10 && \
-	./configure && make && \
-	sudo make install && \
-	make clean
+	cd ImageMagick-6.9.4-10
+```
+We are now ready to configure, make, compile, and install `ImageMagick`. We'll also cleanup afterwards.
+```
+./configure
+make
+sudo make install
+make clean
 ```
 
+#### Step 7 - Install the `zbar` barcode library using brew 🍺.
 Now we can also install `zbar` -- an open-source barcode library.
 
 ```
 brew install --ignore-dependencies zbar
 ```
 
-#### Step 5 - Install the bioformat tools
+#### Step 8 - Install the bioformat tools.
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
@@ -119,18 +125,18 @@ Add symbolic links in `~/bin/`. Now the BioFormats tools will be availabe in you
 
 ```
 mkdir -p ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/domainlist ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/formatlist ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/ijview ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/mkfake ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/showinf ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/tiffcomment ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlindent ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
+	ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/domainlist ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/formatlist ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/ijview ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/mkfake ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/showinf ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/tiffcomment ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/xmlindent ~/bin/ && \
+	ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Step 6 - Install datamatrix barcode libraries
+#### Step 9 - Install datamatrix barcode libraries.
 Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
 
 ```
@@ -153,26 +159,18 @@ We need to make the `configure` script as it doesn't exist on Git; for this you 
 ./configure PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 ```
 
-Now we are ready to make and install the applications.
+Now we are ready to make, compile, and install the applications. We'll also cleanup afterwards.
 
 ```
 make
-```
-
-```
 sudo make install
-```
-
-Be sure to clean up the installation directory:
-
-```
 make clean
 ```
 
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
-#### Step 7 - Install slideToolkit
-Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
+#### Step 10 - Install slideToolkit.
+Download and install the latest version of the slideToolkit from GitHub. First create and go to the git directory, then download the slideToolkit.
 
 ```
 mkdir -p ~/git/ && cd ~/git
@@ -191,7 +189,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 8 - Install CellProfiler
+#### Step 11 - Install CellProfiler.
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
@@ -202,5 +200,5 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app
 
 ```
 
-#### Step 9 - Reboot
+#### Step 12 - Reboot.
 Reboot your system and you're done.
