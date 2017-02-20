@@ -79,10 +79,10 @@ brew install automake wget jpeg libpng libtiff parallel openslide wmctrl
 ```
 
 #### Step 5 - Install `ImageMagick`.
-Uninstall previous installations of `ImageMagick` first, before we build it from source.
+First, we will uninstall *all* previous installations of `ImageMagick`, before we build it from source.
 
 ```
-brew uninstall --ignore-dependencies imagemagick
+brew uninstall --ignore-dependencies --force imagemagick
 ```
 
 We are going to install and build from source `ImageMagick 6.9.4-10`. First we need to make a staging-directory, download and unzip the package.
