@@ -3,7 +3,7 @@ macOS and OS X 10.9+ - slideToolkit installation instructions
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
 
-We have tested slideToolkit on CentOS6, CentOS7, OS X Mountain Lion (version 10.8.[x]), and macOS Sierra (version 10.12.[x]).
+We have tested slideToolkit on CentOS6, CentOS7, OS X Mountain Lion+ (version 10.8.[x]+), and macOS Sierra (version 10.12.[x]).
 
 Please tell us if you run into problems, it is likely we can help you out - we have done this before. ;)
 
@@ -75,7 +75,7 @@ From now on, we asume your `brew` package manager is good to go.
 We install most packages using brew.
 
 ```
-brew install automake wget jpeg libpng libtiff parallel openslide wmctrl
+brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
 ```
 
 #### Step 5 - Install `ImageMagick`.
@@ -85,32 +85,13 @@ First, we will uninstall *all* previous installations of `ImageMagick`, before w
 brew uninstall --ignore-dependencies --force imagemagick
 ```
 
-We are going to install and build from source `ImageMagick 6.9.4-10`. First we need to make a staging-directory, download and unzip the package.
+Now, we are ready to install the latest `ImageMagick` from brew 🍺. 
 
 ```
-mkdir -p ~/usr
-```
-```
-cd ~/usr && wget https://www.imagemagick.org/download/releases/ImageMagick-6.9.4-10.tar.xz && \
-	tar xvzf ImageMagick-6.9.4-10.tar.xz && \ 
-	cd ImageMagick-6.9.4-10
-```
-We are now ready to configure, make, compile, and install `ImageMagick`. We'll also cleanup afterwards.
-```
-./configure
-make
-sudo make install
-make clean
+brew install imagemagick 
 ```
 
-#### Step 7 - Install the `zbar` barcode library using brew 🍺.
-Now we can also install `zbar` -- an open-source barcode library.
-
-```
-brew install --ignore-dependencies zbar
-```
-
-#### Step 8 - Install the bioformat tools.
+#### Step 6 - Install the bioformat tools.
 Install the latest version of BioFormats, including `bfconvert`.
 
 ```
@@ -136,40 +117,22 @@ mkdir -p ~/bin/ && \
 	ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
 ```
 
-#### Step 9 - Install datamatrix barcode libraries.
-Install the latest version of libdmtx, including `dmtxread`. First we install the libraries:
+#### Step 7 - Install datamatrix barcode libraries.
+Install the latest version of `libdmtx`, including `dmtxread`. First we install the libraries:
 
 ```
-brew install libdmtx 
+brew install libdmtx
 ```
 
-Unfortunately, `dmtx-utils` was moved to the `homebrew/boneyard`, so we have to build from source using the Git-repository. 
+Luckily, `dmtx-utils` was updated to work with both `ImageMagick 6+` and `ImageMagick 7+`, and thus it was restored from `homebrew/boneyard`. See also: https://github.com/Homebrew/homebrew-core/pull/10693 and https://github.com/dmtx/dmtx-utils/issues/2. Now we can install it the easy way, using brew 🍺. 
 
 ```
-mkdir -p ~/usr
-```
-```
-cd ~/usr &&  git clone https://github.com/dmtx/dmtx-utils.git && cd dmtx-utils
-```
-
-We need to make the `configure` script as it doesn't exist on Git; for this you might need to point to the location of `pkgconfig`. 
-
-```
-./autogen.sh && \
-./configure PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-```
-
-Now we are ready to make, compile, and install the applications. We'll also cleanup afterwards.
-
-```
-make
-sudo make install
-make clean
+brew install dmtx-utils
 ```
 
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
-#### Step 10 - Install slideToolkit.
+#### Step 8 - Install slideToolkit.
 Download and install the latest version of the slideToolkit from GitHub. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -189,7 +152,7 @@ Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PA
 mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
-#### Step 11 - Install CellProfiler.
+#### Step 9 - Install CellProfiler.
 Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
@@ -200,5 +163,5 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app
 
 ```
 
-#### Step 12 - Reboot.
+#### Step 11 - Reboot.
 Reboot your system and you're done.
