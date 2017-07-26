@@ -6,8 +6,7 @@ Compiling Directives:
 	g++ -o hello_word.exe hello_word.cpp -O2 -lgdi32
 
 - g++ (Linux version) : Use the following command to compile a CImg-based program with g++, on Linux :
-	g++ -o slideEMask slideEMask.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11 -lX11 -ltiff `Magick++-config --cxxflags --cppflags --ldflags --libs`
-
+	g++ -o slideEMask slideEMask.cpp -O2 -L/usr/X11R6/lib -lm -lpthread -lX11 -lX11 -ltiff `Magick++-config --cxxflags --cppflags --ldflags --libs` -std=c++11
 - g++ (Solaris version) : Use the following command to compile a CImg-based program with g++, on Solaris :
 	g++ -o hello_word.exe hello_world.cpp -O2 -lm -lpthread -R/usr/X11R6/lib -lrt -lnsl -lsocket
 	
