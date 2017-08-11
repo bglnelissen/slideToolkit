@@ -170,7 +170,7 @@ Magick::Image getMacroLayer(std::string filename, std::string layer = "") {
 
  else {
 
- 	image.read( filename.append("[" + std::to_string(layer) + "]") );
+ 	image.read( filename.append("[" + layer + "]") );
 
  	return image;
 
