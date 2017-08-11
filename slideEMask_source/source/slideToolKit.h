@@ -137,11 +137,11 @@ Magick::Image getThumbLayer(std::string filename) {
 
  }
 
-Magick::Image getMacroLayer(std::string filename, std::string layer = "") {
+Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
 
 	Magick::Image image;
 
-	if (layer != "") {
+	if (layer != "-1") {
 
 		int LAYER = -1;
 

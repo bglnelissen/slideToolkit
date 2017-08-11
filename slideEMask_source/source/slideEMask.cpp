@@ -21,7 +21,7 @@ using namespace Magick;
 TCLAP::CmdLine cmd("slideEMask: Determine a tissue mask image from a slide TIFF using an image entropy filter (a measure for image texture)", ' ', "0.9");
 
 TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
-TCLAP::ValueArg<int> layerArg("l","layer","The delimiter char to use to parse the file/input. Default behavior is to autodetect (max 50 lines are iterated)! Specify the delimiter to prevent this.", false, "", "character", cmd);
+TCLAP::ValueArg<int> layerArg("l","layer","The layer number of the image to use for processing.", false, -1, "integer", cmd);
 TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
 
 cmd.parse( argc, argv );
