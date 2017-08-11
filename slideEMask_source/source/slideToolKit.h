@@ -136,6 +136,16 @@ Magick::Image getThumbLayer(std::string filename) {
  	return image;
 
  }
+ 
+Magick::Image getCustomLayer(std::string filename, std::string layer) {
+
+	Magick::Image image;
+
+ 	image.read( filename.append("[" + layer + "]") );
+
+ 	return image;
+
+ }
 
 Magick::Image getMacroLayer(std::string filename) {
 
