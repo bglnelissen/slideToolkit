@@ -55,6 +55,8 @@ int main(int argc,char **argv)
        else if (std::string(argv[i]) == "-l" || std::string(argv[i]) == "--layer") {
 
        	layer = std::string(argv[i+1]);
+       	std::cout << "Using custom layer: " + layer + std::endl;
+
        	i++;
        }
        else {
@@ -112,12 +114,8 @@ int main(int argc,char **argv)
 			//FIRST WE SAVE THE MACRO IMAGE, AS THE EXTRACTION IS DONE USING IMAGEMAGICK, AND THE ENTROPY PROCESSING BY CImg, A DIFFERENT LIBRARY.
 			cout << "\t...Extracting macro image" << endl;
 			
-			if (layer == "") {
-				image = getMacroLayer(filename);
-			}
-			else {
-				image = getCustomLayer(filename, layer);
-			}
+			image = getMacroLayer(filename, layer);
+			
 			//Resize the macro image to 2000x2000 pixels
 			//image.resize("2000x2000");
 

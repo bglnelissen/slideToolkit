@@ -136,43 +136,43 @@ Magick::Image getThumbLayer(std::string filename) {
  	return image;
 
  }
- 
-Magick::Image getCustomLayer(std::string filename, std::string layer) {
+
+Magick::Image getMacroLayer(std::string filename, std::string layer = "") {
 
 	Magick::Image image;
 
- 	image.read( filename.append("[" + layer + "]") );
+	if (layer != "") {
 
- 	return image;
+		int LAYER = -1;
 
- }
+	 	std::string ScannerType = getScannerType(filename);
 
-Magick::Image getMacroLayer(std::string filename) {
+	 	if (ScannerType == "iScan HT") {LAYER = 8;}
+	 	if (ScannerType == "iScan") {LAYER = 7;}
+	 	if (ScannerType == "Hamamatsu") {LAYER = 5;}
+	 	if (ScannerType == "Leica") {LAYER = 5;}
+	 	if (ScannerType == "Aperio") {
 
-	Magick::Image image;
+	 		TIFF* tif = TIFFOpen(filename.c_str(), "r");
 
-	int LAYER = -1;
+	 		int n_layers = 0;
+			do {
+			    n_layers++;
+			} while (TIFFReadDirectory(tif));
 
- 	std::string ScannerType = getScannerType(filename);
+	 		LAYER = n_layers - 3;
+	 	}
 
- 	if (ScannerType == "iScan HT") {LAYER = 8;}
- 	if (ScannerType == "iScan") {LAYER = 7;}
- 	if (ScannerType == "Hamamatsu") {LAYER = 5;}
- 	if (ScannerType == "Leica") {LAYER = 5;}
- 	if (ScannerType == "Aperio") {
+	 	image.read( filename.append("[" + std::to_string(LAYER) + "]") );
 
- 		TIFF* tif = TIFFOpen(filename.c_str(), "r");
-
- 		int n_layers = 0;
-		do {
-		    n_layers++;
-		} while (TIFFReadDirectory(tif));
-
- 		LAYER = n_layers - 3;
+	 	return image;
  	}
 
- 	image.read( filename.append("[" + std::to_string(LAYER) + "]") );
+ else {
+
+ 	image.read( filename.append("[" + std::to_string(layer) + "]") );
 
  	return image;
 
  }
+}
