@@ -55,7 +55,7 @@ int main(int argc,char **argv)
        else if (std::string(argv[i]) == "-l" || std::string(argv[i]) == "--layer") {
 
        	layer = std::string(argv[i+1]);
-       	std::cout << "Using custom layer: " + layer + std::endl;
+       	std::cout << "Using custom layer: " << layer << std::endl;
 
        	i++;
        }
