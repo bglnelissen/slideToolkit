@@ -96,7 +96,7 @@ int main(int argc,char **argv)
 			image = getMacroLayer(filename, layer);
 			
 			//Resize the macro image to 2000x2000 pixels
-			//image.resize("2000x2000");
+			image.resize("2000x2000");
 
 			// Write the image to a file 
 			std::string new_filename = replaceString(filename, "." + extension, ".macro.png");
