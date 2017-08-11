@@ -17,6 +17,13 @@ using namespace std;
 #include "slideToolKit.h"
 using namespace Magick;
 
+#include <tclap/CmdLine.h>
+TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
+TCLAP::ValueArg<int> layerArg("l","layer","The delimiter char to use to parse the file/input. Default behavior is to autodetect (max 50 lines are iterated)! Specify the delimiter to prevent this.", false, "", "character", cmd);
+TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
+
+cmd.parse( argc, argv );
+
 //Compiling on MacOSX:
 //g++ -o slideEMask slideEMask.cpp -O2 -lm -lpthread -I/usr/X11R6/include -L/usr/X11R6/lib -lm -lpthread -lX11 -ltiff `Magick++-config --cxxflags --cppflags --ldflags --libs`
 
@@ -33,40 +40,10 @@ void print_help()  {
 int main(int argc,char **argv) 
 { 
 
-	std::string filename = "";
-	std::string layer = "";
+	std::string filename = filenameArg.getValue();
+	std::string layer = to_string(layerArg.getValue());
 
-	bool CellProfiler = false;
-
-	//Check if at least 1 command line arg was passed
-	if(argc < 2) { print_help(); return 1; }
-
-	//Check if the user requests help or a usage instruction
-	if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h" || std::string(argv[1]) == "--usage" || std::string(argv[1]) == "usage") { print_help(); return 0; }
-
-	//Parse the command line args: see if the CellProfiler flag was set.
-	for (int i = 1; i < argc; ++i) {
-       
-       if (std::string(argv[i]) == "-c" || std::string(argv[i]) == "--cp" || std::string(argv[i]) == "--cellprofiler") {
-
-       		CellProfiler = true;
-
-       }
-       else if (std::string(argv[i]) == "-l" || std::string(argv[i]) == "--layer") {
-
-       	layer = std::string(argv[i+1]);
-       	std::cout << "Using custom layer: " << layer << std::endl;
-
-       	i++;
-       }
-       else {
-
-       	filename = std::string(argv[i]);
-
-       }
-
-
-    }
+	bool CellProfiler = cellprofilerArg.getValue();
 
 	if (is_file_exist(filename.c_str()) == false) {
 
