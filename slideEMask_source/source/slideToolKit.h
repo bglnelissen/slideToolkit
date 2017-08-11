@@ -170,7 +170,7 @@ Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
 
  else {
 
- 	std::cout << "Reading image in layer '" << layer << "'' of TIF file." << std::endl;
+ 	std::cout << "\t...Reading image in layer '" << layer << "' of TIF file." << std::endl;
 
  	image.read( filename.append("[" + layer + "]") );
 
