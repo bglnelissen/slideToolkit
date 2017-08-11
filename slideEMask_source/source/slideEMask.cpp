@@ -34,6 +34,8 @@ int main(int argc,char **argv)
 { 
 
 	std::string filename = "";
+	std::string layer = "";
+
 	bool CellProfiler = false;
 
 	//Check if at least 1 command line arg was passed
@@ -49,6 +51,11 @@ int main(int argc,char **argv)
 
        		CellProfiler = true;
 
+       }
+       else if (std::string(argv[i]) == "-l" || std::string(argv[i]) == "--layer") {
+
+       	layer = std::string(argv[i+1]);
+       	i++;
        }
        else {
 
@@ -105,8 +112,12 @@ int main(int argc,char **argv)
 			//FIRST WE SAVE THE MACRO IMAGE, AS THE EXTRACTION IS DONE USING IMAGEMAGICK, AND THE ENTROPY PROCESSING BY CImg, A DIFFERENT LIBRARY.
 			cout << "\t...Extracting macro image" << endl;
 			
-			image = getMacroLayer(filename);
-
+			if (layer == "") {
+				image = getMacroLayer(filename);
+			}
+			else {
+				image = getCustomLayer(filename, layer);
+			}
 			//Resize the macro image to 2000x2000 pixels
 			//image.resize("2000x2000");
 
