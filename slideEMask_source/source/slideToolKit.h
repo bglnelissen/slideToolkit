@@ -141,7 +141,7 @@ Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
 
 	Magick::Image image;
 
-	if (layer != "-1") {
+	if (layer == "-1") {
 
 		int LAYER = -1;
 
