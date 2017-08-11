@@ -18,6 +18,8 @@ using namespace std;
 using namespace Magick;
 
 #include <tclap/CmdLine.h>
+TCLAP::CmdLine cmd(SELECT_DESCRIPTION_STRING, ' ', "0.9");
+
 TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
 TCLAP::ValueArg<int> layerArg("l","layer","The delimiter char to use to parse the file/input. Default behavior is to autodetect (max 50 lines are iterated)! Specify the delimiter to prevent this.", false, "", "character", cmd);
 TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
