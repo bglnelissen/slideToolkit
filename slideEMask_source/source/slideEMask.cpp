@@ -18,13 +18,6 @@ using namespace std;
 using namespace Magick;
 
 #include <tclap/CmdLine.h>
-TCLAP::CmdLine cmd("slideEMask: Determine a tissue mask image from a slide TIFF using an image entropy filter (a measure for image texture)", ' ', "0.9");
-
-TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
-TCLAP::ValueArg<int> layerArg("l","layer","The layer number of the image to use for processing.", false, -1, "integer", cmd);
-TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
-
-cmd.parse( argc, argv );
 
 //Compiling on MacOSX:
 //g++ -o slideEMask slideEMask.cpp -O2 -lm -lpthread -I/usr/X11R6/include -L/usr/X11R6/lib -lm -lpthread -lX11 -ltiff `Magick++-config --cxxflags --cppflags --ldflags --libs`
@@ -41,6 +34,13 @@ void print_help()  {
 
 int main(int argc,char **argv) 
 { 
+	TCLAP::CmdLine cmd("slideEMask: Determine a tissue mask image from a slide TIFF using an image entropy filter (a measure for image texture)", ' ', "0.9");
+
+	TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
+	TCLAP::ValueArg<int> layerArg("l","layer","The layer number of the image to use for processing.", false, -1, "integer", cmd);
+	TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
+
+	cmd.parse( argc, argv );
 
 	std::string filename = filenameArg.getValue();
 	std::string layer = to_string(layerArg.getValue());
