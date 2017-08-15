@@ -13,12 +13,11 @@ bool is_file_exist(const char *fileName)
     return infile.good();
 }
 
-void to_uppercase(std::string str) {
-	
-	//We use the transform function to convert all lower case letters to upper case letters
-	//using the toupper function in the C headers (not std::toupper, hence the '::')
-	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+std::string to_uppercase(string strToConvert)
+{
+    std::transform(strToConvert.begin(), strToConvert.end(), strToConvert.begin(), ::toupper);
 
+    return strToConvert;
 }
 
 float entropy(float N[], int numlen) {
@@ -53,7 +52,7 @@ float entropy(float N[], int numlen) {
 std::string getExtension(std::string subject) {
 
 	std::string extension = subject.substr( subject.find_last_of(".")+1 );
-	to_uppercase(extension);
+	extension = to_uppercase(extension);
 
 	return extension;
 
