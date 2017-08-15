@@ -84,7 +84,6 @@ int main(int argc,char **argv)
 
 		std::string extension = getExtension(filename);
 	
-		std::cout << "The Extension is " << extension << std::endl;
 		std::string to_open = "";
 
 		if (!CellProfiler) {
