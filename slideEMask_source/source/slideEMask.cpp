@@ -88,23 +88,29 @@ int main(int argc,char **argv)
 
 		if (!CellProfiler) {
 
-			//ADD A CHECK FOR TIFF-LIKE FORMAT FILENAME!
+			if ( extension == "PNG" ) {
 
-			//FIRST WE SAVE THE MACRO IMAGE, AS THE EXTRACTION IS DONE USING IMAGEMAGICK, AND THE ENTROPY PROCESSING BY CImg, A DIFFERENT LIBRARY.
-			cout << "\t...Extracting macro image" << endl;
-			
-			image = getMacroLayer(filename, layer);
-			
-			//Resize the macro image to 2000x2000 pixels
-			image.resize("2000x2000");
+				cout << "\t...Image file is PNG, assumed macro image" << endl;
+				to_open = filename;
 
-			// Write the image to a file 
-			std::string new_filename = replaceString(filename, "." + extension, ".macro.png");
+			} 
+			else {
 
-			image.write( new_filename ); 
+				//FIRST WE SAVE THE MACRO IMAGE, AS THE EXTRACTION IS DONE USING IMAGEMAGICK, AND THE ENTROPY PROCESSING BY CImg, A DIFFERENT LIBRARY.
+				cout << "\t...Extracting macro image" << endl;
+				
+				image = getMacroLayer(filename, layer);
+				
+				//Resize the macro image to 2000x2000 pixels
+				image.resize("2000x2000");
 
-		  	to_open = new_filename;
-		  
+				// Write the image to a file 
+				std::string new_filename = replaceString(filename, "." + extension, ".macro.png");
+
+				image.write( new_filename ); 
+
+			  	to_open = new_filename;
+		  	}
 
 	  	}
 	  	else {
