@@ -177,7 +177,7 @@ int main(int argc,char **argv)
 	  	dest.save(new_fn.c_str());
 	  	cout << "\t...Saved as " << new_fn << endl;
 
-	  	if (CellProfiler) { remove(to_open.c_str()); }
+	  	//if (CellProfiler) { remove(to_open.c_str()); }
 
 	    clock_t end = clock();
 	    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
