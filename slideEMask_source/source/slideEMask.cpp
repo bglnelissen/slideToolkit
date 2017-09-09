@@ -39,11 +39,18 @@ int main(int argc,char **argv)
 	TCLAP::ValueArg<std::string> filenameArg("f","file","The filename of the TIF file to process.", true, "", "string", cmd);
 	TCLAP::ValueArg<int> layerArg("l","layer","The layer number of the image to use for processing.", false, -1, "integer", cmd);
 	TCLAP::SwitchArg cellprofilerArg("c", "cellprofiler","The table file does not contain a header / column names", cmd, false);
+	TCLAP::ValueArg<int> thresholdArg("t","threshold","The entropy grayvalue threshold for masking, a number between 0 and 255", false, -1, "integer", cmd);
 
 	cmd.parse( argc, argv );
 
 	std::string filename = filenameArg.getValue();
 	std::string layer = to_string(layerArg.getValue());
+	int threshold = thresholdArg.getValue();
+
+	//TIF, 210 is an appropriate value
+	//NDPI, 190 is an appropriate value
+	if (threshold == -1) { threshold = 190; }
+	else {std::cout << "Overriding default threshold (=190) with value " << threshold << std::endl;}
 
 	bool CellProfiler = cellprofilerArg.getValue();
 
@@ -152,8 +159,8 @@ int main(int argc,char **argv)
 
 	  		float avg = N2.sum()/(5*5);
 
-	      //If the average gray value of this neighborhood exceeds value 210, set the pixel value to white, else black (this value was found empirically).
-	  		if(avg > 210) { dest(x,y) = 0; }
+	      //If the average gray value of this neighborhood exceeds threshold value, set the pixel value to white, else black (this value was found empirically).
+	  		if(avg > threshold) { dest(x,y) = 0; }
 	  		else { dest(x,y) = 255; }
 
 	  	}
