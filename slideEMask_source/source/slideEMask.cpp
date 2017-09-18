@@ -168,6 +168,7 @@ int main(int argc,char **argv)
 	  	//Display functions for optimization/debugging purposes
 	    //!!! Only works when #define cimg_display_type 0 (line 1) is removed!!
 		  //CImgList<unsigned char> visu(src,dest);
+
 		  //visu.display("Original + Entropy");       // Display both original and filtered image.
 	  
 	  	std::string new_fn = "";
@@ -176,6 +177,9 @@ int main(int argc,char **argv)
 	  		new_fn = "ENTROPY_" + replaceString(to_open, ".png", ".bmp");
 	  	}
 	  	else {
+	  		//Dilate the image (a way to widen the borders of the image)
+	  		dest.dilate(3);
+
 	  		new_fn = replaceString(to_open, ".png", ".emask.png");
 	  	}
 	  	 
