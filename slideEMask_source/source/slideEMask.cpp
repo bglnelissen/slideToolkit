@@ -44,7 +44,7 @@ int main(int argc,char **argv)
 	cmd.parse( argc, argv );
 
 	std::string filename = filenameArg.getValue();
-	std::string layer = to_string(layerArg.getValue());
+	int layer = layerArg.getValue();
 	int threshold = thresholdArg.getValue();
 
 	//TIF, 210 is an appropriate value
@@ -178,6 +178,7 @@ int main(int argc,char **argv)
 	  	}
 	  	else {
 	  		//Dilate the image (a way to widen the borders of the image)
+	  		cout << "\t...Dilating mask to widen borders (to prevent too narrow mask borders from clipping relevant tile material) " << endl;
 	  		dest.dilate(3);
 
 	  		new_fn = replaceString(to_open, ".png", ".emask.png");

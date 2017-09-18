@@ -68,28 +68,38 @@ std::string replaceString(std::string subject, const std::string& search,
 }
 
 
-std::string getScannerType(std::string filename)
+void getScannerType(std::string filename, std::string &ScannerType)
 {
+
+	std::cout << "\t...Detecting Scanner Type" << std::endl;
 
     TIFF* tif = TIFFOpen(filename.c_str(), "r");
 	
 	if (tif) {
 
+		std::cout << "\t...Successfully read TIFF directory" << std::endl;
+
 		TIFFReadDirectory(tif);
 
-		char* model_name = NULL;
+		char* model_name = "";
 		    
 		TIFFGetField(tif, TIFFTAG_MODEL, &model_name);
 
+		std::cout << "\t...Successfully extracted TIF Field" << std::endl;
+
 		std::string output( model_name );
+
+		std::cout << "\t...Successfully converted to string" << std::endl;
+
+		ScannerType = output;
 
 		TIFFClose(tif);
 
-    	return output;
+		std::cout << "\t...Successfully closed TIF" << std::endl;
 
     }
 
-    return "Error";
+    std::cerr <<  "Error" << std::endl;
 
 }
 
@@ -98,7 +108,8 @@ Magick::Image getThumbLayer(std::string filename) {
 	//APERIO NEEDS TESTING
 	Magick::Image image;
 
- 	std::string ScannerType = getScannerType(filename);
+ 	std::string ScannerType;
+ 	getScannerType(filename, ScannerType);
 
  	if (ScannerType == "iScan HT") {image.read( filename.append("[0]") );}
  	if (ScannerType == "iScan") {image.read( filename.append("[0]") );}
@@ -136,15 +147,16 @@ Magick::Image getThumbLayer(std::string filename) {
 
  }
 
-Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
+Magick::Image getMacroLayer(std::string filename, int layer = -1) {
 
 	Magick::Image image;
 
-	if (layer == "-1") {
+	if (layer == -1) {
 
 		int LAYER = -1;
 
-	 	std::string ScannerType = getScannerType(filename);
+	 	std::string ScannerType;
+	 	getScannerType(filename, ScannerType);
 
 	 	if (ScannerType == "iScan HT") {LAYER = 8;}
 	 	if (ScannerType == "iScan") {LAYER = 7;}
@@ -161,6 +173,12 @@ Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
 
 	 		LAYER = n_layers - 3;
 	 	}
+	 	else {
+	 		std::cerr << "Unimplemented Scanner Type '" << ScannerType << "'" << std::endl;
+	 		exit(-1);
+	 	}
+
+	 	std::cout << "Detected Scanner Type '" << ScannerType << "'" << std::endl;
 
 	 	image.read( filename.append("[" + std::to_string(LAYER) + "]") );
 
@@ -171,7 +189,7 @@ Magick::Image getMacroLayer(std::string filename, std::string layer = "-1") {
 
  	std::cout << "\t...Reading image in layer '" << layer << "' of TIF file." << std::endl;
 
- 	image.read( filename.append("[" + layer + "]") );
+ 	image.read( filename.append("[" + std::to_string(layer) + "]") );
 
  	return image;
 
