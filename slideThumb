@@ -282,11 +282,11 @@ checkDependencies(){
 getThumb(){
   # get thumb by layer id
   LAYER="$LAYER"
-  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbiScanHT(){
   LAYER=0
-  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbAperio(){
   # the last 2 layers contain thumb and the tissue (couning starts at 0)
@@ -294,19 +294,19 @@ getThumbAperio(){
   N_LABEL="$(($NR_LAYERS - 2))"
   N_TISSUE="$(($NR_LAYERS - 1))"
   # get label, get tissue, rotate one and resize both, then append and do a final resize
-  convert "$FILEFULL[$N_LABEL]" -resize 1024x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize 1024x \)-append -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL[$N_LABEL]" -resize 1024x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize 1024x \)-append -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbLeica(){
   LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbHamamatsu(){
   LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbiScan(){
   LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert -verbose "$FILEFULL"[$LAYER] -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 programOutput(){
   # set variables
