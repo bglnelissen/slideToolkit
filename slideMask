@@ -3,7 +3,7 @@
 # Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+# Copyright (c) 2014-2018, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Copyright (c) 2014-2018, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -270,30 +270,30 @@ checkDependencies(){
 getMacro(){
   # get thumb by layer id
   LAYER="$LAYER"
-	convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+	convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScanHT(){
   # layer 8 contains the macro
   LAYER=8
-  convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroAperio(){
   # the third to last layer contains the macro
   NR_LAYERS=`identify "$FILE" | wc -l`
   LAYER="$(($NR_LAYERS - 3))"
-  convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroLeica(){
-  LAYER=5 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroHamamatsu(){
-  LAYER=5 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScan(){
-  LAYER=7 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert -verbose "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 
 # actual program
@@ -342,13 +342,13 @@ programOutput(){
   # - now everything white is converted to transparent.
   # - this image is now put on-top of the original one.
 
-#   convert "$MACRO" \( "$MACRO" \
-#     -bordercolor white -border 100x100 \
-#     $MASKARGS -transparent white \
-#     -crop +100+100 -crop -100-100 +repage \
-#     -alpha extract \
-#     -transparent white \) \
-#     -flatten "$MASK"
+  convert "$MACRO" \( "$MACRO" \
+    -bordercolor white -border 100x100 \
+    $MASKARGS -transparent white \
+    -crop +100+100 -crop -100-100 +repage \
+    -alpha extract \
+    -transparent white \) \
+    -flatten "$MASK"
 }
 # all check?
 checkRequirements
