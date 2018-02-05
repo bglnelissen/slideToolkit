@@ -33,7 +33,7 @@ SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
-DEFAULT_IM_ARGS="" # imagemagick arguments # +dither -colors 2 -colorspace gray
+DEFAULT_IM_ARGS="" # convert arguments # -verbose
 DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
 DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
@@ -56,7 +56,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2018, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Copyright (c) 2014-2018, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -72,6 +72,7 @@ in all copies or substantial portions of the Software.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
 EOF
 }
 
