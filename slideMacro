@@ -342,13 +342,16 @@ programOutput(){
   # - now everything white is converted to transparent.
   # - this image is now put on-top of the original one.
 
-  convert "$MACRO" \( "$MACRO" \
-    -bordercolor white -border 100x100 \
-    $MASKARGS -transparent white \
-    -crop +100+100 -crop -100-100 +repage \
-    -alpha extract \
-    -transparent white \) \
-    -flatten "$MASK"
+### -- OBSOLETE CODE -- ###
+### We will keep this code, but comment this out as the new slideEntropyMasker is more reliable
+#   convert "$MACRO" \( "$MACRO" \
+#     -bordercolor white -border 100x100 \
+#     $MASKARGS -transparent white \
+#     -crop +100+100 -crop -100-100 +repage \
+#     -alpha extract \
+#     -transparent white \) \
+#     -flatten "$MASK"
+### -- OBSOLETE CODE -- ###
 }
 # all check?
 checkRequirements
