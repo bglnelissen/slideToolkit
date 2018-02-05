@@ -33,6 +33,7 @@ SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
+DEFAULT_IM_ARGS="" # imagemagick arguments # +dither -colors 2 -colorspace gray
 DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
 DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
@@ -90,6 +91,7 @@ options:
   [--macrosuffix] <text>        macro suffix ["$DEFAULT_MACROSUFFIX"]
   [-l, --layer] <integer>       force specific layer by layer id
   [--mask-args] <arguments>     mask arguments (imageMagick) ["$DEFAULT_MASKARGS"]
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
   [--ignore-dependencies]       ignores all dependencies, but gives warning
   
   --help                        display this help
@@ -191,7 +193,10 @@ do
     --macrosuffix=*)
       MACROSUFFIX=${1#*=}
       shift ;;
-     --ignore-dependencies)
+    --convert-args=*) # Equal sign and quotes are required for this option. If not, the convert arguments are seen as slideRename options.
+      IM_ARGS=${1#*=}
+      shift ;;
+    --ignore-dependencies)
       IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
@@ -228,6 +233,12 @@ if [ "$MACROSUFFIX" != "" ]; then
   MACROSUFFIX="$MACROSUFFIX"
 else
   MACROSUFFIX="$DEFAULT_MACROSUFFIX"
+fi
+# set IM_ARGS default
+if [ "$IM_ARGS" != "" ]; then
+  IM_ARGS="$IM_ARGS"
+else
+  IM_ARGS="$DEFAULT_IM_ARGS"
 fi
 # set IGNOREDEPENDENCIES
 if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
@@ -270,30 +281,30 @@ checkDependencies(){
 getMacro(){
   # get thumb by layer id
   LAYER="$LAYER"
-	convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+	convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScanHT(){
   # layer 8 contains the macro
   LAYER=8
-  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroAperio(){
   # the third to last layer contains the macro
   NR_LAYERS=`identify "$FILE" | wc -l`
   LAYER="$(($NR_LAYERS - 3))"
-  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroLeica(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 
 # actual program
@@ -343,14 +354,14 @@ programOutput(){
   # - this image is now put on-top of the original one.
 
 ### -- OBSOLETE CODE -- ###
-### We will keep this code, but comment this out as the new slideEntropyMasker is more reliable
-#   convert "$MACRO" \( "$MACRO" \
-#     -bordercolor white -border 100x100 \
-#     $MASKARGS -transparent white \
-#     -crop +100+100 -crop -100-100 +repage \
-#     -alpha extract \
-#     -transparent white \) \
-#     -flatten "$MASK"
+### We will keep this code, but not that the new slideEntropyMasker is more reliable.
+  convert "$MACRO" \( "$MACRO" \
+    -bordercolor white -border 100x100 \
+    $MASKARGS -transparent white \
+    -crop +100+100 -crop -100-100 +repage \
+    -alpha extract \
+    -transparent white \) \
+    -flatten "$MASK"
 ### -- OBSOLETE CODE -- ###
 }
 # all check?
