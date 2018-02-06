@@ -11,7 +11,7 @@ A typical workflow consists of four consecutive steps.
 - In the first step (acquisition), whole slide images are collected and converted to TIFF files. 
 - In the second step (preparation), files are organized. 
 - The third step (tiles), creates multiple manageable tiles to count. 
-- In the fourth step (analysis), tissue is analyzed and results are stored in a data set. Using this method, two consecutive measurements of 303 slides showed an intraclass correlation of 0.99 [Vrijenhoek JE _et al._](https://www.ncbi.nlm.nih.gov/pubmed/25541691).
+- In the fourth step (analysis), tissue is analyzed and results are stored in a data set. Using this method, two consecutive measurements of 303 slides showed an intraclass correlation of 0.99 ([Vrijenhoek JE _et al._](https://www.ncbi.nlm.nih.gov/pubmed/25541691)).
 
 In conclusion, **slideToolkit** provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
 
