@@ -18,8 +18,8 @@ In conclusion, **slideToolkit** provides a free, powerful and versatile collecti
 > Installation instructions for CentOS 6+, Ubuntu and Mac OS X Mountain Lion+ can be found in [guides](https://github.com/swvanderlaan/slideToolkit/tree/master/guides).
 
 #### Citations
-- Nelissen BGL, van Herwaarden JA, Moll FL, van Diest PJ, Pasterkamp G (2014) _SlideToolkit: An Assistive Toolset for the Histological Quantification of Whole Slide Images._ **PLoS One. 2014 Nov 5;9(11):e110289**. doi: 10.1371/journal.pone.0110289. Direct link: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0110289.
-- Vrijenhoek J.E.P., Nelissen B.G.L., Velema E., Vons K., de Vries J.P.P.M., Eijkemans M.J.C., den Ruijter H.M., de Borst G.J., Moll F.L., Pasterkamp G (2014) _High Reproducibility of Histological Characterization by Whole Virtual Slide Quantification; An Example Using Carotid Plaque Specimens._ **PLoS One. 2014 Dec 26;9(12):e115907.**. doi: 10.1371/journal.pone.0115907. Direct link: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0115907
+- Nelissen B.G.L., van Herwaarden J.A., Moll F.L., van Diest P.J., and Pasterkamp G. (2014) _SlideToolkit: An Assistive Toolset for the Histological Quantification of Whole Slide Images._ **PLoS One.** 2014 Nov 5;9(11):e110289. doi: 10.1371/journal.pone.0110289. [Direct link](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0110289).
+- Vrijenhoek J.E.P., Nelissen B.G.L., Velema E., Vons K., de Vries J.P.P.M., Eijkemans M.J.C., den Ruijter H.M., de Borst G.J., Moll F.L., and Pasterkamp G (2014) _High Reproducibility of Histological Characterization by Whole Virtual Slide Quantification; An Example Using Carotid Plaque Specimens._ **PLoS One**. 2014 Dec 26;9(12):e115907. doi: 10.1371/journal.pone.0115907. [Direct link](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0115907).
 
 
 -----------------------------------------------
