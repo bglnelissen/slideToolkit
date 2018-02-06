@@ -1,0 +1,8 @@
+title: slideToolkit
+description: "slideToolkit: a free toolset for analyzing full size virtual histology slides"
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
