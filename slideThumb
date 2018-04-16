@@ -313,7 +313,7 @@ getThumbLeica(){
   convert $IM_ARGS  "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbHamamatsu(){
-  LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  LAYER=6 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
   convert $IM_ARGS  "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbiScan(){
