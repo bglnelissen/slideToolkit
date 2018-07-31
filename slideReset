@@ -1,0 +1,6 @@
+rm -rf AE*/*tiles
+rm -rf AE*/cp_output
+rm AE*/processanda.txt
+rm AE*/result.txt
+rm errors/*
+rm logs/*
