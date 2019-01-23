@@ -11,11 +11,12 @@ if [ ! -f $2 ]; then echo "No such file (CP protocol)!"; exit 1; fi;
 if [ "$STAIN" = "" ]; then echo "Please specify Stain name!"; exit; fi;
 HOLD_JIDS=()
 INDEX=0
-BATCH_SIZE=15
+BATCH_SIZE=3000
 UNIQUE_LABEL="V3"
 
 for AE_NUM in AE*/
 do
+	sleep 1
 	THIS_AE=${AE_NUM/\//}
 	THIS_SLIDEMASK=${THIS_AE}_slideMask_${UNIQUE_LABEL}
 	THIS_SLIDE2TILES=${THIS_AE}_slide2Tiles_${UNIQUE_LABEL}
@@ -28,7 +29,7 @@ do
 	if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
 		HOLD_JID_STRING=""
 	else
-		HOLD_JID_STRING="-hold_jid ${HOLD_JIDS[$HOLD_JID_INDEX]}"
+		HOLD_JID_STRING=""
 	fi
 	HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 	
@@ -41,19 +42,21 @@ do
 	echo "#if [ -f *mask.png ]; then exit; fi;
 	module load slideToolkit
 	module load ndpitools
-	mkdir -p magick-tmp
+	mkdir -vp magick-tmp
         export MAGICK_TMPDIR=$(pwd)/magick-tmp
         export TMPDIR=$(pwd)/magick-tmp
 	if [ -f *.ndpi ]; then
-		if [ ! -f *.tif ]; then  ndpisplit -x40 -z0 *.ndpi; fi
+		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
 		slideMask --layer 0 -f *.tif;
 	else
-		slideMask -f *.TIF
+		slideMask --layer 3 -f *.TIF
 	fi
 	slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
-	rm -rf magick-tmp
+	rm -rfv magick-tmp
 	" | qsub -cwd -N $THIS_SLIDEMASK -e ../errors/ -o ../logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
-		
+	echo $THIS_SLIDEMASK
+	echo $HOLD_JID_STRING
+	
 	#slide2Tiles
 	echo "if [ -d *.tiles ]; then exit; fi;
 	module load ndpitools;
@@ -66,7 +69,7 @@ do
 
 		slide2Tiles --layer 0 -f *x40*.tif -m *emask.png
 	else
-		slide2Tiles -f *.TIF -m *.emask.png
+		slide2Tiles --layer 3 -f *.TIF -m *.emask.png
 	fi
 
 	rm -rf magick-tmp
@@ -81,9 +84,9 @@ do
 	cd *.tiles/;
 	module load slideNormalize;
 	module load slideToolkit;
-	mkdir -p magick-tmp
-        export MAGICK_TMPDIR=$(pwd)/magick-tmp
-        export TMPDIR=$(pwd)/magick-tmp
+	mkdir -vp magick-tmp
+		export MAGICK_TMPDIR=$(pwd)/magick-tmp
+		export TMPDIR=$(pwd)/magick-tmp
 	for f in *.png
 	do
 		echo \"...Processing tile \$f\";
@@ -100,13 +103,13 @@ do
 	#CellProfiler
 	echo "if [ -d cp_output ]; then exit; fi;
 	module load anaconda
-	mkdir -p cp_output
+	mkdir -vp cp_output
 	cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
 	" | qsub -cwd -N $THIS_CELLPROFILER -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
 
 	#REMOVE THIS BREAK FOR PRODUCTION!
 	INDEX=$((INDEX+1))
-	#        break;	
+# 	break;	
 	
 	#Wrap Up
 	echo "
@@ -116,14 +119,14 @@ do
 	AE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
 	echo \$AE_NUM \$(Rscript ..\/Colsums.R $STAIN) >> ../result.txt;
 	cd ..
-	rm -rf *tiles/;
+	rm -rfv *tiles/;
 	if [ -f *.ndpi ]; then rm *x40*.tif; rm *x40*.png; fi;
-        rm processanda.txt;
+		rm -v processanda.txt;
 	" | qsub -cwd -N $THIS_WRAPUP -e ../errors/ -o ../logs/ -hold_jid $THIS_CELLPROFILER
 
 	cd ..
 
 	INDEX=$((INDEX+1))
-	if [ "$INDEX" -eq "21" ]; then break; fi;
+	if [ "$INDEX" -eq "3000" ]; then break; fi;
 done
 
