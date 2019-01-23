@@ -135,7 +135,8 @@ else
 	UNIQUE_LABEL="v1"
 
 	### FOR DEBUG
-	for SLIDE_NUM in AE999.FIBRIN/ AE99.T02-18575.A.FIBRIN/ AE997.T05-12460.FIBRIN/ ; do
+	DEBUGLIST="AE999.FIBRIN AE99.T02-18575.A.FIBRIN AE997.T05-12460.FIBRIN AE99.T02-18575.A.FIBRIN"
+	for SLIDE_NUM in $DEBUGLIST; do
 # 	for SLIDE_NUM in AE*/; do
 		sleep 1
 		THIS_SLIDE=${SLIDE_NUM/\//}
@@ -155,15 +156,19 @@ else
 		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 	
 		cd $SLIDE_NUM
-		echobold "Processing images of file [ $THIS_AE ] for staining [ $STAIN ]."
+
+		echo ""
+		echobold "Processing images of file [ $SLIDE_NUM ] for staining [ $STAIN ]."
 	
 		if [ -f result.txt ]; then 
+			echoitalic "Checking if this file was processed before ....."
 			cd ..; 
 			INDEX=$((INDEX+1)); 
 			echo "..... Analysis was already done!"; 
 			continue; 
 		fi
-
+		echo "..... Processing file for the first time!"
+		
 		### slideEMask for macro, and NDPISplit when necessary
 		echo ""
 		echoitalic "Submitting job for slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
@@ -182,9 +187,10 @@ else
 		fi
 		slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
 		rm -rfv magick-tmp
-		" | qsub -cwd -N $THIS_SLIDEMASK -e ../errors/ -o ../logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
-		echo $THIS_SLIDEMASK
-		echo $HOLD_JID_STRING
+		" | qsub -cwd -N $THIS_SLIDEMASK -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
+		### FOR DEBUG
+# 		echo $THIS_SLIDEMASK
+# 		echo $HOLD_JID_STRING
 	
 		### slide2Tiles
 		echo ""
@@ -206,7 +212,7 @@ else
 		fi
 
 		rm -rfv magick-tmp
-		" | qsub -cwd -N $THIS_SLIDE2TILES -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=150G -l h_rt=02:30:00
+		" | qsub -cwd -N $THIS_SLIDE2TILES -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=150G -l h_rt=02:30:00
 
 		### slideNormalize
 		echo ""
@@ -234,7 +240,7 @@ else
 		cd ..
 		ls -d -1 \$PWD/*tiles/*normalized* > processanda.txt;
 		ls -d -1 \$PWD/*tiles/ENTROPY* >> processanda.txt;
-		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=5G -l h_rt=02:00:00
+		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=5G -l h_rt=02:00:00
 	
 		### CellProfiler
 		echo ""
@@ -244,12 +250,14 @@ else
 		module load anaconda
 		mkdir -pv cp_output
 		cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
-		" | qsub -cwd -N $THIS_CELLPROFILER -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
+		" | qsub -cwd -N $THIS_CELLPROFILER -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
 
 		### REMOVE THIS BREAK FOR PRODUCTION!
+		### When this break is active, only the first item 
+		### in the list of items to be processed will be processed.
 		INDEX=$((INDEX+1))
-		break;	
-	
+# 		break;	
+
 		### Wrap Up
 		echo ""
 		echoitalic "Submitting job to WrapUp the work we have done, and clean house."
@@ -264,7 +272,7 @@ else
 		rm -rfv *tiles/;
 		if [ -f *.ndpi ]; then rm -v *x40*.tif; rm -v *x40*.png; fi;
 			rm -v processanda.txt;
-		" | qsub -cwd -N $THIS_WRAPUP -e ../errors/ -o ../logs/ -hold_jid $THIS_CELLPROFILER
+		" | qsub -cwd -N $THIS_WRAPUP -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_CELLPROFILER
 
 		cd ..
 
