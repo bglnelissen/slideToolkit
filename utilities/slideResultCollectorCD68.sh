@@ -4,6 +4,7 @@
 ### Setting colouring
 NONE='\033[00m'
 BOLD='\033[1m'
+ITALIC='\033[3m'
 OPAQUE='\033[2m'
 FLASHING='\033[5m'
 UNDERLINE='\033[4m'

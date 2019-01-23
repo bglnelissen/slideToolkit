@@ -1,133 +1,281 @@
 #!/bin/bash
-rm -rf logs/
-rm -rf errors/
-mkdir -p logs
-mkdir -p errors
-rm -rf AE*/magick-tmp
-ENTROPY_THRESHOLD=210
-STAIN=$1
-PIPELINE=$2
-if [ ! -f $2 ]; then echo "No such file (CP protocol)!"; exit 1; fi;
-if [ "$STAIN" = "" ]; then echo "Please specify Stain name!"; exit; fi;
-HOLD_JIDS=()
-INDEX=0
-BATCH_SIZE=3000
-UNIQUE_LABEL="v1"
 
-# for AE_NUM in AE*/
-for AE_NUM in AE999.FIBRIN/
-do
-	sleep 1
-	THIS_AE=${AE_NUM/\//}
-	THIS_SLIDEMASK=${THIS_AE}_slideMask_${UNIQUE_LABEL}
-	THIS_SLIDE2TILES=${THIS_AE}_slide2Tiles_${UNIQUE_LABEL}
-	THIS_SLIDENORMALIZE=${THIS_AE}_slideNormalize_${UNIQUE_LABEL}
-	THIS_CELLPROFILER=${THIS_AE}_CellProfiler_${UNIQUE_LABEL}
-	THIS_WRAPUP=${THIS_AE}_WrapUp_${UNIQUE_LABEL}
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+OPAQUE='\033[2m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
 
-	HOLD_JID_INDEX=`expr $INDEX % $BATCH_SIZE`
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+### Regarding changing the 'type' of the things printed with 'echo'
+### Refer to: 
+### - http://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
+### - http://misc.flogisoft.com/bash/tip_colors_and_formatting
+### - http://unix.stackexchange.com/questions/37260/change-font-in-echo-command
 
-	if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
-		HOLD_JID_STRING=""
-	else
-		HOLD_JID_STRING=""
-	fi
-	HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
+### echo -e "\033[1mbold\033[0m"
+### echo -e "\033[3mitalic\033[0m" ### THIS DOESN'T WORK ON MAC!
+### echo -e "\033[4munderline\033[0m"
+### echo -e "\033[9mstrikethrough\033[0m"
+### echo -e "\033[31mHello World\033[0m"
+### echo -e "\x1B[31mHello World\033[0m"
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echocyan { 
+    echo -e "${CYAN}${1}${NONE}" 
+}
+
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
+
+# errors
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+
+# errors no option
+function echoerrornooption { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
+}
+
+### MESSAGE FUNCTIONS
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2016-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
+script_arguments_error() {
+	echoerror "$1" # ERROR MESSAGE
+	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror ""
+	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory]"
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+  	exit 1
+}
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                               slideQuantify"
+echo ""
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
+echoitalic "* Last update : 2019-01-23"
+echoitalic "* Version     : 1.1.0"
+echo ""
+echoitalic "* Description : This script will start the quantification for a given stain"
+echoitalic "                in a given project directory."
+echo ""
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+echobold "Cleaning up house, first."
+rm -rfv logs/
+rm -rfv errors/
+mkdir -pv logs
+mkdir -pv errors
+rm -rfv AE*/magick-tmp
+
+echo ""
+### REQUIRED | GENERALS	
+STAIN="$1" # Depends on arg1
+PIPELINE="$2" # Depends on arg2
+PROJECTDIR="$3" # Depends on arg3
 	
-	cd $AE_NUM
-	echo "Processing $THIS_AE"
-	
-	if [ -f result.txt ]; then cd ..; INDEX=$((INDEX+1)); echo "....Already done!"; continue; fi;
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 3 ]]; then 
+	echo "Oh, computer says no! Number of arguments found "$#"."
+	script_arguments_error "You must supply correct arguments when running *** sldieQuantify ***!"
+		
+else
+	ENTROPY_THRESHOLD=210
+	HOLD_JIDS=()
+	INDEX=0
+	BATCH_SIZE=3000
+	UNIQUE_LABEL="v1"
 
-	#slideEMask for macro, and NDPISplit when necessary
-	echo "#if [ -f *mask.png ]; then exit; fi;
-	module load slideToolkit
-	module load ndpitools
-	mkdir -pv magick-tmp
+	### FOR DEBUG
+	for SLIDE_NUM in AE999.FIBRIN/ AE99.T02-18575.A.FIBRIN/ AE997.T05-12460.FIBRIN/ ; do
+# 	for SLIDE_NUM in AE*/; do
+		sleep 1
+		THIS_SLIDE=${SLIDE_NUM/\//}
+		THIS_SLIDEMASK=${THIS_SLIDE}_slideMask_${UNIQUE_LABEL}
+		THIS_SLIDE2TILES=${THIS_SLIDE}_slide2Tiles_${UNIQUE_LABEL}
+		THIS_SLIDENORMALIZE=${THIS_SLIDE}_slideNormalize_${UNIQUE_LABEL}
+		THIS_CELLPROFILER=${THIS_SLIDE}_CellProfiler_${UNIQUE_LABEL}
+		THIS_WRAPUP=${THIS_SLIDE}_WrapUp_${UNIQUE_LABEL}
+
+		HOLD_JID_INDEX=`expr $INDEX % $BATCH_SIZE`
+
+		if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
+			HOLD_JID_STRING=""
+		else
+			HOLD_JID_STRING=""
+		fi
+		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
+	
+		cd $SLIDE_NUM
+		echobold "Processing images of file [ $THIS_AE ] for staining [ $STAIN ]."
+	
+		if [ -f result.txt ]; then 
+			cd ..; 
+			INDEX=$((INDEX+1)); 
+			echo "..... Analysis was already done!"; 
+			continue; 
+		fi
+
+		### slideEMask for macro, and NDPISplit when necessary
+		echo ""
+		echoitalic "Submitting job for slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
+		
+		echo "#if [ -f *mask.png ]; then exit; fi;
+		module load slideToolkit
+		module load ndpitools
+		mkdir -pv magick-tmp
+			export MAGICK_TMPDIR=$(pwd)/magick-tmp
+			export TMPDIR=$(pwd)/magick-tmp
+		if [ -f *.ndpi ]; then
+			if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
+			slideMask --layer 0 -f *.tif;
+		else
+			slideMask --layer 3 -f *.TIF
+		fi
+		slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
+		rm -rfv magick-tmp
+		" | qsub -cwd -N $THIS_SLIDEMASK -e ../errors/ -o ../logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
+		echo $THIS_SLIDEMASK
+		echo $HOLD_JID_STRING
+	
+		### slide2Tiles
+		echo ""
+		echoitalic "Submitting job for slide2Tiles to create tiles from images."
+		
+		echo "if [ -d *.tiles ]; then exit; fi;
+		module load ndpitools;
+		module load slideToolkit;
+		mkdir -pv magick-tmp
 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
 		export TMPDIR=$(pwd)/magick-tmp
-	if [ -f *.ndpi ]; then
-		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
-		slideMask --layer 0 -f *.tif;
-	else
-		slideMask --layer 3 -f *.TIF
-	fi
-	slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
-	rm -rfv magick-tmp
-	" | qsub -cwd -N $THIS_SLIDEMASK -e ../errors/ -o ../logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
-	echo $THIS_SLIDEMASK
-	echo $HOLD_JID_STRING
+
+		if [ -f *.ndpi ]; then
+			slide2Tiles --layer 0 -f *x40*.tif -m *emask.png
+			
+		else
+			slide2Tiles --layer 3 -f *.TIF -m *.emask.png
+			
+		fi
+
+		rm -rfv magick-tmp
+		" | qsub -cwd -N $THIS_SLIDE2TILES -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=150G -l h_rt=02:30:00
+
+		### slideNormalize
+		echo ""
+		echoitalic "Submitting job for sldieNormalize for normalization of images."
+		
+		echo "if [ -f processanda.txt ]; then exit; fi;
+		if [ ! -d *.tiles ]; then
+			(>&2 echo "Error! No tiles to process")
+			exit; 
+		fi
+		cd *.tiles/;
+		module load slideNormalize;
+		module load slideToolkit;
+		mkdir -pv magick-tmp
+			export MAGICK_TMPDIR=$(pwd)/magick-tmp
+			export TMPDIR=$(pwd)/magick-tmp
+		for f in *.png
+		do
+			echo \"...Processing tile \$f\";
+			slideNormalize \$f;
+			slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
+			rm -v \$f;
+		done
+		rm -rfv magick-tmp
+		cd ..
+		ls -d -1 \$PWD/*tiles/*normalized* > processanda.txt;
+		ls -d -1 \$PWD/*tiles/ENTROPY* >> processanda.txt;
+		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=5G -l h_rt=02:00:00
 	
-	#slide2Tiles
-	echo "if [ -d *.tiles ]; then exit; fi;
-	module load ndpitools;
-	module load slideToolkit;
-	mkdir -pv magick-tmp
-	export MAGICK_TMPDIR=$(pwd)/magick-tmp
-	export TMPDIR=$(pwd)/magick-tmp
+		### CellProfiler
+		echo ""
+		echoitalic "Submitting job for CellProfiler to analyze images."
+		
+		echo "if [ -d cp_output ]; then exit; fi;
+		module load anaconda
+		mkdir -pv cp_output
+		cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
+		" | qsub -cwd -N $THIS_CELLPROFILER -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
 
-	if [ -f *.ndpi ]; then
+		### REMOVE THIS BREAK FOR PRODUCTION!
+		INDEX=$((INDEX+1))
+		break;	
+	
+		### Wrap Up
+		echo ""
+		echoitalic "Submitting job to WrapUp the work we have done, and clean house."
+		
+		echo "
+		ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
+		echo 'SLIDE_NUM $STAIN' > result.txt;
+		cd cp_output;
+		SLIDE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
+		echo \$SLIDE_NUM \$(Rscript \$PROJECTDIR/Colsums.R $STAIN) >> ../result.txt;
+		cd ..
+		rm -rfv *tiles/;
+		if [ -f *.ndpi ]; then rm -v *x40*.tif; rm -v *x40*.png; fi;
+			rm -v processanda.txt;
+		" | qsub -cwd -N $THIS_WRAPUP -e ../errors/ -o ../logs/ -hold_jid $THIS_CELLPROFILER
 
-		slide2Tiles --layer 0 -f *x40*.tif -m *emask.png
-	else
-		slide2Tiles --layer 3 -f *.TIF -m *.emask.png
-	fi
+		cd ..
 
-	rm -rfv magick-tmp
-	" | qsub -cwd -N $THIS_SLIDE2TILES -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=150G -l h_rt=02:30:00
-
-	#slideNormalize
-	echo "if [ -f processanda.txt ]; then exit; fi;
-	if [ ! -d *.tiles ]; then
-		(>&2 echo "Error! No tiles to process")
-		exit; 
-	fi
-	cd *.tiles/;
-	module load slideNormalize;
-	module load slideToolkit;
-	mkdir -pv magick-tmp
-		export MAGICK_TMPDIR=$(pwd)/magick-tmp
-		export TMPDIR=$(pwd)/magick-tmp
-	for f in *.png
-	do
-		echo \"...Processing tile \$f\";
-		slideNormalize \$f;
-		slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
-		rm -v \$f;
+		INDEX=$((INDEX+1))
+		if [ "$INDEX" -eq "3000" ]; then 
+			break; 
+		fi;
 	done
-	rm -rfv magick-tmp
-	cd ..
-	ls -d -1 \$PWD/*tiles/*normalized* > processanda.txt;
-	ls -d -1 \$PWD/*tiles/ENTROPY* >> processanda.txt;
-	" | qsub -cwd -N $THIS_SLIDENORMALIZE -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=5G -l h_rt=02:00:00
-	
-	#CellProfiler
-	echo "if [ -d cp_output ]; then exit; fi;
-	module load anaconda
-	mkdir -pv cp_output
-	cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
-	" | qsub -cwd -N $THIS_CELLPROFILER -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
 
-	#REMOVE THIS BREAK FOR PRODUCTION!
-	INDEX=$((INDEX+1))
-# 	break;	
-	
-	#Wrap Up
-	echo "
-	ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
-	echo 'AE_NUM $STAIN' > result.txt;
-	cd cp_output;
-	AE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
-	echo \$AE_NUM \$(Rscript ..\/Colsums.R $STAIN) >> ../result.txt;
-	cd ..
-	rm -rfv *tiles/;
-	if [ -f *.ndpi ]; then rm *x40*.tif; rm *x40*.png; fi;
-		rm -v processanda.txt;
-	" | qsub -cwd -N $THIS_WRAPUP -e ../errors/ -o ../logs/ -hold_jid $THIS_CELLPROFILER
 
-	cd ..
+### END of if-else statement for the number of command-line arguments passed ###
+fi
 
-	INDEX=$((INDEX+1))
-	if [ "$INDEX" -eq "3000" ]; then break; fi;
-done
-
+script_copyright_message
