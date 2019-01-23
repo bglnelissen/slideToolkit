@@ -87,14 +87,14 @@ script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  indicates the stain used."
 	echoerror ""
-	echoerror "An example command would be: ResultCollector.sh [arg1: STAIN] "
+	echoerror "An example command would be: slideResultCollectorCD68.sh [arg1: STAIN] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
 }
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                             slideResultCollector"
+echobold "                         slideResultCollector for CD68"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
@@ -102,7 +102,7 @@ echoitalic "* Last update : 2019-01-23"
 echoitalic "* Version     : 1.0.1"
 echo ""
 echoitalic "* Description : This script will collect data for a object quantification,"
-echoitalic "                such as DAB based CD68 or SMA."
+echoitalic "                such as DAB based CD68."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
