@@ -12,9 +12,10 @@ if [ "$STAIN" = "" ]; then echo "Please specify Stain name!"; exit; fi;
 HOLD_JIDS=()
 INDEX=0
 BATCH_SIZE=3000
-UNIQUE_LABEL="V3"
+UNIQUE_LABEL="v1"
 
-for AE_NUM in AE*/
+# for AE_NUM in AE*/
+for AE_NUM in AE999.FIBRIN/
 do
 	sleep 1
 	THIS_AE=${AE_NUM/\//}
@@ -42,9 +43,9 @@ do
 	echo "#if [ -f *mask.png ]; then exit; fi;
 	module load slideToolkit
 	module load ndpitools
-	mkdir -vp magick-tmp
-        export MAGICK_TMPDIR=$(pwd)/magick-tmp
-        export TMPDIR=$(pwd)/magick-tmp
+	mkdir -pv magick-tmp
+		export MAGICK_TMPDIR=$(pwd)/magick-tmp
+		export TMPDIR=$(pwd)/magick-tmp
 	if [ -f *.ndpi ]; then
 		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
 		slideMask --layer 0 -f *.tif;
@@ -61,7 +62,7 @@ do
 	echo "if [ -d *.tiles ]; then exit; fi;
 	module load ndpitools;
 	module load slideToolkit;
-	mkdir -p magick-tmp
+	mkdir -pv magick-tmp
 	export MAGICK_TMPDIR=$(pwd)/magick-tmp
 	export TMPDIR=$(pwd)/magick-tmp
 
@@ -72,7 +73,7 @@ do
 		slide2Tiles --layer 3 -f *.TIF -m *.emask.png
 	fi
 
-	rm -rf magick-tmp
+	rm -rfv magick-tmp
 	" | qsub -cwd -N $THIS_SLIDE2TILES -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=150G -l h_rt=02:30:00
 
 	#slideNormalize
@@ -84,7 +85,7 @@ do
 	cd *.tiles/;
 	module load slideNormalize;
 	module load slideToolkit;
-	mkdir -vp magick-tmp
+	mkdir -pv magick-tmp
 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
 		export TMPDIR=$(pwd)/magick-tmp
 	for f in *.png
@@ -92,9 +93,9 @@ do
 		echo \"...Processing tile \$f\";
 		slideNormalize \$f;
 		slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
-		rm \$f;
+		rm -v \$f;
 	done
-	rm -rf magick-tmp
+	rm -rfv magick-tmp
 	cd ..
 	ls -d -1 \$PWD/*tiles/*normalized* > processanda.txt;
 	ls -d -1 \$PWD/*tiles/ENTROPY* >> processanda.txt;
@@ -103,7 +104,7 @@ do
 	#CellProfiler
 	echo "if [ -d cp_output ]; then exit; fi;
 	module load anaconda
-	mkdir -vp cp_output
+	mkdir -pv cp_output
 	cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
 	" | qsub -cwd -N $THIS_CELLPROFILER -e ../errors/ -o ../logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=25G -l h_rt=03:00:00
 
