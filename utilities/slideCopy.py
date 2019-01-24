@@ -5,7 +5,7 @@ from sys import argv
 
 # vars for batch
 lower = 1
-upper = 50
+upper = 100
 batch = True
 STAIN = "HE"
 basedir = "/data/isi/d/dhl/ec/VirtualSlides/AE-SLIDES/"+STAIN+"/_"
