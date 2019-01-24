@@ -136,7 +136,7 @@ if [[ $# -lt 1 ]]; then
 		
 else
 	
-echo "All arguments are passed and correct. We will collect data for stain: [ $STAIN ] ."
+	echo "All arguments are passed and correct. We will collect data for stain: [ $STAIN ] ."
 
 	echo ""
 	echocyan "Collecting data for DAB OBJECTS."

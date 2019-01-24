@@ -89,6 +89,7 @@ script_arguments_error() {
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
 	echoerror "- Argument #2  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
 	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror "- Argument #4  -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
 	echoerror ""
 	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -109,25 +110,26 @@ echoitalic "                in a given project directory."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-echobold "Cleaning up house, first."
-rm -rfv logs/
-rm -rfv errors/
-mkdir -pv logs
-mkdir -pv errors
-rm -rfv AE*/magick-tmp
-
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
 PIPELINE="$2" # Depends on arg2
 PROJECTDIR="$3" # Depends on arg3
+FILESTART="$4" # Depends on arg4
 	
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 3 ]]; then 
+if [[ $# -lt 4 ]]; then 
 	echo "Oh, computer says no! Number of arguments found "$#"."
 	script_arguments_error "You must supply correct arguments when running *** sldieQuantify ***!"
 		
 else
+	echobold "Cleaning up house, first."
+	rm -rfv logs/
+	rm -rfv errors/
+	mkdir -pv logs
+	mkdir -pv errors
+	rm -rfv $FILESTART*/magick-tmp
+
 	ENTROPY_THRESHOLD=210
 	HOLD_JIDS=()
 	INDEX=0
@@ -135,9 +137,9 @@ else
 	UNIQUE_LABEL="v1"
 
 	### FOR DEBUG
-	DEBUGLIST="AE999.FIBRIN AE99.T02-18575.A.FIBRIN AE997.T05-12460.FIBRIN AE99.T02-18575.A.FIBRIN"
-	for SLIDE_NUM in $DEBUGLIST; do
-# 	for SLIDE_NUM in AE*/; do
+	### DEBUGLIST="AE999.FIBRIN AE99.T02-18575.A.FIBRIN AE997.T05-12460.FIBRIN"
+	### for SLIDE_NUM in $DEBUGLIST; do
+	for SLIDE_NUM in $FILESTART*; do
 		sleep 1
 		THIS_SLIDE=${SLIDE_NUM/\//}
 		THIS_SLIDEMASK=${THIS_SLIDE}_slideMask_${UNIQUE_LABEL}
@@ -167,11 +169,11 @@ else
 			echo "..... Analysis was already done!"; 
 			continue; 
 		fi
-		echo "..... Processing file for the first time!"
+		echo "..... Processing file for the first time. Submitting job for: "
 		
 		### slideEMask for macro, and NDPISplit when necessary
 		echo ""
-		echoitalic "Submitting job for slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
+		echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
 		
 		echo "#if [ -f *mask.png ]; then exit; fi;
 		module load slideToolkit
@@ -189,12 +191,12 @@ else
 		rm -rfv magick-tmp
 		" | qsub -cwd -N $THIS_SLIDEMASK -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ $HOLD_JID_STRING -l h_vmem=100G -l h_rt=01:30:00
 		### FOR DEBUG
-# 		echo $THIS_SLIDEMASK
-# 		echo $HOLD_JID_STRING
+		### echo $THIS_SLIDEMASK
+		### echo $HOLD_JID_STRING
 	
 		### slide2Tiles
 		echo ""
-		echoitalic "Submitting job for slide2Tiles to create tiles from images."
+		echoitalic "* slide2Tiles to create tiles from images."
 		
 		echo "if [ -d *.tiles ]; then exit; fi;
 		module load ndpitools;
@@ -216,7 +218,7 @@ else
 
 		### slideNormalize
 		echo ""
-		echoitalic "Submitting job for sldieNormalize for normalization of images."
+		echoitalic "* slideNormalize for normalization of images."
 		
 		echo "if [ -f processanda.txt ]; then exit; fi;
 		if [ ! -d *.tiles ]; then
@@ -244,7 +246,7 @@ else
 	
 		### CellProfiler
 		echo ""
-		echoitalic "Submitting job for CellProfiler to analyze images."
+		echoitalic "* CellProfiler to analyze images."
 		
 		echo "if [ -d cp_output ]; then exit; fi;
 		module load anaconda
@@ -260,7 +262,7 @@ else
 
 		### Wrap Up
 		echo ""
-		echoitalic "Submitting job to WrapUp the work we have done, and clean house."
+		echoitalic "* WrapUp the work we have done, and clean house."
 		
 		echo "
 		ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
