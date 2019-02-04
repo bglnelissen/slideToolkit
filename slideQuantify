@@ -102,8 +102,8 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-01-23"
-echoitalic "* Version     : 1.1.0"
+echoitalic "* Last update : 2019-03-04"
+echoitalic "* Version     : 1.1.1"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory."
@@ -150,10 +150,11 @@ else
 
 		HOLD_JID_INDEX=`expr $INDEX % $BATCH_SIZE`
 
+		# process batches in smaller chunks
 		if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
 			HOLD_JID_STRING=""
 		else
-			HOLD_JID_STRING=""
+			HOLD_JID_STRING="-hold_jid ${HOLD_JIDS[$HOLD_JID_INDEX]}"
 		fi
 		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 	
