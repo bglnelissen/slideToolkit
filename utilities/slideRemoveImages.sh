@@ -42,8 +42,8 @@ echobold "                             slideRemoveImages"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-01-23"
-echoitalic "* Version     : 1.0.1"
+echoitalic "* Last update : 2019-02-17"
+echoitalic "* Version     : 1.0.2"
 echo ""
 echoitalic "* Description : This script will remove TIFs, NDPIs, and PNG when we have"
 echoitalic "                no use of them anymore."
@@ -52,21 +52,25 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo ""
 echocyan "Removing TIF-files."
-rm -rf AE*/*.TIF
-rm -rf AE*/*/*.TIF
-rm -rf AE*/*/*/*.TIF
+rm -rvf AE*/*.TIF
+rm -rvf AE*/*/*.TIF
+rm -rvf AE*/*/*/*.TIF
 
 echo ""
 echocyan "Removing NDPI-files."
-rm -rf AE*/*.ndpi
-rm -rf AE*/*/*.ndpi
-rm -rf AE*/*/*/*.ndpi
+rm -rvf AE*/*.ndpi
+rm -rvf AE*/*/*.ndpi
+rm -rvf AE*/*/*/*.ndpi
 
 echo ""
 echocyan "Removing PNG-files."
-rm -rf AE*/*.png
-rm -rf AE*/*/*.png
-rm -rf AE*/*/*/*.png
+rm -rvf AE*/*.png
+rm -rvf AE*/*/*.png
+rm -rvf AE*/*/*/*.png
+
+echo ""
+echocyan "Removing magick-tmp-folders."
+rm -rvf AE*/magick-tmp
 
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
