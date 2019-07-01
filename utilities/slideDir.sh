@@ -42,21 +42,40 @@ echobold "                             DIRECTORY CREATOR"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-01-15"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Last update : 2019-07-01"
+echoitalic "* Version     : 1.0.1"
 echo ""
 echoitalic "* Description : This script will create directories using slideDirectory from "
 echoitalic "                slideToolKit."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
+
+echo ""
+echocyan "Fix filenames and replace 'spaces' with '_'."
+for f in *\ *; do 
+	mv -v "$f" "${f// /_}"
+done
+
 echo ""
 echocyan "Creating directories for NDPI-files."
-find "$(pwd)" -iname "*.ndpi" -exec /hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideDirectory -f "{}" \;
+# old version macOS based, '-iname' goes iteratively through all the folders in the folder
+# find "$(pwd)" -iname "*.ndpi" -exec /hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideDirectory -f "{}" \;
+find  *.ndpi -exec $SLIDETOOLKITDIR/slideDirectory -f "{}" \;
 
 echo ""
 echocyan "Creating directories for TIF-files."
-find "$(pwd)" -iname "*.TIF" -exec /hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideDirectory -f "{}" \;
+# old version macOS based, '-iname' goes iteratively through all the folders in the folder
+# find "$(pwd)" -iname "*.TIF" -exec /hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideDirectory -f "{}" \;
+find  *.TIF -exec $SLIDETOOLKITDIR/slideDirectory -f "{}" \;
+
+echo ""
+echocyan "Creating directories for tif-files."
+# old version macOS based, '-iname' goes iteratively through all the folders in the folder
+# find "$(pwd)" -iname "*.TIF" -exec /hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideDirectory -f "{}" \;
+find  *.tif -exec $SLIDETOOLKITDIR/slideDirectory -f "{}" \;
 
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
