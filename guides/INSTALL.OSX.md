@@ -149,7 +149,6 @@ if [ -d ~/git/slideToolKit/.git ]; then \
 Add symbolic links in `~/bin/`. Now the **slideToolKit** will be availabe in your PATH. Adding the **slideToolKit** tools to your PATH makes it easier to acces the slideToolkit commands.
 
 ```
-mkdir -p ~/bin/ && 
 mkdir -p ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slide2Tiles ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slideConvert ~/bin/ && \
@@ -178,7 +177,8 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1
 
 ```
 
-_Note: change the version number of CellProfiler in the command above, if needed._
+_Note #1: change the version number of CellProfiler in the command above, if needed._
+_Note #2: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29){target=_blank}_
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
