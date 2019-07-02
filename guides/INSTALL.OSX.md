@@ -173,18 +173,25 @@ Some pathology scanners produce proprietary `NDPI`-files. These are almost simil
 Simply go to the [NDPITools website](https://www.imnc.in2p3.fr/pagesperso/deroulers/software/ndpitools/) and following the instructions for macOS.
 
 #### Step 10 - Install CellProfiler.
-Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
+Install `CellProfiler version 2.2.0` following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
 
 ```
-printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1.8.app/Contents/MacOS/cp "$@"\n' \
+printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app/Contents/MacOS/CellProfiler "$@"\n' \
     > ~/bin/cellprofiler && chmod -v 0755 ~/bin/cellprofiler
 
 ```
 
-_Note #1: change the version number of CellProfiler in the command above, if needed._
-_Note #2: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29)_
+##### We prefer version 2.2.0
+We prefer version 2.2.0 because this version works best on our _high-performance computing cluster_. That said: one could easily install the latest version by simply changing the version number of CellProfiler in the command above, if needed. For example:
+
+```
+printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1.8.app/Contents/MacOS/cp "$@"\n' \
+    > ~/bin/cellprofiler && chmod -v 0755 ~/bin/cellprofiler
+```
+
+_Note: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29)_
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
