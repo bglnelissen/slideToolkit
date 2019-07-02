@@ -173,7 +173,7 @@ Some pathology scanners produce proprietary `NDPI`-files. These are almost simil
 Simply go to the [NDPITools website](https://www.imnc.in2p3.fr/pagesperso/deroulers/software/ndpitools/) and following the instructions for macOS.
 
 #### Step 10 - Install CellProfiler.
-Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml){target="_blank"}. Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
+Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
 
