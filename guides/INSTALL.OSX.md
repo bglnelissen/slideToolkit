@@ -149,7 +149,22 @@ if [ -d ~/git/slideToolKit/.git ]; then \
 Add symbolic links in `~/bin/`. Now the **slideToolKit** will be availabe in your PATH. Adding the **slideToolKit** tools to your PATH makes it easier to acces the slideToolkit commands.
 
 ```
-mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolKit/slide* ~/bin/
+mkdir -p ~/bin/ && 
+mkdir -p ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slide2Tiles ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideConvert ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideDirectory ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideEMask ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideInfo ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideJobsCellProfiler ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideMask ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideMacro ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideQuantify ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideQuantifyLocal ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideRename ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideReset ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideSQLheader ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideThumb ~/bin/ 
 ```
 
 #### Step 9 - Install CellProfiler.
@@ -159,7 +174,7 @@ To make the CellProfiler command line interface (CLI) available, we create a `ce
 
 ```
 printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1.8.app/Contents/MacOS/cp "$@"\n' \
-    > ~/bin/cellprofiler && chmod 755 ~/bin/cellprofiler
+    > ~/bin/cellprofiler && chmod -v 0755 ~/bin/cellprofiler
 
 ```
 
