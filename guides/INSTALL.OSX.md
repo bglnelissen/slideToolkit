@@ -1,9 +1,9 @@
 macOS and OS X 10.9+ - slideToolkit installation instructions
 ============
 
-The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
+The **slideToolKit** is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
 
-We have tested slideToolkit on CentOS6, CentOS7, OS X Mountain Lion+ (version 10.8.[x]+), and macOS Sierra (version 10.12.[x]).
+We have tested **slideToolKit** on CentOS6, CentOS7, OS X Mountain Lion+ (version 10.8.[x]+), and macOS Sierra (version 10.12.[x]).
 
 Please tell us if you run into problems, it is likely we can help you out - we have done this before. ;)
 
@@ -102,7 +102,7 @@ cd ~/usr && wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifac
 	unzip -o bftools.zip && \
 	rm bftools.zip
 ```
-Add symbolic links in `~/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the slideToolkit to find its dependencies.
+Add symbolic links in `~/bin/`. Now the BioFormats tools will be availabe in your PATH. Adding the bftools  to your PATH is obligatory for the **slideToolKit** to find its dependencies.
 
 ```
 mkdir -p ~/bin/ && \
@@ -133,23 +133,23 @@ brew install dmtx-utils
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 8 - Install slideToolkit.
-Download and install the latest version of the slideToolkit from GitHub. First create and go to the git directory, then download the slideToolkit.
+Download and install the latest version of the slideToolKit from GitHub. First create and go to the git directory, then download the **slideToolKit**.
 
 ```
 mkdir -p ~/git/ && cd ~/git
 ```
 ```
-if [ -d ~/git/slideToolkit/.git ]; then \
-		cd ~/git/slideToolkit && git pull; \
+if [ -d ~/git/slideToolKit/.git ]; then \
+		cd ~/git/slideToolKit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolKit.git; \
 	fi
 ```
 
-Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PATH. Adding the slideToolkit tools to your PATH makes it easier to acces the slideToolkit commands.
+Add symbolic links in `~/bin/`. Now the **slideToolKit** will be availabe in your PATH. Adding the **slideToolKit** tools to your PATH makes it easier to acces the slideToolkit commands.
 
 ```
-mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
+mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolKit/slide* ~/bin/
 ```
 
 #### Step 9 - Install CellProfiler.
@@ -158,10 +158,12 @@ Install CellProfiler following instructions on their [website](http://cellprofil
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
 
 ```
-printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app/Contents/MacOS/CellProfiler "$@"\n' \
+printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1.8.app/Contents/MacOS/cp "$@"\n' \
     > ~/bin/cellprofiler && chmod 755 ~/bin/cellprofiler
 
 ```
+
+_Note: change the version number of CellProfiler in the command above, if needed._
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
