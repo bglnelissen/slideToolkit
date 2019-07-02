@@ -85,10 +85,10 @@ First, we will uninstall *all* previous installations of `ImageMagick`, before w
 brew uninstall --ignore-dependencies --force imagemagick
 ```
 
-Now, we are ready to install the latest `ImageMagick` from brew 🍺. 
+Now, we are ready to install the latest `ImageMagick` from brew 🍺 and from _source_, because otherwise `slideEMask` will not work. 
 
 ```
-brew install imagemagick 
+brew install -s imagemagick 
 ```
 
 #### Step 6 - Install the bioformat tools.
