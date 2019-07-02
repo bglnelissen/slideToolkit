@@ -158,10 +158,12 @@ Install CellProfiler following instructions on their [website](http://cellprofil
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
 
 ```
-printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app/Contents/MacOS/CellProfiler "$@"\n' \
+printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1.8.app/Contents/MacOS/cp "$@"\n' \
     > ~/bin/cellprofiler && chmod 755 ~/bin/cellprofiler
 
 ```
+
+_Note: change the version number of CellProfiler in the command above, if needed._
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
