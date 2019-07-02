@@ -210,7 +210,7 @@ else
 		
 		elif [ -f *.TIF ]; then 
 			echo \"The image-file as a .TIF.\"
-			slideMask --layer 3 -f *.TIF;
+			slideMask --layer 7 -f *.TIF;
 		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
@@ -245,7 +245,7 @@ else
 		
 		elif [ -f *.TIF ]; then
 			echo \"The image-file as a .TIF.\"
-			slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
+			slide2Tiles --layer 7 -f *.TIF -m *.emask.png;
 		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
