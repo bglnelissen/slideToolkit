@@ -90,8 +90,9 @@ script_arguments_error() {
 	echoerror "- Argument #2  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
 	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
 	echoerror "- Argument #4  -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
+	echoerror "- Argument #5  -- output filename where the CellProfiler results are stored, e.g. Image.txt (delimiter is assumed '_')."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA]"
+	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.txt]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -102,7 +103,7 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-01"
+echoitalic "* Last update : 2019-07-02"
 echoitalic "* Version     : 1.1.2"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
@@ -116,6 +117,7 @@ STAIN="$1" # Depends on arg1
 PIPELINE="$2" # Depends on arg2
 PROJECTDIR="$3" # Depends on arg3
 FILESTART="$4" # Depends on arg4
+OUTPUTFILENAME="$5" # Depends on arg5
 
 QJOB_MEM_SLIDEMASK="100G"
 QJOB_TIME_SLIDEMASK="02:30:00"
@@ -133,9 +135,9 @@ QJOB_TIME_CP="09:00:00"
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 4 ]]; then 
+if [[ $# -lt 5 ]]; then 
 	echo "Oh, computer says no! Number of arguments found "$#"."
-	script_arguments_error "You must supply correct arguments when running *** slideQuantify ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
 		
 else
 	echobold "Cleaning up house, first."
@@ -148,7 +150,7 @@ else
 	ENTROPY_THRESHOLD=210
 	HOLD_JIDS=()
 	INDEX=0
-	BATCH_SIZE=3000
+	BATCH_SIZE=5000
 	UNIQUE_LABEL="V3"
 
 	### FOR DEBUG
@@ -198,15 +200,18 @@ else
 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
 			export TMPDIR=$(pwd)/magick-tmp
 		if [ -f *.ndpi ]; then
+			echo \"The image-file as a NDPI and will be converted to .tif before masking.\"
 			if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
-			slideMask --layer 0 -f *.tif
-			
-		elif [ -f *.tif ]; then
-			slideMask --layer 0 -f *.tif
-			
-		elif [ -f *.tif ]; then
-			slideMask --layer 3 -f *.TIF
-			
+			slideMask --layer 0 -f *.tif;
+		
+		elif [ -f *.tif ]; then 
+			echo \"The image-file as a (NDPI-converted) .tif.\"
+			slideMask --layer 0 -f *.tif;
+		
+		elif [ -f *.TIF ]; then 
+			echo \"The image-file as a .TIF.\"
+			slideMask --layer 3 -f *.TIF;
+		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
 			[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
@@ -231,14 +236,17 @@ else
 		export TMPDIR=$(pwd)/magick-tmp
 
 		if [ -f *.ndpi ]; then
-			slide2Tiles --layer 0 -f *x40*.tif -m *emask.png
-			
+			echo \"The image-file as a NDPI and will be converted to .tif before tiling.\"
+			slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
+		
 		elif [ -f *.tif ]; then
-			slide2Tiles --layer 0 -f *.tif -m *.emask.png
-			
+			echo \"The image-file as a (NDPI-converted) .tif.\"
+			slide2Tiles --layer 0 -f *.tif -m *.emask.png;
+		
 		elif [ -f *.TIF ]; then
-			slide2Tiles --layer 3 -f *.TIF -m *.emask.png
-			
+			echo \"The image-file as a .TIF.\"
+			slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
+		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
 			[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
@@ -251,7 +259,7 @@ else
 		echo ""
 		echoitalic "* slideNormalize for normalization of images."
 		
-		echo "if [ -f processanda.txt ]; then exit; fi;
+		echo "if [ -f files2cp.txt ]; then exit; fi;
 		if [ ! -d *.tiles ]; then
 			(>&2 echo "Error! No tiles to process")
 			exit; 
@@ -262,8 +270,7 @@ else
 		mkdir -pv magick-tmp
 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
 			export TMPDIR=$(pwd)/magick-tmp
-		for f in *.png
-		do
+		for f in *.png; do
 			echo \"...Processing tile \$f\";
 			slideNormalize \$f;
 			slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
@@ -271,8 +278,8 @@ else
 		done
 		rm -rfv magick-tmp
 		cd ..
-		ls -d -1 \$PWD/*tiles/*normalized* > processanda.txt;
-		ls -d -1 \$PWD/*tiles/ENTROPY* >> processanda.txt;
+		ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
+		ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
 		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=$QJOB_MEM_SLIDENORM -l h_rt=$QJOB_TIME_SLIDENORM
 	
 		### CellProfiler
@@ -282,7 +289,7 @@ else
 		echo "if [ -d cp_output ]; then exit; fi;
 		module load anaconda
 		mkdir -pv cp_output
-		cellprofiler -c -r -p $PIPELINE --file-list processanda.txt -o cp_output/;
+		cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 		" | qsub -cwd -N $THIS_CELLPROFILER -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=$QJOB_MEM_CP -l h_rt=$QJOB_TIME_CP
 
 		### REMOVE THIS BREAK FOR PRODUCTION!
@@ -295,26 +302,34 @@ else
 		echo ""
 		echoitalic "* WrapUp the work we have done, and clean house."
 		
+		# Obsolete code
+		# 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
+		# 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
+		#    Colsums.R
+		# 3. we remove tiles, and other files we don't need
+		
 		echo "
 		ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
-		echo 'SLIDE_NUM $STAIN' > result.txt;
+		echo 'SLIDE_NUM $STAIN' > results.txt;
 		cd cp_output;
 		SLIDE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
-		echo $SLIDE_NUM \$(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN) >> ../result.txt;
+		echo $SLIDE_NUM \$(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN $OUTPUTFILENAME) >> ../results.txt;
 		gzip -v ../results.txt;
 		cd ..
-		rm -rfv *tiles/;
+		#rm -rfv *tiles/;
 		if [ -f *.ndpi ]; then 
-			rm -v *x40*.tif; 
-			rm -v *x40*.png; 
+			echo \"Removing intermediate tif- & png-files converted from NDPI-files.\";
+			#rm -v *x40*.tif; 
+			#rm -v *x40*.png; 
 			fi;
-			rm -v processanda.txt;
+			echo \"Removing list of files to process.\";
+			#rm -v files2cp.txt;
 		" | qsub -cwd -N $THIS_WRAPUP -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_CELLPROFILER
 
 		cd ..
 
 		INDEX=$((INDEX+1))
-		if [ "$INDEX" -eq "3000" ]; then 
+		if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
 			break; 
 		fi;
 	done
