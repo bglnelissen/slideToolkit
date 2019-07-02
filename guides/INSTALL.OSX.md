@@ -166,8 +166,14 @@ mkdir -p ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slideThumb ~/bin/ 
 ```
 
-#### Step 9 - Install CellProfiler.
-Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
+#### Step 9 - Instal NDPITools
+
+Some pathology scanners produce proprietary `NDPI`-files. These are almost similar to `TIF`, but with some differences. To be able to run _slideToolKit_ and _CellProfiler_ we need to install a small package `NDPITools` to convert `NDPI`-files to `TIF`. 
+
+Simply go to the [NDPITools website](https://www.imnc.in2p3.fr/pagesperso/deroulers/software/ndpitools/) and following the instructions for macOS.
+
+#### Step 10 - Install CellProfiler.
+Install CellProfiler following instructions on their [website](http://cellprofiler.org/download.shtml){target="_blank"}. Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
 
@@ -178,7 +184,7 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1
 ```
 
 _Note #1: change the version number of CellProfiler in the command above, if needed._
-_Note #2: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29){target=_blank}_
+_Note #2: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29)_
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
