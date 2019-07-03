@@ -140,8 +140,8 @@ else
 	UNIQUE_LABEL="V3"
 
 	### FOR DEBUG
-	### DEBUGLIST="AE999.FIBRIN AE99.T02-18575.A.FIBRIN AE997.T05-12460.FIBRIN"
-	### for SLIDE_NUM in $DEBUGLIST; do
+# 	DEBUGLIST="AE1686.T07-11206.CD3.20141216 AE1927.T08-12829.CD3.20141216 AE337.T06-19497.CD3.20141218 AE1827.T09-14098.CD3 AE2191.UMC.CD3.20141216 AE921.T05-16731.CD3.20150901"
+# 	for SLIDE_NUM in $DEBUGLIST; do
 	for SLIDE_NUM in $FILESTART*; do
 		sleep 1
 		THIS_SLIDE=${SLIDE_NUM/\//}
@@ -166,7 +166,7 @@ else
 		echo ""
 		echobold "Processing images of file [ $SLIDE_NUM ] for staining [ $STAIN ]."
 	
-		if [ -f result.txt ]; then 
+		if [ -f results.txt ]; then 
 			echoitalic "Checking if this file was processed before ....."
 			cd ..; 
 			INDEX=$((INDEX+1)); 
@@ -179,9 +179,11 @@ else
 		echo ""
 		echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary. [ $THIS_SLIDEMASK ]"
 		
-		if [ -f *emask.png ]; then 
-			exit; 
-		fi;
+# 		if [[ -f *mask.png ]]; then 
+# 			echo "..... Entropy mask already exists."
+# 			exit; 
+# 		fi;
+		
 		mkdir -pv magick-tmp
 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
 			export TMPDIR=$(pwd)/magick-tmp
@@ -206,69 +208,74 @@ else
 		
 		echo "..... Applying entropy filter over [*.macro.png]."
 		slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
-# 		rm -rfv magick-tmp
+		echo "..... Removing temporary directory."
+		rm -rfv magick-tmp
 
 		### FOR DEBUG
 		### echo $THIS_SLIDEMASK
 		### echo $HOLD_JID_STRING
 	
 		### slide2Tiles
-# 		echo ""
-# 		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
-# 		
-# 		if [ -d *.tiles ]; then 
-# 			exit; 
-# 		fi;
-# 
-# 		mkdir -pv magick-tmp
-# 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
-# 		export TMPDIR=$(pwd)/magick-tmp
-# 
-# 		if [ -f *.ndpi ]; then
-# 			echo "The image-file is a NDPI and will be converted to .tif before tiling."
-# 			slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
-# 		
-# 		elif [ -f *.tif ]; then
-# 			echo "The image-file is a (NDPI-converted) .tif."
-# 			slide2Tiles --layer 0 -f *.tif -m *.emask.png;
-# 		
-# 		elif [ -f *.TIF ]; then
-# 			echo "The image-file is a .TIF."
-# 			slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
-# 		
-# 		else
-# 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-# 			[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
-# 			exit 1 
-# 		fi
-# 		rm -rfv magick-tmp
+		echo ""
+		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
+		
+		if [ -d *.tiles ]; then 
+			echo "..... Tiles directory already exists."
+			exit; 
+		fi;
+
+		mkdir -pv magick-tmp
+		export MAGICK_TMPDIR=$(pwd)/magick-tmp
+		export TMPDIR=$(pwd)/magick-tmp
+
+		if [ -f *.ndpi ]; then
+			echo "The image-file is a NDPI and will be converted to .tif before tiling."
+			slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
+		
+		elif [ -f *.tif ]; then
+			echo "The image-file is a (NDPI-converted) .tif."
+			slide2Tiles --layer 0 -f *.tif -m *.emask.png;
+		
+		elif [ -f *.TIF ]; then
+			echo "The image-file is a .TIF."
+			slide2Tiles --layer 7 -f *.TIF -m *.emask.png;
+		
+		else
+			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+			[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
+			exit 1 
+		fi
+		echo "..... Removing temporary directory."
+		rm -rfv magick-tmp
 
 		### slideNormalize
-# 		echo ""
-# 		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
-# 		
-# 		if [ -f files2cp.txt ]; then 
-# 			exit; 
-# 		fi;
-# 		if [ ! -d *.tiles ]; then
-# 			(>&2 echo "Error! No tiles to process")
-# 			exit; 
-# 		fi
-# 		cd *.tiles/;
-# 
-# 		mkdir -pv magick-tmp
-# 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
-# 			export TMPDIR=$(pwd)/magick-tmp
-# 		for f in *.png; do
-# 			echo \"...Processing tile \$f\";
-# 			slideNormalize \$f;
-# 			slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
-# 			rm -v \$f;
-# 		done
-# 		rm -rfv magick-tmp
-# 		cd ..
-# 		ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
-# 		ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
+		echo ""
+		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
+		
+		if [ -f files2cp.txt ]; then 
+			exit; 
+		fi;
+		if [ ! -d *.tiles ]; then
+			(>&2 echo "Error! No tiles to process")
+			exit; 
+		fi
+		
+		ls ${PROJECTDIR}/${SLIDE_NUM}/*.tiles/;
+		cd ${PROJECTDIR}/${SLIDE_NUM}/*.tiles/;
+
+		mkdir -pv magick-tmp
+			export MAGICK_TMPDIR=$(pwd)/magick-tmp
+			export TMPDIR=$(pwd)/magick-tmp
+		for f in *.png; do
+			echo \"...Processing tile \$f\";
+			slideNormalize \$f;
+			slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
+			rm -v \$f;
+		done
+		rm -rfv magick-tmp
+		cd ..
+		ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
+		ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
 	
 		### CellProfiler
 # 		echo ""

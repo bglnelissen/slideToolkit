@@ -1,4 +1,4 @@
-[slideToolKit](https://github.com/swvanderlaan/slideToolkit)
+[slideToolKit](https://github.com/swvanderlaan/slideToolKit)
 ============
 
 **slideToolKit**: _an assistive toolset for the histological quantification of whole slide images_
@@ -15,7 +15,7 @@ A typical workflow consists of four consecutive steps.
 
 In conclusion, **slideToolKit** provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
 
-> Installation instructions for CentOS 6+, Ubuntu and Mac OS X Mountain Lion+ can be found in [guides](https://github.com/swvanderlaan/slideToolkit/tree/master/guides).
+> Installation instructions for CentOS 6+, Ubuntu and Mac OS X Mountain Lion+ can be found in [guides](https://github.com/swvanderlaan/slideToolKit/tree/master/guides).
 
 #### Citations
 - Nelissen B.G.L., van Herwaarden J.A., Moll F.L., van Diest P.J., and Pasterkamp G. (2014) _SlideToolkit: An Assistive Toolset for the Histological Quantification of Whole Slide Images._ **PLoS One.** 2014 Nov 5;9(11):e110289. doi: 10.1371/journal.pone.0110289. [Direct link](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0110289).

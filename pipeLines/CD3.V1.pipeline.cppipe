@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:3
 DateRevision:20160418141927
 GitHash:9969f42
-ModuleCount:18
+ModuleCount:17
 HasImagePlaneDetails:False
 
 Images:[module_num:1|svn_version:\'Unknown\'|variable_revision_number:2|show_window:False|notes:\x5B\'To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.\', \'\\xe2\\x80\\x94\', \'Settings converted from legacy pipeline.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
@@ -11,11 +11,11 @@ Images:[module_num:1|svn_version:\'Unknown\'|variable_revision_number:2|show_win
     Select the rule criteria:and (extension does isimage) (directory doesnot containregexp "\x5B\\\\\\\\\\\\\\\\/\x5D\\\\\\\\.")
 
 Metadata:[module_num:2|svn_version:\'Unknown\'|variable_revision_number:4|show_window:False|notes:\x5B\'The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.\', \'\\xe2\\x80\\x94\', \'Settings converted from legacy pipeline.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
-    Extract metadata?:No
+    Extract metadata?:Yes
     Metadata data type:Text
     Metadata types:{}
     Extraction method count:1
-    Metadata extraction method:Extract from file/folder names
+    Metadata extraction method:Extract from image file headers
     Metadata source:File name
     Regular expression:^(?P<Plate>.*)_(?P<Well>\x5BA-P\x5D\x5B0-9\x5D{2})_s(?P<Site>\x5B0-9\x5D)_w(?P<ChannelNumber>\x5B0-9\x5D)
     Regular expression:(?P<Date>\x5B0-9\x5D{4}_\x5B0-9\x5D{2}_\x5B0-9\x5D{2})$
@@ -38,7 +38,7 @@ NamesAndTypes:[module_num:3|svn_version:\'Unknown\'|variable_revision_number:6|s
     Select the rule criteria:and (file doesnot contain ".overlay") (file does contain ".png")
     Name to assign these images:Original
     Name to assign these objects:Cell
-    Select the image type:Grayscale image
+    Select the image type:Color image
     Set intensity range from:Image metadata
     Retain outlines of loaded objects?:No
     Name the outline image:LoadedOutlines
@@ -101,7 +101,7 @@ ImageMath:[module_num:7|svn_version:\'Unknown\'|variable_revision_number:4|show_
     Multiply the second image by:1
     Measurement:
 
-IdentifyPrimaryObjects:[module_num:8|svn_version:\'Unknown\'|variable_revision_number:10|show_window:False|notes:\x5B\'Find tissue using the grayscale image.\', \'White is background, non-white is foreground.\', \'Diameter is choosen after some testing.\', "Using theshold method is based on trial and error, MoG Global does a good job of removing dark shaded area\'s in contrast to Threshold.", \'From now on, outlined foreground is called Tissue\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+IdentifyPrimaryObjects:[module_num:8|svn_version:\'Unknown\'|variable_revision_number:10|show_window:False|notes:\x5B\'Find tissue using the grayscale image.\', \'White is background, non-white is foreground.\', \'Diameter is choosen after some testing.\', \'Using theshold method is based on trial and error, MoG Global does a good job of removing dark shaded area\\xe2\\x80\\x99s in contrast to Threshold.\', \'From now on, outlined foreground is called Tissue\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Inverted
     Name the primary objects to be identified:Tissue
     Typical diameter of objects, in pixel units (Min,Max):40,99999999
@@ -165,7 +165,7 @@ UnmixColors:[module_num:10|svn_version:\'Unknown\'|variable_revision_number:2|sh
     Green absorbance:0.651435
     Blue absorbance:0.666181
 
-MaskImage:[module_num:11|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Use selected Tissue object to create a mask\', "Only analyse what\'s in the \'Tissue\' area"\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:11|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Use selected Tissue object to create a mask\', \'Only analyse what\\xe2\\x80\\x99s in the \\xe2\\x80\\x98Tissue\\xe2\\x80\\x99 area\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:DAB_masked
     Use objects or an image as a mask?:Objects
@@ -224,11 +224,11 @@ MeasureImageAreaOccupied:[module_num:13|svn_version:\'Unknown\'|variable_revisio
     Hidden:1
     Measure the area occupied in a binary image, or in objects?:Objects
     Select objects to measure:DAB_Nuclei
-    Retain a binary image of the object regions?:No
-    Name the output binary image:Stain
+    Retain a binary image of the object regions?:Yes
+    Name the output binary image:Stain_DAB_Nuclei
     Select a binary image to measure:Tissue
 
-OverlayOutlines:[module_num:14|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Create outlines for visualisation.\', \'The Tissue outline has a thick blue like\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+OverlayOutlines:[module_num:14|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Create outlines for visualisation.\', \'The Tissue outline has a thick blue line.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Display outlines on a blank image?:No
     Select image on which to display outlines:Original
     Name the output image:Orig_Overlay
@@ -240,7 +240,7 @@ OverlayOutlines:[module_num:14|svn_version:\'Unknown\'|variable_revision_number:
     Load outlines from an image or objects?:Image
     Select objects to display:None
 
-OverlayOutlines:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Create outlines for visualisation.\', \'The DAB outline is a thin line\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+OverlayOutlines:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Create outlines for visualisation.\', \'The DAB outline is a thin line.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Display outlines on a blank image?:No
     Select image on which to display outlines:Orig_Overlay
     Name the output image:Orig_Overlay
@@ -276,76 +276,15 @@ SaveImages:[module_num:16|svn_version:\'Unknown\'|variable_revision_number:11|sh
     Base image folder:Elsewhere...\x7C/Users/swvanderlaan/PLINK/analyses/expressscan
     Saved movie format:avi
 
-ExportToDatabase:[module_num:17|svn_version:\'Unknown\'|variable_revision_number:27|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
-    Database type:MySQL / CSV
-    Database name:DefaultDB
-    Add a prefix to table names?:No
-    Table prefix:Expt_
-    SQL file prefix:SQL_
-    Output file location:Default Output Folder\x7CNone
-    Create a CellProfiler Analyst properties file?:Yes
-    Database host:
-    Username:
-    Password:
-    Name the SQLite database file:DefaultDB.db
-    Calculate the per-image mean values of object measurements?:No
-    Calculate the per-image median values of object measurements?:No
-    Calculate the per-image standard deviation values of object measurements?:No
-    Calculate the per-well mean values of object measurements?:No
-    Calculate the per-well median values of object measurements?:No
-    Calculate the per-well standard deviation values of object measurements?:No
-    Export measurements for all objects to the database?:All
-    Select the objects:
-    Maximum # of characters in a column name:64
-    Create one table per object, a single object table or a single object view?:Single object table
-    Enter an image url prepend if you plan to access your files via http:
-    Write image thumbnails directly to the database?:No
-    Select the images for which you want to save thumbnails:
-    Auto-scale thumbnail pixel intensities?:Yes
-    Select the plate type:None
-    Select the plate metadata:None
-    Select the well metadata:None
-    Include information for all images, using default values?:Yes
-    Properties image group count:1
-    Properties group field count:1
-    Properties filter field count:0
-    Workspace measurement count:1
-    Experiment name:MyExpt
-    Which objects should be used for locations?:None
-    Enter a phenotype class table name if using the classifier tool:
-    Export object relationships?:No
-    Overwrite without warning?:Data only
-    Access CPA images via URL?:No
-    Select the classification type:Object
-    Select an image to include:None
-    Use the image name for the display?:Yes
-    Image name:Channel1
-    Channel color:red
-    Do you want to add group fields?:No
-    Enter the name of the group:
-    Enter the per-image columns which define the group, separated by commas:ImageNumber, Image_Metadata_Plate, Image_Metadata_Well
-    Do you want to add filter fields?:No
-    Automatically create a filter for each plate?:No
-    Create a CellProfiler Analyst workspace file?:No
-    Select the measurement display tool:ScatterPlot
-    Type of measurement to plot on the X-axis:Image
-    Enter the object name:Image
-    Select the X-axis measurement:
-    Select the X-axis index:ImageNumber
-    Type of measurement to plot on the Y-axis:Image
-    Enter the object name:Image
-    Select the Y-axis measurement:
-    Select the Y-axis index:ImageNumber
-
-ExportToSpreadsheet:[module_num:18|svn_version:\'Unknown\'|variable_revision_number:11|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+ExportToSpreadsheet:[module_num:17|svn_version:\'Unknown\'|variable_revision_number:11|show_window:False|notes:\x5B\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Select the column delimiter:Comma (",")
-    Add image metadata columns to your object data file?:No
+    Add image metadata columns to your object data file?:Yes
     Limit output to a size that is allowed in Excel?:No
     Select the measurements to export:No
-    Calculate the per-image mean values for object measurements?:No
-    Calculate the per-image median values for object measurements?:No
-    Calculate the per-image standard deviation values for object measurements?:No
-    Output file location:Default Output Folder\x7CNone
+    Calculate the per-image mean values for object measurements?:Yes
+    Calculate the per-image median values for object measurements?:Yes
+    Calculate the per-image standard deviation values for object measurements?:Yes
+    Output file location:Default Input Folder sub-folder\x7Cexpressscan/CD3/_ANALYSES
     Create a GenePattern GCT file?:No
     Select source of sample row name:Metadata
     Select the image to use as the identifier:None
@@ -353,8 +292,8 @@ ExportToSpreadsheet:[module_num:18|svn_version:\'Unknown\'|variable_revision_num
     Export all measurement types?:Yes
     :
     Representation of Nan/Inf:NaN
-    Add a prefix to file names?:No
-    Filename prefix:MyExpt_
+    Add a prefix to file names?:Yes
+    Filename prefix:CD3_
     Overwrite existing files without warning?:Yes
     Data to export:Do not use
     Combine these object measurements with those of the previous object?:No
