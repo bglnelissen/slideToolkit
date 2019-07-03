@@ -161,7 +161,7 @@ else
 		fi
 		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 	
-		cd $SLIDE_NUM
+		cd $PROJECTDIR/$SLIDE_NUM
 
 		echo ""
 		echobold "Processing images of file [ $SLIDE_NUM ] for staining [ $STAIN ]."
@@ -179,11 +179,11 @@ else
 		echo ""
 		echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary. [ $THIS_SLIDEMASK ]"
 		
-# 		if [[ -f *mask.png ]]; then 
-# 			echo "..... Entropy mask already exists."
-# 			exit; 
-# 		fi;
-		
+		### NOTE: this does not work locally on macOS
+		### if [[ -f *mask.png ]]; then 
+		### 	echo "..... Entropy mask already exists."
+		### 	continue; 
+		### fi;
 		mkdir -pv magick-tmp
 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
 			export TMPDIR=$(pwd)/magick-tmp
@@ -219,10 +219,11 @@ else
 		echo ""
 		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
 		
-		if [ -d *.tiles ]; then 
-			echo "..... Tiles directory already exists."
-			exit; 
-		fi;
+		### NOTE: this does not work locally on macOS
+		### if [ -d *.tiles ]; then 
+		### 	echo "..... Tiles directory already exists."
+		### 	continue; 
+		### fi;
 
 		mkdir -pv magick-tmp
 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
@@ -250,74 +251,88 @@ else
 
 		### slideNormalize
 		echo ""
-		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
+		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]."
 		
-		if [ -f files2cp.txt ]; then 
-			exit; 
-		fi;
+		### NOTE: this does not work locally on macOS
+		### if [ -f files2cp.txt ]; then 
+		### 	echo "Normalization was already applied."
+		### 	continue; 
+		### fi;
 		if [ ! -d *.tiles ]; then
-			(>&2 echo "Error! No tiles to process")
+			(>&2 echo "*** ERROR *** No tiles to process.")
 			exit; 
 		fi
 		
-		ls ${PROJECTDIR}/${SLIDE_NUM}/*.tiles/;
-		cd ${PROJECTDIR}/${SLIDE_NUM}/*.tiles/;
+		### DEBUG
+		### echo "...Checking existence of tiles."
+		### ls $PROJECTDIR/$SLIDE_NUM/*.tiles/;
+		cd $PROJECTDIR/$SLIDE_NUM/*.tiles/;
 
 		mkdir -pv magick-tmp
 			export MAGICK_TMPDIR=$(pwd)/magick-tmp
 			export TMPDIR=$(pwd)/magick-tmp
-		for f in *.png; do
-			echo \"...Processing tile \$f\";
-			slideNormalize \$f;
-			slideEMask -c -f \$f -t $ENTROPY_THRESHOLD
-			rm -v \$f;
+		for MASKED_IMAGE_TILE in *.png; do
+			echo "...Processing tile [ $MASKED_IMAGE_TILE ]"
+			echo "... - applying normalization ..."
+			slideNormalize $MASKED_IMAGE_TILE
+			
+			echo "... - masking the normalized image ..."
+			slideEMask -c -f $MASKED_IMAGE_TILE -t $ENTROPY_THRESHOLD
+			rm -v $MASKED_IMAGE_TILE;
 		done
 		rm -rfv magick-tmp
 		cd ..
-		ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
-		ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
+		echo "...Collecting all normalized and masked tiles in a file for CellProfiler."
+		ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt
+		ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt
 	
 		### CellProfiler
+		### This does not work on macOS Mojave 10.14.5 because we need vigra.
+		### However installing this comes with issues: 
+		### https://github.com/ukoethe/vigra/issues/468
 # 		echo ""
 # 		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
 # 		
-# 		if [ -d cp_output ]; then 
-# 			exit; 
-# 		fi;
+# 		if [ -z "$(ls -A cp_output)" ]; then 
+# 			mkdir -pv cp_output
+# 			echo "...Running CellProfiler using $PIPELINE for $STAIN stained samples."
+# 			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 # 
-# 		mkdir -pv cp_output
-# 		cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
-
-		### REMOVE THIS BREAK FOR PRODUCTION!
-		### When this break is active, only the first item 
-		### in the list of items to be processed will be processed.
-		INDEX=$((INDEX+1))
-# 		break;	
-
-		### Wrap Up
+# 		else
+# 			echo "CellProfiler was already run, or at least there is a 'cp_output'-directory."
+# 			
+# 		fi
+# 
+# 		### REMOVE THIS BREAK FOR PRODUCTION!
+# 		### When this break is active, only the first item 
+# 		### in the list of items to be processed will be processed.
+# 		INDEX=$((INDEX+1))
+# # 		break;	
+# 
+# 		### Wrap Up
 # 		echo ""
 # 		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ] "
-# 		
-# 		# Obsolete code
-# 		# 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
-# 		# 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
-# 		#    Colsums.R
-# 		# 3. we remove tiles, and other files we don't need
-# 		
-# 		ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
+# # 		
+# # 		# Obsolete code
+# # 		# 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
+# # 		# 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
+# # 		#    Colsums.R
+# # 		# 3. we remove tiles, and other files we don't need
+# # 		
+# 		ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - 10) | xargs rm;
 # 		echo 'SLIDE_NUM $STAIN' > results.txt;
 # 		cd cp_output;
-# 		SLIDE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
-# 		echo $SLIDE_NUM \$(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN $OUTPUTFILENAME) >> ../results.txt;
+# 		SLIDE_NUM=$(basename "$PWD") | cut -d'.' -f1
+# 		echo $SLIDE_NUM $(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN $OUTPUTFILENAME) >> ../results.txt;
 # 		gzip -v ../results.txt;
 # 		cd ..
 # 		#rm -rfv *tiles/;
 # 		if [ -f *.ndpi ]; then 
-# 			echo \"Removing intermediate tif- & png-files converted from NDPI-files.\";
+# 			echo "Removing intermediate tif- & png-files converted from NDPI-files.";
 # 			#rm -v *x40*.tif; 
 # 			#rm -v *x40*.png; 
-# 			fi;
-# 			echo \"Removing list of files to process.\";
+# 		fi;
+# 			echo "Removing list of files to process.";
 # 			#rm -v files2cp.txt;
 # 
 		cd ..
