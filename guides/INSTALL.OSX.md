@@ -133,7 +133,7 @@ brew install dmtx-utils
 The dmtx and libdmtx binairies are installed in `/usr/local/bin`. This is the folder `brew` uses for its installations and should already be in your PATH.
 
 #### Step 8 - Install slideToolkit.
-Download and install the latest version of the slideToolKit from GitHub. First create and go to the git directory, then download the **slideToolKit**.
+Download and install the latest version of the **slideNormalize** from GitHub. First create and go to the git directory, then download the **slideToolKit**.
 
 ```
 mkdir -p ~/git/ && cd ~/git
