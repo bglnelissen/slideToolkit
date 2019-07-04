@@ -103,8 +103,8 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-02"
-echoitalic "* Version     : 1.1.2"
+echoitalic "* Last update : 2019-07-03"
+echoitalic "* Version     : 1.1.3-beta"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory."
@@ -121,7 +121,7 @@ PROJECTDIR="$3" # Depends on arg3
 FILESTART="$4" # Depends on arg4
 OUTPUTFILENAME="$5" # Depends on arg5
 
-# Set slideToolKit DIRECTORY
+### Set slideToolKit DIRECTORY
 SLIDETOOLKITDIR="~/git/swvanderlaan/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
@@ -140,8 +140,8 @@ else
 	UNIQUE_LABEL="V3"
 
 	### FOR DEBUG
-# 	DEBUGLIST="AE1686.T07-11206.CD3.20141216 AE1927.T08-12829.CD3.20141216 AE337.T06-19497.CD3.20141218 AE1827.T09-14098.CD3 AE2191.UMC.CD3.20141216 AE921.T05-16731.CD3.20150901"
-# 	for SLIDE_NUM in $DEBUGLIST; do
+	### DEBUGLIST="AE1686.T07-11206.CD3.20141216 AE1927.T08-12829.CD3.20141216 AE337.T06-19497.CD3.20141218 AE1827.T09-14098.CD3 AE2191.UMC.CD3.20141216 AE921.T05-16731.CD3.20150901"
+	### for SLIDE_NUM in $DEBUGLIST; do
 	for SLIDE_NUM in $FILESTART*; do
 		sleep 1
 		THIS_SLIDE=${SLIDE_NUM/\//}
@@ -282,14 +282,14 @@ else
 		done
 		rm -rfv magick-tmp
 		cd ..
-		echo "...Collecting all normalized and masked tiles in a file for CellProfiler."
-		ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt
-		ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt
-	
-		### CellProfiler
-		### This does not work on macOS Mojave 10.14.5 because we need vigra.
-		### However installing this comes with issues: 
-		### https://github.com/ukoethe/vigra/issues/468
+# 		echo "...Collecting all normalized and masked tiles in a file for CellProfiler."
+# 		ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt
+# 		ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt
+# 	
+# 		### CellProfiler
+# 		### This does not work on macOS Mojave 10.14.5 because we need vigra.
+# 		### However installing this comes with issues: 
+# 		### https://github.com/ukoethe/vigra/issues/468
 # 		echo ""
 # 		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
 # 		
@@ -339,11 +339,11 @@ else
 
 		INDEX=$((INDEX+1))
 		if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
-			break; 
-		fi;
+			break;
+		fi
+		
 	done
-
-
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 
