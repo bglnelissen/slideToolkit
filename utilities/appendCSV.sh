@@ -112,8 +112,9 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- (the path to) the filenames, e.g. Output_Image.csv or cp_output/Output_Image.csv."
 	echoerror ""
-	echoerror "An example command would be: appendCSV [arg1: STAIN] "
+	echoerror "An example command would be: appendCSV [arg1: STAIN] [arg2: Output_Image.csv] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -122,7 +123,7 @@ script_arguments_error() {
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                              RESULT APPENDER"
 echo ""
-echoitalic "* Written by  : Tim G.M. van der Kerkhof; Sander W. van der Laan"
+echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2019-07-09"
 echoitalic "* Version     : v1.0.0"
@@ -136,35 +137,54 @@ TODAY=$(date +"%Y%m%d")	# set Today
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
+FILELOC="$2"
 
-if [[ $# -lt 1 ]]; then 
-	echo "Oh, computer says no! Number of arguments found "$#"."
+if [[ $# -lt 2 ]]; then 
+	echoerrorflash "Oh, computer says no! Number of arguments found "$#"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** appendCSV ***!"
 		
 else
 
 	OutFileName="${TODAY}.${STAIN}.ImageExp.csv"                       # Fix the output name
-
-	i=0                                       # Reset a counter
-
+	
 	echo ""
-	echoitalic "Collecting data for: "
-	for filename in AE*/cp_output/cp_output/Output_Image.csv; do 
-		if [ "$filename"  != "$OutFileName" ] ;      # Avoid recursion 
-			then 
-				if [[ $i -eq 0 ]] ; then 
+	echoitalic "Creating a new log."
+	# make a new append.log
+	rm -v append.log
+	echo "STUDYNUMBER FILENAME" > append.log
+	
+	i=0                                       # Reset a counter
+	echo ""
+	echoitalic "Collecting data for:"
+	for filename in AE*/cp_output/${FILELOC}; do 
+		if [ "$filename"  != "$OutFileName" ] ; then     # Avoid recursion
+		
+			cols=$(cat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
+			if [[ "$cols" -gt 1 ]]; then
+				STUDYNUMBER=${filename%%\/*}   # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
+				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
+				echo "$STUDYNUMBER $filename" >> append.log
+		
+			else	
+				if [[ $i -eq 0 ]] ;  then
 					head -1  "$filename" >   "$OutFileName" # Copy header if it is the first file
+				else
+					echoitalic "  ... [ ${filename} ] ..."
+					tail -n +2  "$filename" >>  "$OutFileName" # Append from the 2nd line each file
 				fi
-			echoitalic "  ... [ ${filename} ] ..."
-			tail -n +2  "$filename" >>  "$OutFileName" # Append from the 2nd line each file
-			i=$(( $i + 1 ))                            # Increase the counter
+			fi
 		fi
+		i=$(( $i + 1 ))                            # Increase the counter
 	done
 
 	echo ""
 	echoitalic "Gzipping the shizzle."
 	gzip -vf ${TODAY}.${STAIN}.ImageExp.csv
 
+	echo ""
+	echoitalic "Checking the log."
+	cat append.log
+	
 	echo ""
 
 ### END of if-else statement for the number of command-line arguments passed ###
