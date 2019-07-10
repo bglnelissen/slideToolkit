@@ -103,8 +103,8 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-09"
-echoitalic "* Version     : 1.1.3"
+echoitalic "* Last update : 2019-07-10"
+echoitalic "* Version     : 1.1.4"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory."
@@ -180,7 +180,7 @@ else
 		echo ""
 		echobold "Processing images of file [ $SLIDE_NUM ] for staining [ $STAIN ]."
 	
-		if [ -f result.txt ]; then 
+		if [ -f results.txt ]; then 
 			echoitalic "Checking if this file was processed before ....."
 			cd ..; 
 			INDEX=$((INDEX+1)); 
@@ -315,14 +315,17 @@ else
 		SLIDE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
 		echo $SLIDE_NUM \$(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN $OUTPUTFILENAME) >> ../results.txt;
 		cd ..
-		#rm -rfv *tiles/;
+		rm -rfv *tiles/;
 		if [ -f *.ndpi ]; then 
 			echo \"Removing intermediate tif- & png-files converted from NDPI-files.\";
-			#rm -v *x40*.tif; 
-			#rm -v *x40*.png; 
+			rm -v *x40*.tif; 
+			rm -v *x40*.png; 
 			fi;
 			echo \"Removing list of files to process.\";
-			#rm -v files2cp.txt;
+			rm -v files2cp.txt;
+			echo \"Gzipping result files.\";
+			gzip -vf cp_output/${STAIN}*.gct;
+			gzip -vf cp_output/${STAIN}*.csv;
 		" | qsub -cwd -N $THIS_WRAPUP -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_CELLPROFILER
 
 		cd ..
