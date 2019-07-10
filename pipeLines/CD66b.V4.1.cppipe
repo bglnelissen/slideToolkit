@@ -310,9 +310,9 @@ OverlayOutlines:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:
     Select outline color:#F7F40A
     Load outlines from an image or objects?:Image
     Select objects to display:None
-    Select outlines to display:None
+    Select outlines to display:DAB_Nuclei_Red
     Select outline color:#FB0009
-    Load outlines from an image or objects?:Objects
+    Load outlines from an image or objects?:Image
     Select objects to display:DAB_Nuclei_object
 
 SaveImages:[module_num:16|svn_version:\'Unknown\'|variable_revision_number:11|show_window:False|notes:\x5B\'Save outlined images\', \'These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
