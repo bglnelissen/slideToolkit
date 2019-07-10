@@ -464,7 +464,7 @@ ExportToSpreadsheet:[module_num:18|svn_version:\'Unknown\'|variable_revision_num
     :
     Representation of Nan/Inf:NaN
     Add a prefix to file names?:Yes
-    Filename prefix:SMA_
+    Filename prefix:CD68_
     Overwrite existing files without warning?:Yes
     Data to export:Do not use
     Combine these object measurements with those of the previous object?:No
