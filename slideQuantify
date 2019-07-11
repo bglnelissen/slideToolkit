@@ -91,6 +91,8 @@ script_arguments_error() {
 	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
 	echoerror "- Argument #4  -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
 	echoerror "- Argument #5  -- output filename where the CellProfiler results are stored, e.g. Image.txt (delimiter is assumed '_')."
+	echoerror "- Argument #6  -- email address to send aborted/error jobs too, e.g. y.name@umcutrecht.nl."
+	echoerror "- Argument #7  -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send."
 	echoerror ""
 	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.txt]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -103,8 +105,8 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-10"
-echoitalic "* Version     : 1.1.4"
+echoitalic "* Last update : 2019-07-11"
+echoitalic "* Version     : 1.1.5"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory."
@@ -118,6 +120,8 @@ PIPELINE="$2" # Depends on arg2
 PROJECTDIR="$3" # Depends on arg3
 FILESTART="$4" # Depends on arg4
 OUTPUTFILENAME="$5" # Depends on arg5
+EMAIL="$6" # Depends on arg6
+MAILSETTING="$7" # Depends on arg7
 
 QJOB_MEM_SLIDEMASK="100G"
 QJOB_TIME_SLIDEMASK="02:30:00"
@@ -135,7 +139,7 @@ QJOB_TIME_CP="09:00:00"
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 5 ]]; then 
+if [[ $# -lt 7 ]]; then 
 	echo "Oh, computer says no! Number of arguments found "$#"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
 		
@@ -219,7 +223,7 @@ else
 		fi
 		slideEMask -f *macro.png -t $ENTROPY_THRESHOLD
 		rm -rfv magick-tmp
-		" | qsub -cwd -N $THIS_SLIDEMASK -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ $HOLD_JID_STRING -l h_vmem=$QJOB_MEM_SLIDEMASK -l h_rt=$QJOB_TIME_SLIDEMASK
+		" | qsub -cwd -N $THIS_SLIDEMASK -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ $HOLD_JID_STRING -l h_vmem=$QJOB_MEM_SLIDEMASK -l h_rt=$QJOB_TIME_SLIDEMASK -m ${MAILSETTING} -M ${EMAIL}
 		### FOR DEBUG
 		### echo $THIS_SLIDEMASK
 		### echo $HOLD_JID_STRING
@@ -253,7 +257,7 @@ else
 			exit 1 
 		fi
 		rm -rfv magick-tmp
-		" | qsub -cwd -N $THIS_SLIDE2TILES -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=$QJOB_MEM_SLIDE2TILES -l h_rt=$QJOB_TIME_SLIDE2TILES
+		" | qsub -cwd -N $THIS_SLIDE2TILES -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDEMASK -l h_vmem=$QJOB_MEM_SLIDE2TILES -l h_rt=$QJOB_TIME_SLIDE2TILES -m ${MAILSETTING} -M ${EMAIL}
 
 		### slideNormalize
 		echo ""
@@ -280,7 +284,7 @@ else
 		cd ..
 		ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
 		ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
-		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=$QJOB_MEM_SLIDENORM -l h_rt=$QJOB_TIME_SLIDENORM
+		" | qsub -cwd -N $THIS_SLIDENORMALIZE -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDE2TILES -l h_vmem=$QJOB_MEM_SLIDENORM -l h_rt=$QJOB_TIME_SLIDENORM -m ${MAILSETTING} -M ${EMAIL}
 	
 		### CellProfiler
 		echo ""
@@ -290,7 +294,7 @@ else
 		module load anaconda
 		mkdir -pv cp_output
 		cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
-		" | qsub -cwd -N $THIS_CELLPROFILER -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=$QJOB_MEM_CP -l h_rt=$QJOB_TIME_CP
+		" | qsub -cwd -N $THIS_CELLPROFILER -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_SLIDENORMALIZE -l h_vmem=$QJOB_MEM_CP -l h_rt=$QJOB_TIME_CP -m ${MAILSETTING} -M ${EMAIL}
 
 		### REMOVE THIS BREAK FOR PRODUCTION!
 		### When this break is active, only the first item 
@@ -326,7 +330,7 @@ else
 			echo \"Gzipping result files.\";
 			gzip -vf cp_output/${STAIN}*.gct;
 			gzip -vf cp_output/${STAIN}*.csv;
-		" | qsub -cwd -N $THIS_WRAPUP -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_CELLPROFILER
+		" | qsub -cwd -N $THIS_WRAPUP -e $PROJECTDIR/errors/ -o $PROJECTDIR/logs/ -hold_jid $THIS_CELLPROFILER -m ${MAILSETTING} -M ${EMAIL}
 
 		cd ..
 
