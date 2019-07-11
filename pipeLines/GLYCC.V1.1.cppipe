@@ -271,7 +271,7 @@ SaveImages:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:11|sh
     Base image folder:Elsewhere...\x7C
     Saved movie format:avi
 
-MeasureImageAreaOccupied:[module_num:16|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Measure Tissue (green) and HE nuclei (blue) and DAB area (yellow) and red) area\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
+MeasureImageAreaOccupied:[module_num:16|svn_version:\'Unknown\'|variable_revision_number:3|show_window:False|notes:\x5B\'Measure Tissue (green) and HE nuclei (blue) and DAB (yellow) and area (red).\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Hidden:2
     Measure the area occupied in a binary image, or in objects?:Binary Image
     Select objects to measure:None
