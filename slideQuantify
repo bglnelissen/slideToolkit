@@ -169,7 +169,7 @@ else
 		THIS_CELLPROFILER=${THIS_SLIDE}_CellProfiler_${UNIQUE_LABEL}
 		THIS_WRAPUP=${THIS_SLIDE}_WrapUp_${UNIQUE_LABEL}
 
-		HOLD_JID_INDEX=`expr ${INDEX} % ${BATCH_SIZE}``
+		HOLD_JID_INDEX=`expr ${INDEX} % ${BATCH_SIZE}`
 
 		# process batches in smaller chunks
 		if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
@@ -299,7 +299,7 @@ else
 		### REMOVE THIS BREAK FOR PRODUCTION!
 		### When this break is active, only the first item 
 		### in the list of items to be processed will be processed.
-		INDEX=$((INDEX+1))
+# 		INDEX=$((INDEX+1))
 # 		break;	
 
 		### Wrap Up
