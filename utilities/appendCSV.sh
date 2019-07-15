@@ -155,8 +155,8 @@ else
 	echo ""
 	echoitalic "Creating a new log."
 	# make a new append.log
-	rm -v append.log
-	echo "STUDYNUMBER FILENAME" > append.log
+	rm -v *append.log
+	echo "STUDYNUMBER FILENAME" > ${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.append.log
 	
 	i=0 # Reset a counter
 	echo ""
@@ -168,7 +168,7 @@ else
 			if [[ "$cols" -gt 1 ]]; then
 				STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
 				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
-				echo "$STUDYNUMBER $filename" >> append.log
+				echo "$STUDYNUMBER $filename" >> ${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.append.log
 		
 			else	
 				if [[ $i -eq 0 ]] ;  then
@@ -196,8 +196,8 @@ else
 	gzip -vf ${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.ImageExp.csv
 
 	echo ""
-	echoitalic "Checking the log."
-	cat append.log
+	echoitalic "Checking the log -- note: no results is a good thing."
+	cat ${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.append.log
 	
 	echo ""
 
