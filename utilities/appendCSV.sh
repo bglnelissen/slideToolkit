@@ -173,14 +173,18 @@ else
 			else	
 				if [[ $i -eq 0 ]] ;  then
 					### DEBUG
-					echo "DEBUG: check head first file"
-					zcat "$filename" | head -1
+					### echo "DEBUG: check head first file"
+					### zcat "$filename" | head -1
 					zcat "$filename" | head -1 > "$OutFileName" # Copy header if it is the first file
 				else
 					echoitalic " ... [ ${filename} ] ..."
 					### DEBUG
-					echo "DEBUG: check head next file"
+					### echo "DEBUG: check head next file"
+					### zcat "$filename" | head -2
 					zcat "$filename" | tail -n +2 >> "$OutFileName" # Append from the 2nd line each file
+					
+					### DEBUG
+					### ls -lh "$OutFileName"
 				fi
 			fi
 		fi
@@ -189,7 +193,7 @@ else
 
 	echo ""
 	echoitalic "Gzipping the shizzle."
-	gzip -vf ${TODAY}.${STAIN}.${IMAGETYPE}.ImageExp.csv
+	gzip -vf ${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.ImageExp.csv
 
 	echo ""
 	echoitalic "Checking the log."
