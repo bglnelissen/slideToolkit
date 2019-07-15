@@ -1,16 +1,16 @@
 #!/bin/bash
 #
-#$ -S /bin/bash 																			# the type of BASH you'd like to use
-#$ -N Appender  																	# the name of this script
-# -hold_jid some_other_basic_bash_script  													# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/dhl_ec/VirtualSlides/Appender.log  								# the log file of this job
-#$ -e /hpc/dhl_ec/VirtualSlides/Appender.errors 							# the error file of this job
-#$ -l h_rt=00:15:00  																		# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
-#$ -l h_vmem=4G  																			#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
+#$ -S /bin/bash 																		# the type of BASH you'd like to use
+#$ -N Appender."$1" 																		# the name of this script
+# -hold_jid some_other_basic_bash_script  												# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
+#$ -o /hpc/dhl_ec/VirtualSlides/Appender."$1".log  											# the log file of this job
+#$ -e /hpc/dhl_ec/VirtualSlides/Appender."$1".errors 										# the error file of this job
+#$ -l h_rt=00:30:00  																	# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
+#$ -l h_vmem=4G  																		#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
 # -l tmpspace=64G  																		# this is the amount of temporary space you think your script will use
-#$ -M s.w.vanderlaan-2@umcutrecht.nl  														# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
-#$ -m ea  																					# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
-#$ -cwd  																					# set the job start to the current directory - so all the things in this script are relative to the current directory!!!
+#$ -M s.w.vanderlaan-2@umcutrecht.nl  													# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
+#$ -m ea  																				# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
+#$ -cwd  																				# set the job start to the current directory - so all the things in this script are relative to the current directory!!!
 #
 ### INTERACTIVE SHELLS
 # You can also schedule an interactive shell, e.g.:
@@ -113,8 +113,9 @@ script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
 	echoerror "- Argument #2  -- (the path to) the filenames, e.g. Output_Image.csv or cp_output/Output_Image.csv."
+	echoerror "- Argument #3  -- image file type, e.g. TIF, NDPI."
 	echoerror ""
-	echoerror "An example command would be: appendCSV [arg1: STAIN] [arg2: Output_Image.csv] "
+	echoerror "An example command would be: appendCSV [arg1: STAIN] [arg2: Output_Image.csv] [arg3: TIF or NDPI]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -125,27 +126,29 @@ echobold "                              RESULT APPENDER"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-09"
-echoitalic "* Version     : v1.0.0"
+echoitalic "* Last update : 2019-07-15"
+echoitalic "* Version     : v1.0.1"
 echo ""
 echoitalic "* Description : This script will collect results and append these in a CSV."
+echoitalic "                Input CSV-files are expected to be gzipped."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "Today's: "$(date)
-TODAY=$(date +"%Y%m%d")	# set Today
+TODAY=$(date +"%Y%m%d") # set Today
 
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
 FILELOC="$2"
+IMAGETYPE="$3"
 
 if [[ $# -lt 2 ]]; then 
 	echoerrorflash "Oh, computer says no! Number of arguments found "$#"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** appendCSV ***!"
-		
+
 else
 
-	OutFileName="${TODAY}.${STAIN}.ImageExp.csv"                       # Fix the output name
+	OutFileName="${TODAY}.${STAIN}.${IMAGETYPE}.ImageExp.csv" # Fix the output name
 	
 	echo ""
 	echoitalic "Creating a new log."
@@ -153,33 +156,33 @@ else
 	rm -v append.log
 	echo "STUDYNUMBER FILENAME" > append.log
 	
-	i=0                                       # Reset a counter
+	i=0 # Reset a counter
 	echo ""
 	echoitalic "Collecting data for:"
 	for filename in AE*/cp_output/${FILELOC}; do 
-		if [ "$filename"  != "$OutFileName" ] ; then     # Avoid recursion
+		if [ "$filename"  != "$OutFileName" ] ; then # Avoid recursion
 		
 			cols=$(cat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
 			if [[ "$cols" -gt 1 ]]; then
-				STUDYNUMBER=${filename%%\/*}   # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
+				STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
 				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
 				echo "$STUDYNUMBER $filename" >> append.log
 		
 			else	
 				if [[ $i -eq 0 ]] ;  then
-					head -1  "$filename" >   "$OutFileName" # Copy header if it is the first file
+					zcat "$filename" | head -1 > "$OutFileName" # Copy header if it is the first file
 				else
 					echoitalic "  ... [ ${filename} ] ..."
-					tail -n +2  "$filename" >>  "$OutFileName" # Append from the 2nd line each file
+					zcat "$filename" | tail -n +2 >> "$OutFileName" # Append from the 2nd line each file
 				fi
 			fi
 		fi
-		i=$(( $i + 1 ))                            # Increase the counter
+		i=$(( $i + 1 )) # Increase the counter
 	done
 
 	echo ""
 	echoitalic "Gzipping the shizzle."
-	gzip -vf ${TODAY}.${STAIN}.ImageExp.csv
+	gzip -vf ${TODAY}.${STAIN}.${IMAGETYPE}.ImageExp.csv
 
 	echo ""
 	echoitalic "Checking the log."
