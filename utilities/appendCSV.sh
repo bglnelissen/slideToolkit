@@ -112,10 +112,11 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- (the path to) the filenames, e.g. Output_Image.csv or cp_output/Output_Image.csv."
+	echoerror "- Argument #2  -- study type of the analysis, e.g. AE or AAA."
 	echoerror "- Argument #3  -- image file type, e.g. TIF, NDPI."
+	echoerror "- Argument #4  -- (the path to) the filename, e.g. Image.csv.gz, the script will automatically append STAIN, e.g. STAIN_Image.csv.gz"
 	echoerror ""
-	echoerror "An example command would be: appendCSV [arg1: STAIN] [arg2: Output_Image.csv] [arg3: TIF or NDPI]"
+	echoerror "An example command would be: appendCSV [arg1: STAIN] [arg2: STUDYTYPE ] [arg3: IMAGETYPE ] [arg4: Output_Image.csv.gz] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -139,16 +140,17 @@ TODAY=$(date +"%Y%m%d") # set Today
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
-FILELOC="$2"
+STUDYTYPE="$2"
 IMAGETYPE="$3"
+RESULTSFILENAME="$4"
 
-if [[ $# -lt 2 ]]; then 
+if [[ $# -lt 4 ]]; then 
 	echoerrorflash "Oh, computer says no! Number of arguments found "$#"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** appendCSV ***!"
 
 else
 
-	OutFileName="${TODAY}.${STAIN}.${IMAGETYPE}.ImageExp.csv" # Fix the output name
+	OutFileName="${TODAY}.${STAIN}.${STUDYTYPE}.${IMAGETYPE}.ImageExp.csv" # Fix the output name
 	
 	echo ""
 	echoitalic "Creating a new log."
@@ -159,10 +161,10 @@ else
 	i=0 # Reset a counter
 	echo ""
 	echoitalic "Collecting data for:"
-	for filename in AE*/cp_output/${FILELOC}; do 
+	for filename in ${STUDYTYPE}*/cp_output/${STAIN}_${RESULTSFILENAME}; do 
 		if [ "$filename"  != "$OutFileName" ] ; then # Avoid recursion
 		
-			cols=$(cat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
+			cols=$(zcat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
 			if [[ "$cols" -gt 1 ]]; then
 				STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
 				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
@@ -172,7 +174,7 @@ else
 				if [[ $i -eq 0 ]] ;  then
 					zcat "$filename" | head -1 > "$OutFileName" # Copy header if it is the first file
 				else
-					echoitalic "  ... [ ${filename} ] ..."
+					echoitalic " ... [ ${filename} ] ..."
 					zcat "$filename" | tail -n +2 >> "$OutFileName" # Append from the 2nd line each file
 				fi
 			fi
