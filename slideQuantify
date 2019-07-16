@@ -105,8 +105,8 @@ echobold "                               slideQuantify"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-11"
-echoitalic "* Version     : 1.1.6"
+echoitalic "* Last update : 2019-07-16"
+echoitalic "* Version     : 1.1.7"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory."
@@ -214,7 +214,7 @@ else
 		
 		elif [ -f *.TIF ]; then 
 			echo \"The image-file is a .TIF.\"
-			slideMask --layer 7 -f *.TIF;
+			slideMask --layer 3 -f *.TIF;
 		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
@@ -249,7 +249,7 @@ else
 		
 		elif [ -f *.TIF ]; then
 			echo \"The image-file is a .TIF.\"
-			slide2Tiles --layer 7 -f *.TIF -m *.emask.png;
+			slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
 		
 		else
 			echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
