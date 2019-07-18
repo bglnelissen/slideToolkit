@@ -141,7 +141,7 @@ QJOB_TIME_CP="09:00:00"
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 7 ]]; then 
+if [[ $# -lt 8 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
 		
