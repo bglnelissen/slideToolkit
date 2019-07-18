@@ -90,8 +90,8 @@ echobold "                               NDPI2TIF"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim van de Kerkhof"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2019-07-01"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Last update : 2019-07-18"
+echoitalic "* Version     : 1.0.1"
 echo ""
 echoitalic "* Description : This script will convert NDPI-files to TIF-format."
 echo ""
@@ -107,10 +107,10 @@ fi
 ERRORS=$(pwd)/errors
 LOGS=$(pwd)/logs
 
-find *.ndpi | while read line; do
+find $(pwd)/*.ndpi | while read line; do
 	echo ""
 	echocyan "processing file [ $line ]"
-	FILENAME=$(basename $line *.ndpi)
+	FILENAME=$(basename "$line" .ndpi)
 	echo "
 	module load ndpitools
 	ndpisplit -v -x20 -z0 '$line'
