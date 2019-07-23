@@ -146,12 +146,10 @@ if [[ $# -lt 8 ]]; then
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
 		
 else
-# 	echobold "Cleaning up house, first."
-# 	rm -rfv $PROJECTDIR/logs/
-# 	rm -rfv $PROJECTDIR/errors/
-# 	mkdir -pv $PROJECTDIR/logs
-# 	mkdir -pv $PROJECTDIR/errors
-# 	rm -rfv $FILESTART*/magick-tmp
+	echobold "Cleaning up house, first."
+	mkdir -pv "$PROJECTDIR"/logs
+	mkdir -pv "$PROJECTDIR"/errors
+	rm -rfv "$FILESTART"*/magick-tmp
 
 	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" # should be argument
 	HOLD_JIDS=()
@@ -162,7 +160,7 @@ else
 	### FOR DEBUG
 	### DEBUGLIST="AE999.FIBRIN AE99.T02-18575.A.FIBRIN AE997.T05-12460.FIBRIN"
 	### for SLIDE_NUM in $DEBUGLIST; do
-	for SLIDE_NUM in ${FILESTART}*; do
+	for SLIDE_NUM in "$FILESTART"*; do
 		sleep 1
 		THIS_SLIDE=${SLIDE_NUM/\//}
 		THIS_SLIDEMASK=${THIS_SLIDE}_slideMask_${UNIQUE_LABEL}
@@ -171,7 +169,7 @@ else
 		THIS_CELLPROFILER=${THIS_SLIDE}_CellProfiler_${UNIQUE_LABEL}
 		THIS_WRAPUP=${THIS_SLIDE}_WrapUp_${UNIQUE_LABEL}
 
-		HOLD_JID_INDEX=`expr ${INDEX} % ${BATCH_SIZE}`
+		HOLD_JID_INDEX=$(expr ${INDEX} % ${BATCH_SIZE})
 
 		# process batches in smaller chunks
 		if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
@@ -181,7 +179,7 @@ else
 		fi
 		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 	
-		cd $SLIDE_NUM
+		cd "$SLIDE_NUM" || exit
 		echo ""
 		echobold "Processing images of file [ ${SLIDE_NUM} ] for staining [ ${STAIN} ] -- at index [ ${INDEX} ] with total batch size [ ${BATCH_SIZE} ]."
 	
@@ -195,7 +193,10 @@ else
 		fi
 		
 		echo "..... Processing file for the first time. Submitting job for: "
-	
+		
+		rm -rfv "$PROJECTDIR"/logs/"$SLIDE_NUM"*
+		rm -rfv "$PROJECTDIR"/errors/"$SLIDE_NUM"*
+
 	### slideEMask for macro, and NDPISplit when necessary
 	echo ""
 	echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
