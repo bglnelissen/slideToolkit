@@ -97,6 +97,19 @@ script_arguments_error() {
   	exit 1
 }
 
+script_arguments_error_imagetype() {
+	echoerror "$1" 
+	echoerror ""
+	echoerror "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
+	echoerror ""
+	echoerror " You must supply the correct argument:"
+	echoerror " * [TIF]/[NDPI] -- provide a valid imagetype."
+	echoerror ""
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	# The wrong arguments are passed, so we'll exit the script now!
+  	exit 1
+}
+
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                               slideCollector"
 echo ""
@@ -121,14 +134,23 @@ FILESTART="$4" # Depends on arg4
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 1 ]]; then 
+if [[ $# -lt 4 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideCollector ***!"
 		
 else
 
 echo ""
-echobold "Reading [ "$FILENAME" ] and collecting relevant samples."
+echobold "Reading [ ""$FILENAME"" ] and collecting relevant samples for ""$STAIN""."
+
+OUTPUTDIR=$(basename "$FILENAME" .txt)
+
+echo ""
+echoitalic "Making the output directory [ ""$OUTPUTDIR"" ] and necessary subfolder(s)."
+mkdir -pv "$OUTPUTDIR"
+mkdir -pv "$OUTPUTDIR"/counted
+COUNTDIR="$OUTPUTDIR"/counted
+
 while IFS='' read -r SAMPLEOFINTEREST || [[ -n "$SAMPLEOFINTEREST" ]]; do
 	### EXAMPLE VARIANT LIST
 	### StudyNumber ImageType TotalSTAINTissue TotalTissue TotalSTAINTissueCount TotalTissueCounts PercentageSTAIN RatioSTAIN CountObjectsSTAIN
@@ -137,26 +159,40 @@ while IFS='' read -r SAMPLEOFINTEREST || [[ -n "$SAMPLEOFINTEREST" ]]; do
 
 	LINE=${SAMPLEOFINTEREST}
 	SAMPLENUMBER=$(echo "${LINE}" | awk '{ print $1 }')
-	VARIANTFORFILE=$(echo "${LINE}" | awk '{ print $1 }')
 	IMAGETYPE=$(echo "${LINE}" | awk '{ print $2 }')
-			
-	OUTPUTDIR=$(basename "$FILENAME" .txt)
+
+	echo "$SAMPLENUMBER $IMAGETYPE"
+	if [[ ${IMAGETYPE} = "TIF" ]]; then
+		echo ""
+		echo "Processing imagetype [" "$IMAGETYPE" "]."
+
+		echo ""
+		echoitalic "Copying macro and masks."
+		cp -v "$PROJECTDIR"/"${FILESTART}""${SAMPLENUMBER}"*/*.png "$OUTPUTDIR"/
 	
-	echo ""
-	echoitalic "Making the output directory [ "$OUTPUTDIR" ] and necessary subfolder(s)."
-	mkdir -v "$OUTPUTDIR"
-	mkdir -v "$OUTPUTDIR"/counted
-	COUNTDIR="$OUTPUTDIR"/counted
+		echo ""
+		echoitalic "Copying macro and masks."
+		cp -v "$PROJECTDIR"/"${FILESTART}""${SAMPLENUMBER}"*/cp_output/*.png "$COUNTDIR"/
 	
-	echo ""
-	echoitalic "Copying macro and masks."
-	cp -v "$PROJECTDIR"/${SUBDIRNAME}${SAMPLENUMBER}*.png "$OUTPUTDIR"/
+	elif [[ ${IMAGETYPE} = "NDPI" ]]; then
+
+		echo ""
+		echo "Processing imagetype [" "$IMAGETYPE" "]."
+
+		echo ""
+		echoitalic "Copying macro and masks."
+		cp -v "$PROJECTDIR"/_ndpi/"${FILESTART}""${SAMPLENUMBER}"*/*.png "$OUTPUTDIR"/
 	
-	echo ""
-	echoitalic "Copying macro and masks."
-	cp -v "$PROJECTDIR"/${SUBDIRNAME}${SAMPLENUMBER}*/cp_output/*.png "$COUNTDIR"/
-	
-done < ${FILENAME}
+		echo ""
+		echoitalic "Copying macro and masks."
+		cp -v "$PROJECTDIR"/_ndpi/"${FILESTART}""${SAMPLENUMBER}"*/cp_output/*.png "$COUNTDIR"/
+		
+	else 
+		### If arguments are not met then this error message will be displayed
+		script_arguments_error_imagetype
+	fi
+
+done < <(tail -n "+3" "$FILENAME")
 			
 
 
