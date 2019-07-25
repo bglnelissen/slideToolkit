@@ -193,8 +193,11 @@ while IFS='' read -r SAMPLEOFINTEREST || [[ -n "$SAMPLEOFINTEREST" ]]; do
 	fi
 
 done < <(tail -n "+3" "$FILENAME")
-			
 
+echo ""
+echoitalic "Gzipping collection for [ ""$STAIN""]."
+
+tar -zcvf "$OUTPUTDIR".tar.gz "$OUTPUTDIR"/
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
