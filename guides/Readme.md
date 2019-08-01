@@ -136,5 +136,4 @@ Installation instructions for OS X and Linux can be found in this repo. *We are 
 - [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
 - *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
 
-*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packeges for there support and excellent software.*
-=======
+*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packages for there support and excellent software.*
