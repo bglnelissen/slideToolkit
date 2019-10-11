@@ -128,7 +128,7 @@ IdentifyPrimaryObjects:[module_num:8|svn_version:\'Unknown\'|variable_revision_n
     Select the smoothing method for thresholding:Automatic
     Threshold smoothing scale:1
     Threshold correction factor:1
-    Lower and upper bounds on threshold:0.05,1.0
+    Lower and upper bounds on threshold:0.08,1.0
     Approximate fraction of image covered by objects?:0.01
     Manual threshold:0.05
     Select the measurement to threshold with:None
@@ -234,12 +234,12 @@ MaskImage:[module_num:13|svn_version:\'Unknown\'|variable_revision_number:3|show
 IdentifyPrimaryObjects:[module_num:14|svn_version:\'Unknown\'|variable_revision_number:10|show_window:True|notes:\x5B\'Find DAB positive nuclei (red) within masked image (green)\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB_object_mask
     Name the primary objects to be identified:nuclei_DAB
-    Typical diameter of objects, in pixel units (Min,Max):8,40
+    Typical diameter of objects, in pixel units (Min,Max):8,30
     Discard objects outside the diameter range?:Yes
     Try to merge too small objects with nearby larger objects?:No
     Discard objects touching the border of the image?:No
-    Method to distinguish clumped objects:Shape
-    Method to draw dividing lines between clumped objects:Intensity
+    Method to distinguish clumped objects:Laplacian of Gaussian
+    Method to draw dividing lines between clumped objects:Shape
     Size of smoothing filter:10
     Suppress local maxima that are closer than this minimum allowed distance:7
     Speed up by using lower-resolution image to find local maxima?:Yes
@@ -255,20 +255,20 @@ IdentifyPrimaryObjects:[module_num:14|svn_version:\'Unknown\'|variable_revision_
     Handling of objects if excessive number of objects identified:Continue
     Maximum number of objects:500
     Threshold setting version:1
-    Threshold strategy:Global
+    Threshold strategy:Per object
     Thresholding method:Otsu
     Select the smoothing method for thresholding:Automatic
     Threshold smoothing scale:1
-    Threshold correction factor:1
-    Lower and upper bounds on threshold:0.3,1.0
+    Threshold correction factor:2
+    Lower and upper bounds on threshold:0.1,1.0
     Approximate fraction of image covered by objects?:0.01
     Manual threshold:0.0
     Select the measurement to threshold with:None
     Select binary image:None
     Masking objects:From image
     Two-class or three-class thresholding?:Three classes
-    Minimize the weighted variance or the entropy?:Entropy
-    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Minimize the weighted variance or the entropy?:Weighted variance
+    Assign pixels in the middle intensity class to the foreground or the background?:Background
     Method to calculate adaptive window size:Image size
     Size of adaptive window:10
     Use default parameters?:Default
@@ -281,12 +281,12 @@ IdentifyPrimaryObjects:[module_num:14|svn_version:\'Unknown\'|variable_revision_
 IdentifyPrimaryObjects:[module_num:15|svn_version:\'Unknown\'|variable_revision_number:10|show_window:True|notes:\x5B\'Find HE positive nuclei (blue) within masked image (green)\'\x5D|batch_state:array(\x5B\x5D, dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Tissue_Masked_HEchannel
     Name the primary objects to be identified:nuclei_HE
-    Typical diameter of objects, in pixel units (Min,Max):8,40
+    Typical diameter of objects, in pixel units (Min,Max):8,20
     Discard objects outside the diameter range?:Yes
     Try to merge too small objects with nearby larger objects?:No
     Discard objects touching the border of the image?:No
     Method to distinguish clumped objects:Shape
-    Method to draw dividing lines between clumped objects:Intensity
+    Method to draw dividing lines between clumped objects:Shape
     Size of smoothing filter:10
     Suppress local maxima that are closer than this minimum allowed distance:7
     Speed up by using lower-resolution image to find local maxima?:Yes
@@ -306,7 +306,7 @@ IdentifyPrimaryObjects:[module_num:15|svn_version:\'Unknown\'|variable_revision_
     Thresholding method:Otsu
     Select the smoothing method for thresholding:Automatic
     Threshold smoothing scale:1
-    Threshold correction factor:1
+    Threshold correction factor:0.8
     Lower and upper bounds on threshold:0.3,1.0
     Approximate fraction of image covered by objects?:0.01
     Manual threshold:0.0
@@ -314,7 +314,7 @@ IdentifyPrimaryObjects:[module_num:15|svn_version:\'Unknown\'|variable_revision_
     Select binary image:None
     Masking objects:From image
     Two-class or three-class thresholding?:Three classes
-    Minimize the weighted variance or the entropy?:Entropy
+    Minimize the weighted variance or the entropy?:Weighted variance
     Assign pixels in the middle intensity class to the foreground or the background?:Foreground
     Method to calculate adaptive window size:Image size
     Size of adaptive window:10
@@ -389,7 +389,7 @@ ExportToSpreadsheet:[module_num:18|svn_version:\'Unknown\'|variable_revision_num
     :
     Representation of Nan/Inf:NaN
     Add a prefix to file names?:Yes
-    Filename prefix:CD68_
+    Filename prefix:CD20_
     Overwrite existing files without warning?:Yes
     Data to export:Do not use
     Combine these object measurements with those of the previous object?:No
