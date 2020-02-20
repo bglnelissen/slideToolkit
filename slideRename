@@ -380,6 +380,7 @@ checkDependencies(){
   fi
 }
 # show thumbs per scanner type (-filter box is best for resizing and text)
+# layer information can be determined using example files (http://openslide.cs.cmu.edu/download/openslide-testdata/)
 getThumb(){
   # get thumb by layer id
   LAYER="$LAYER"
@@ -399,7 +400,7 @@ getThumbLeica(){
   convert "$FILEFULL[$LAYER]" -rotate 180 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbHamamatsu(){
-  LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  LAYER=7 # determined from example file from our in-house (UMC Utrecht) Hamamatsu scanner 
   convert "$FILEFULL[$LAYER]" -rotate 90 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
 }
 getThumbiScan(){
