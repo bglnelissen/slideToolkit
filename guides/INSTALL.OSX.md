@@ -172,7 +172,7 @@ Some pathology scanners produce proprietary `NDPI`-files. These are almost simil
 
 Simply go to the [NDPITools website](https://www.imnc.in2p3.fr/pagesperso/deroulers/software/ndpitools/) and following the instructions for macOS.
 
-#### Step 10 - Install CellProfiler.
+#### Step 10 - Install CellProfiler, we prefer version 2.2.0.
 Install `CellProfiler version 2.2.0` following instructions on their [website](http://cellprofiler.org/download.shtml). Using the downloaded installer, CellProfiler will be installed in the default location (/Applications/CellProfiler).
 
 To make the CellProfiler command line interface (CLI) available, we create a `cellprofiler` script in your `~/bin` folder. This scripts links to CellProfiler installed in your /Applications folder.
@@ -183,7 +183,7 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler.app
 
 ```
 
-##### We prefer version 2.2.0
+##### Alternative versions of CellProfiler
 We prefer version 2.2.0 because this version works best on our _high-performance computing cluster_. That said: one could easily install the latest version by simply changing the version number of CellProfiler in the command above, if needed. For example:
 
 ```
@@ -192,6 +192,9 @@ printf '#!/bin/bash\n# run cellprofiler from CLI\n/Applications/CellProfiler-3.1
 ```
 
 _Note: an alternative installation instruction for CellProfiler could be found [here](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-%28OS-X-and-macOS%29)_
+
+
+> Disclaimer: we have not fully tested our workflow and slideToolKit with newer versions of CellProfiler. Presumably `pipelines` need to be edited to fit the new version.
 
 #### Step 11 - Reboot.
 Reboot your system and you're done.
