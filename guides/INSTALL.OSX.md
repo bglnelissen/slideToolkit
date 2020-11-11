@@ -3,7 +3,7 @@ macOS and OS X 10.9+ - slideToolkit installation instructions
 
 The **slideToolKit** is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation.
 
-We have tested **slideToolKit** on CentOS6, CentOS7, OS X Mountain Lion+ (version 10.8.[x]+), and macOS Sierra (version 10.12.[x]).
+We have tested **slideToolKit** on CentOS6, CentOS7, OS X Mountain Lion+ (version 10.8.[x]+), macOS Sierra (version 10.12.[x]), macOS High Sierra (version 10.13.[x]), macOS Mojave (version 10.14.[x]), and macOS Catalina (version 10.15.[x]).
 
 Please tell us if you run into problems, it is likely we can help you out - we have done this before. ;)
 
