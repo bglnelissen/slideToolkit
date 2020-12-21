@@ -60,7 +60,7 @@ conda install -c anaconda automake cmake enum34 requests libtiff libpng freetype
 
 
 ```
-conda install -c c4aarch64 autoconf`
+conda install -c c4aarch64 autoconf
 ```
 
 
@@ -118,10 +118,11 @@ module load anaconda slideToolKit
 
 To do:
 
-- [] add description on installation `anaconda`.
-- [] add description on how to create `anaconda` module.
-- [] add description on how to install required packages for `anaconda` and `slideToolKit`.
-- [] add description on how to create `slideToolKit` module.
+- [.] add description on installation `anaconda`.
+- [.] add description on how to create `anaconda` module.
+- [x] add description on how to install required packages for `anaconda` and `slideToolKit`.
+- [.] add description on how to create `slideToolKit` module.
+- [x] update manual instructions .
 
 
 ------------
