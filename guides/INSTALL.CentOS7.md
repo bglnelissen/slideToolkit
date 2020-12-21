@@ -25,6 +25,109 @@ NOTE: these instructions are for CentOS7 on a high-performance computer cluster,
 
 ------------
 
+## Anaconda version
+
+The HPC is managed and user do not normally have admin rights. Therefore it is advised to install a distribution of `anaconda`.
+
+### Step 1: check what is available on the system
+Let's first check whether some packages are installed already.
+
+```
+for PACK in curl cvs gcc gcc-c++ gimp git libtool openjpeg perl svn vim wget giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel; do echo "* checking [ "$PACK" ]...."; command -v "$PACK"; echo "---------"; echo ""; done
+```
+
+### Step 2: installation anaconda
+We require `anaconda` to have full control on the installation of required libraries and packages for `slideToolKit`.
+
+If `anaconda` is available, make sure it is up-to-date.
+
+```
+conda update -n base conda
+```
+
+[instructions forthcoming]
+
+
+We will create a `module` for `anaconda`.
+
+
+### Step 3: installation required packages
+
+
+```
+conda install -c anaconda automake cmake enum34 requests libtiff libpng freetype zlib zbar numpy scipy cython
+```
+
+
+```
+conda install -c c4aarch64 autoconf`
+```
+
+
+```
+conda install -c conda-forge openjpeg gcc giflib libjpeg-turbo wmctrl parallel pylibdmtx imagemagick matplotlib
+```
+
+
+```
+conda install -c bioconda bftools java-jdk
+```
+
+
+### Step 4: installation slideToolkit
+Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
+
+```
+mkdir -p ~/git/ && cd ~/git
+```
+```
+if [ -d ~/git/slideToolkit/.git ]; then \
+		cd ~/git/slideToolkit && git pull; \
+	else \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolKit.git; \
+	fi
+```
+
+Add symbolic links in `~/bin/`. Now the slideToolkit will be availabe in your PATH. Adding the slideToolkit tools to your PATH makes it easier to acces the slideToolkit commands.
+
+```
+mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
+```
+
+
+### Step 5: installation CellProfiler
+
+Follow these instructions to install [CellProfiler](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-(Linux)).
+
+[instructions forthcoming]
+
+
+
+## Cleanup, restart & you're done!
+Source your `bash_profile`.
+
+```
+source ~/.bash_profile
+```
+
+And make sure you load the new modules:
+
+```
+module load anaconda slideToolKit
+```
+
+To do:
+
+-[] add description on installation `anaconda`.
+-[] add description on how to create `anaconda` module.
+-[] add description on how to install required packages for `anaconda` and `slideToolKit`.
+-[] add description on how to create `slideToolKit` module.
+
+
+------------
+CURRENT VERSION TO MANUALLY INSTALL ALL REQUIRED PACKAGES/LIBRARIES WITH FULL ADMIN RIGHTS.
+
+
 #### Update and prepare
 To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
 
@@ -274,7 +377,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolKit.git; \
 	fi
 ```
 
