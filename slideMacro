@@ -3,7 +3,7 @@
 # Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2018, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+# Copyright (c) 2014-2020, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ slideToolkit 0.1 beta
 ($SCRIPTNAME is part of the slideToolkit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2018, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
+Copyright (c) 2014-2020, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -125,8 +125,11 @@ instances you need to run slideInfo to find the correct layer manually.
 When the layer is identified (approximately 2000x2000 pixels), use 
 the --layer flag.
 
-NOTE: the original 'mask' arguments have not been removed, but the 
+NOTE #1: the original 'mask' arguments have not been removed, but the 
 masking command has been commented out.
+
+NOTE #2: by default we set -quiet to remove warnings such as those described
+here: https://stackoverflow.com/questions/27608124/imagemagick-how-to-get-rid-of-tiffwarnings-768-message-about-unknown-field-wh
 
 The slideToolkit and all its tools are released under the terms of the MIT license.
 The slideToolkit (C) 2014-2020, Bas G.L. Nelissen, Sander W. van der Laan, 
@@ -281,30 +284,30 @@ checkDependencies(){
 getMacro(){
   # get thumb by layer id
   LAYER="$LAYER"
-	convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+	convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScanHT(){
   # layer 8 contains the macro
   LAYER=8
-  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroAperio(){
   # the third to last layer contains the macro
   NR_LAYERS=`identify "$FILE" | wc -l`
   LAYER="$(($NR_LAYERS - 3))"
-  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroLeica(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 
 # actual program
