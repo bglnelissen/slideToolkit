@@ -115,24 +115,23 @@ print a job list for 'qsub':
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
 
-You can mask parts of your image that you do not wat to process. This
-program will use 'convert' to create a mask for you which you can later
-edit if needed. The mask is a layer within the original TIF file. The
-slideToolkit excludes real black in further processing (color #000000).
-Two new files will be created, one file.macro.png, and one masked macro
-file (file.mask.png). Definitions of masking can be set with the
---mask-args flag. A blur creates space between the mask and the tissue.
-A fuzz selects the background. A fuzz of 3% works well, but fails on
-very light slides, a fuzz of 2% is mightby to easy on the selection, 5%
-works on slides with a darkish background. Pipe the 'multiple folders at
-once' output in 'parallel' for parallel processing. For some slides, the
-virtual slide format is not known. For these instances you need to run
-slideInfo to find the correct layer manually. When the mask layer is
-identified (approximately 2000x2000 pixels), use the --layer flag.
+You can extract a layer to quickly inspect the image. This program will 
+use 'convert' to create a '*.macro.png'-file for you which you can 
+inspect. The 'macro'-image is a layer within the original TIF file. 
+Pipe the 'multiple folders at once' output in 'parallel' for parallel 
+processing. 
+For some slides, the virtual slide format is not known. For these 
+instances you need to run slideInfo to find the correct layer manually. 
+When the layer is identified (approximately 2000x2000 pixels), use 
+the --layer flag.
+
+NOTE: the original 'mask' arguments have not been removed, but the 
+masking command has been commented out.
 
 The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
-Report issues at https://github.com/bglnelissen/slideToolkit/issues.
+The slideToolkit (C) 2014-2020, Bas G.L. Nelissen, Sander W. van der Laan, 
+UMC Utrecht, the Netherlands.
+Report issues at https://github.com/swvanderlaan/slideToolkit/issues.
 
 EOF
 }
@@ -356,13 +355,13 @@ programOutput(){
 
 ### -- OBSOLETE CODE -- ###
 ### We will keep this code, but not that the new slideEntropyMasker is more reliable.
-  convert "$MACRO" \( "$MACRO" \
-    -bordercolor white -border 100x100 \
-    $MASKARGS -transparent white \
-    -crop +100+100 -crop -100-100 +repage \
-    -alpha extract \
-    -transparent white \) \
-    -flatten "$MASK"
+#   convert "$MACRO" \( "$MACRO" \
+#     -bordercolor white -border 100x100 \
+#     $MASKARGS -transparent white \
+#     -crop +100+100 -crop -100-100 +repage \
+#     -alpha extract \
+#     -transparent white \) \
+#     -flatten "$MASK"
 ### -- OBSOLETE CODE -- ###
 }
 # all check?
