@@ -125,10 +125,12 @@ To do:
 
 
 ------------
-CURRENT VERSION TO MANUALLY INSTALL ALL REQUIRED PACKAGES/LIBRARIES WITH FULL ADMIN RIGHTS.
+## Manual version
+
+> Note: the instructions below require **full** adminstration rights.
 
 
-#### Update and prepare
+### Update and prepare
 To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
 
 ```
@@ -152,7 +154,7 @@ if ! [[ "$PATH" =~ ($HOME/bin:|~/bin:) ]] ; then \
 
 Now we are up to date, and ready to continue the installation.
 
-#### Install required libraries and packages using apt-get
+### Install required libraries and packages using apt-get
 Let's first check whether some packages are installed already.
 
 ```
@@ -170,12 +172,22 @@ su -c 'yum -y install autoconf automake cmake gcc-c++ \
     gimp openjpeg giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
 ```
 
-# wmctrl
-# zbar-tools
+### Install `wmctrl`
+Install the latest version of `wmctrl`.
 
+```
+yum install wmctrl
+```
 
-#### Install parallel
-Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
+### Install `zbar`
+Install the latest version of `zbar`.
+
+```
+yum install zbar
+```
+
+### Install `parallel`
+Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract `parallel`.
 
 ```
 mkdir -p ~/src && cd ~/src && \\
@@ -193,8 +205,8 @@ cd ~/src/parallel-*
 ./configure && make && su -c "make install" && make clean
 ```
 
-#### Install zlib
-Install the latest zlib compression libraries. First create and go to the src directory, then download and extract zlib.
+#### Install `zlib`
+Install the latest `zlib` compression libraries. First create and go to the src directory, then download and extract `zlib`.
 
 ```
 mkdir -p ~/src && cd ~/src && \\
