@@ -55,7 +55,7 @@ We will create a `module` for `anaconda`.
 
 
 ```
-conda install -c anaconda automake cmake enum34 requests libtiff libpng freetype zlib zbar numpy scipy cython
+conda install -c anaconda automake cmake enum34 requests libtiff libpng freetype zlib numpy scipy cython
 ```
 
 
@@ -65,7 +65,7 @@ conda install -c c4aarch64 autoconf
 
 
 ```
-conda install -c conda-forge openjpeg gcc giflib libjpeg-turbo wmctrl parallel pylibdmtx imagemagick matplotlib
+conda install -c conda-forge zbar openjpeg giflib libjpeg-turbo wmctrl parallel pylibdmtx imagemagick matplotlib 
 ```
 
 
