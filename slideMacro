@@ -104,7 +104,11 @@ print a job list:
 
 print a job list for 'slurm':
     find "\$(pwd)" -iname "*.ndpi" -type f \\
+<<<<<<< HEAD
           -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
+=======
+          -exec printf "qsub $DEFAULT_SLURMARGS " \; \\
+>>>>>>> 66ad53b1b07e3dbbacd415efae716c4228d92129
           -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
           -exec echo "--file=\""{}"\" " \;
 
