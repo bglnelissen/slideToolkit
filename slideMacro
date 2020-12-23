@@ -33,7 +33,7 @@ SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="" #"2000x2000" # Maximum size of macro image
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
-DEFAULT_SLURMARGS="-t 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
+DEFAULT_SLURMARGS="--time 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 
 # Errors go to stderr
 err() {
@@ -100,13 +100,13 @@ examples:
   $SCRIPTNAME  --file="file.ndpi"
 
 print a job list:
-  find "\$(pwd)" -iname "*.ndpi" -printf 'processing file %p\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
+  find "\$(pwd)" -iname "*.ndpi" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
 
 print a job list for 'slurm':
-  find "\$(pwd)" -iname "*.ndpi" -type f \\
-        -exec printf "sbatch $DEFAULT_SLURMARGS " \; \\
-        -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
-        -exec echo "--file=\""{}"\" " -J ${basename "{}" }\;
+    find "\$(pwd)" -iname "*.ndpi" -type f \\
+          -exec printf "sbatch $DEFAULT_SLURMARGS -D \$(pwd) " \; \\
+          -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
+          -exec echo "--file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
