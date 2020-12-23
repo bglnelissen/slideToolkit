@@ -102,11 +102,11 @@ examples:
 print a job list:
   find "\$(pwd)" -iname "*.TIF" -printf 'processing file %p\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
 
-print a job list for 'qsub':
+print a job list for 'slurm':
   find "\$(pwd)" -iname "*.TIF" -type f \\
         -exec printf "sbatch $DEFAULT_SLURMARGS " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
-        -exec echo "--file=\""{}"\" " \;
+        -exec echo "--file=\""{}"\" " -J ${basename "{}" }\;
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
