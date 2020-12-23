@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # Description: Create scaled mask and macro from a virtual slide
-# 
+#
 # The MIT License (MIT)
 # Copyright (c) 2014-2020, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
 # "Software"), to deal in the Software without restriction, including
@@ -12,10 +12,10 @@
 # distribute, sublicense, and/or sell copies of the Software, and to
 # permit persons to whom the Software is furnished to do so, subject to
 # the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included
 # in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 # OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -23,19 +23,17 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# 
+#
 
 # Variables
 SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create scaled *.macro.png from a virtual slide."
 DEPENDENCIES=("convert")
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
-# DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
-DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
+DEFAULT_MACRO_THUMBSIZE="" #"2000x2000" # Maximum size of macro image
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
-DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
-# DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
+DEFAULT_SLURMARGS="-t 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 
 # Errors go to stderr
 err() {
@@ -92,7 +90,7 @@ options:
   [-l, --layer] <integer>       force specific layer by layer id
   [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
   [--ignore-dependencies]       ignores all dependencies, but gives warning
-  
+
   --help                        display this help
   --version                     display version and license information
 
@@ -105,32 +103,29 @@ print a job list:
   find "\$(pwd)" -iname "*.TIF" -printf 'processing file %p\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
 
 print a job list for 'qsub':
-  find "\$(pwd)" -iname "*tif" -type f \\
-        -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
+  find "\$(pwd)" -iname "*.TIF" -type f \\
+        -exec printf "sbatch $DEFAULT_SLURMARGS " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
         -exec echo "--file=\""{}"\" " \;
 
 dependencies: ${DEPENDENCIES[@]}
 supported formats: ${SUPPORTED_FORMATS[@]}
 
-You can extract a layer to quickly inspect the image. This program will 
-use 'convert' to create a '*.macro.png'-file for you which you can 
-inspect. The 'macro'-image is a layer within the original TIF file. 
-Pipe the 'multiple folders at once' output in 'parallel' for parallel 
-processing. 
-For some slides, the virtual slide format is not known. For these 
-instances you need to run slideInfo to find the correct layer manually. 
-When the layer is identified (approximately 2000x2000 pixels), use 
+You can extract a layer to quickly inspect the image. This program will
+use 'convert' to create a '*.macro.png'-file for you which you can
+inspect. The 'macro'-image is a layer within the original TIF file.
+Pipe the 'multiple folders at once' output in 'parallel' for parallel
+processing.
+For some slides, the virtual slide format is not known. For these
+instances you need to run slideInfo to find the correct layer manually.
+When the layer is identified (approximately 2000x2000 pixels), use
 the --layer flag.
 
-NOTE #1: the original 'mask' arguments have not been removed, but the 
-masking command has been commented out.
-
-NOTE #2: by default we set -quiet to remove warnings such as those described
+NOTE #1: by default we set -quiet to remove warnings such as those described
 here: https://stackoverflow.com/questions/27608124/imagemagick-how-to-get-rid-of-tiffwarnings-768-message-about-unknown-field-wh
 
 The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2020, Bas G.L. Nelissen, Sander W. van der Laan, 
+The slideToolkit (C) 2014-2020, Bas G.L. Nelissen, Sander W. van der Laan,
 UMC Utrecht, the Netherlands.
 Report issues at https://github.com/swvanderlaan/slideToolkit/issues.
 
@@ -140,9 +135,7 @@ EOF
 # Empty variables
 FILE=""
 LAYER=""
-# MASKSUFFIX=""
 MACROSUFFIX=""
-MASKARGS=""
 # illegal option
 illegalOption() {
 cat <<- EOF
@@ -176,18 +169,6 @@ do
     --layer=*)
       LAYER=${1#*=}
       shift ;;
-#     --masksuffix)
-#       MASKSUFFIX=$2
-#       shift 2 ;;
-#     --masksuffix=*)
-#       MASKSUFFIX=${1#*=}
-#       shift ;;
-#     --mask-args)
-#       MASKARGS=$2
-#       shift 2 ;;
-#     --mask-args=*)
-#       MASKARGS=${1#*=}
-#       shift ;;
     --macrosuffix)
       MACROSUFFIX=$2
       shift 2 ;;
@@ -217,18 +198,6 @@ if [ "$FILE" != "" ]; then
 else
   FILE="$1"
 fi
-# set MASKSUFFIX default
-# if [ "$MASKSUFFIX" != "" ]; then
-#   MASKSUFFIX="$MASKSUFFIX"
-# else
-#   MASKSUFFIX="$DEFAULT_MASKSUFFIX"
-# fi
-# set MASKARGS default
-# if [ "$MASKARGS" != "" ]; then
-#   MASKARGS="$MASKARGS"
-# else
-#   MASKARGS="$DEFAULT_MASKARGS"
-# fi
 # set MACROSUFFIX default
 if [ "$MACROSUFFIX" != "" ]; then
   MACROSUFFIX="$MACROSUFFIX"
@@ -301,8 +270,7 @@ getMacroLeica(){
 }
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  #-resize "${DEFAULT_MACRO_THUMBSIZE}>" 
-  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]"  -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
@@ -318,7 +286,6 @@ programOutput(){
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
-#   MASK="${FILEPATH}${MASKSUFFIX}.png"
   MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
   # check metadata for scanner data
@@ -340,35 +307,11 @@ programOutput(){
     usage
     exit 1
   fi
-  
-  # what am I doing here?
-  # create mask, lay it ontop of the macro image.
-  # a fuzz of 4% works well, but fails on very light slides
-  # a fuzz of 2% is might by to easy on the selection
-  # a fuzz of 2.5% is possible (but still to stringend on some slides)
-  # - we add a temporary border to the image of 100 pixels.
-  # - The image is blurred, the border will make sure the blur is applied to the borders as well. 
-  #   A blur will fill small holes in the tissue and will get rid of dust speckles.
-  # - Using fuzz, the background is selected and made transparent.
-  # - the previous added border is removed
-  # - the alpha makes all transparent parts of the image black, and the rest white.
-  # - now everything white is converted to transparent.
-  # - this image is now put on-top of the original one.
 
-### -- OBSOLETE CODE -- ###
-### We will keep this code, but not that the new slideEntropyMasker is more reliable.
-#   convert "$MACRO" \( "$MACRO" \
-#     -bordercolor white -border 100x100 \
-#     $MASKARGS -transparent white \
-#     -crop +100+100 -crop -100-100 +repage \
-#     -alpha extract \
-#     -transparent white \) \
-#     -flatten "$MASK"
-### -- OBSOLETE CODE -- ###
 }
 # all check?
 checkRequirements
-checkDependencies 
+checkDependencies
 
 # lets go!
 # actual program
