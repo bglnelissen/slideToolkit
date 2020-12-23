@@ -104,11 +104,7 @@ print a job list:
 
 print a job list for 'slurm':
     find "\$(pwd)" -iname "*.ndpi" -type f \\
-<<<<<<< HEAD
           -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
-=======
-          -exec printf "qsub $DEFAULT_SLURMARGS " \; \\
->>>>>>> 66ad53b1b07e3dbbacd415efae716c4228d92129
           -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
           -exec echo "--file=\""{}"\" " \;
 
@@ -274,7 +270,8 @@ getMacroLeica(){
 }
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  # convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1%  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
