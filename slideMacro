@@ -27,15 +27,15 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Create scaled *.mask.png and *.macro.png from a virtual slide."
+DESCRIPTIONSHORT="Create scaled *.macro.png from a virtual slide."
 DEPENDENCIES=("convert")
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
-DEFAULT_MASKSUFFIX=".mask"
+# DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
 DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
-DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
+# DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
 err() {
@@ -52,8 +52,8 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolkit 0.1 beta
-($SCRIPTNAME is part of the slideToolkit)
+slideToolKit 1.0
+($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
 Copyright (c) 2014-2020, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
@@ -88,10 +88,8 @@ usage:
 options:
   -f, --file <filename>         virtual slide to create mask from
 
-  [--masksuffix] <text>         mask suffix ["$DEFAULT_MASKSUFFIX"]
   [--macrosuffix] <text>        macro suffix ["$DEFAULT_MACROSUFFIX"]
   [-l, --layer] <integer>       force specific layer by layer id
-  [--mask-args] <arguments>     mask arguments (imageMagick) ["$DEFAULT_MASKARGS"]
   [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
   [--ignore-dependencies]       ignores all dependencies, but gives warning
   
@@ -104,7 +102,7 @@ examples:
   $SCRIPTNAME  --file="file.tif"
 
 print a job list:
-  find "\$(pwd)" -iname "*.TIF" -exec $(command -v "$SCRIPTNAME") -f "{}" \;
+  find "\$(pwd)" -iname "*.TIF" -printf 'processing file %p\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
 
 print a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
@@ -142,7 +140,7 @@ EOF
 # Empty variables
 FILE=""
 LAYER=""
-MASKSUFFIX=""
+# MASKSUFFIX=""
 MACROSUFFIX=""
 MASKARGS=""
 # illegal option
@@ -178,18 +176,18 @@ do
     --layer=*)
       LAYER=${1#*=}
       shift ;;
-    --masksuffix)
-      MASKSUFFIX=$2
-      shift 2 ;;
-    --masksuffix=*)
-      MASKSUFFIX=${1#*=}
-      shift ;;
-    --mask-args)
-      MASKARGS=$2
-      shift 2 ;;
-    --mask-args=*)
-      MASKARGS=${1#*=}
-      shift ;;
+#     --masksuffix)
+#       MASKSUFFIX=$2
+#       shift 2 ;;
+#     --masksuffix=*)
+#       MASKSUFFIX=${1#*=}
+#       shift ;;
+#     --mask-args)
+#       MASKARGS=$2
+#       shift 2 ;;
+#     --mask-args=*)
+#       MASKARGS=${1#*=}
+#       shift ;;
     --macrosuffix)
       MACROSUFFIX=$2
       shift 2 ;;
@@ -220,17 +218,17 @@ else
   FILE="$1"
 fi
 # set MASKSUFFIX default
-if [ "$MASKSUFFIX" != "" ]; then
-  MASKSUFFIX="$MASKSUFFIX"
-else
-  MASKSUFFIX="$DEFAULT_MASKSUFFIX"
-fi
+# if [ "$MASKSUFFIX" != "" ]; then
+#   MASKSUFFIX="$MASKSUFFIX"
+# else
+#   MASKSUFFIX="$DEFAULT_MASKSUFFIX"
+# fi
 # set MASKARGS default
-if [ "$MASKARGS" != "" ]; then
-  MASKARGS="$MASKARGS"
-else
-  MASKARGS="$DEFAULT_MASKARGS"
-fi
+# if [ "$MASKARGS" != "" ]; then
+#   MASKARGS="$MASKARGS"
+# else
+#   MASKARGS="$DEFAULT_MASKARGS"
+# fi
 # set MACROSUFFIX default
 if [ "$MACROSUFFIX" != "" ]; then
   MACROSUFFIX="$MACROSUFFIX"
@@ -284,7 +282,7 @@ checkDependencies(){
 getMacro(){
   # get thumb by layer id
   LAYER="$LAYER"
-	convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScanHT(){
   # layer 8 contains the macro
@@ -303,7 +301,8 @@ getMacroLeica(){
 }
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  #-resize "${DEFAULT_MACRO_THUMBSIZE}>" 
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]"  -fuzz 1% -transparent "#ECECEC"  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
@@ -319,7 +318,7 @@ programOutput(){
   EXTENSION="${BASENAME##*.}"         # extension
   FILEPATH="${FILEFULL%.*}"           # full path, no extension
   FILENAME="${BASENAME%.*}"           # filename, no extension"
-  MASK="${FILEPATH}${MASKSUFFIX}.png"
+#   MASK="${FILEPATH}${MASKSUFFIX}.png"
   MACRO="${FILEPATH}${MACROSUFFIX}.png"
 
   # check metadata for scanner data
