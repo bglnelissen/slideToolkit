@@ -27,10 +27,10 @@
 
 # Variables
 SCRIPTNAME=$(basename $0)
-DESCRIPTIONSHORT="Create scaled *.macro.png from a virtual slide."
+DESCRIPTIONSHORT="Create *.png from a virtual slide."
 DEPENDENCIES=("convert")
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
-DEFAULT_MACROSUFFIX=""
+DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="" #"2000x2000" # Maximum size of macro image
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
 DEFAULT_SLURMARGS="--time 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
@@ -98,9 +98,11 @@ options:
 examples:
   $SCRIPTNAME "file.ndpi"
   $SCRIPTNAME  --file="file.ndpi"
+  $SCRIPTNAME  -f "file.ndpi"
+  $SCRIPTNAME  -f "file.ndpi --macrosuffix=".layer5"
 
 print a job list:
-  find "\$(pwd)" -iname "*.ndpi" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") -f "{}" \;
+  find "\$(pwd)" -iname "*.ndpi" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") --file "{}" \;
 
 print a job list for 'slurm':
     find "\$(pwd)" -iname "*.ndpi" -type f \\
@@ -199,7 +201,7 @@ else
   FILE="$1"
 fi
 # set MACROSUFFIX default
-if [ "$MACROSUFFIX" != "" ]; then
+if [ "$MACROSUFFIX" != "$DEFAULT_MACROSUFFIX" ]; then
   MACROSUFFIX="$MACROSUFFIX"
 else
   MACROSUFFIX="$DEFAULT_MACROSUFFIX"
@@ -271,7 +273,7 @@ getMacroLeica(){
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
   # convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
-  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1%  "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
