@@ -30,7 +30,7 @@ SCRIPTNAME=$(basename $0)
 DESCRIPTIONSHORT="Create scaled *.macro.png from a virtual slide."
 DEPENDENCIES=("convert")
 SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
-DEFAULT_MACROSUFFIX=".macro"
+DEFAULT_MACROSUFFIX=""
 DEFAULT_MACRO_THUMBSIZE="" #"2000x2000" # Maximum size of macro image
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
 DEFAULT_SLURMARGS="--time 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
@@ -271,7 +271,7 @@ getMacroLeica(){
 getMacroHamamatsu(){
   LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
   # convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
-  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1%  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" "$MACRO"
 }
 getMacroiScan(){
   LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
