@@ -85,15 +85,15 @@ for fname in files:
             img = fimage.read_region((0, 0), level, fimage.level_dimensions[level])
         img = np.asarray(img)[:,:, 0:3]
 
-    if args.verbose:
-        print("Processing [",fname,"] at level [",level,"].")
-        print('* image dimensions (height x width in pixels):', img.shape)
-        img_size = img.size/1024 # to get kilobytes
-        print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
-        cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
-    else:
-        print("Writing macro for [",fname,"] at level [",level,"].")
-        cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
+        if args.verbose:
+            print("Processing [",fname,"] at level [",level,"].")
+            print('* image dimensions (height x width in pixels):', img.shape)
+            img_size = img.size/1024 # to get kilobytes
+            print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
+            cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
+        else:
+            print("Writing macro for [",fname,"] at level [",level,"].")
+            cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
