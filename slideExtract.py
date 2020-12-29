@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# script to extract a macro-file from NDPI file
+# script to extract a thumbnails and macros whole-slide image files (*.TIF, *.NDPI, etc.)
 #
 # Ref: https://github.com/choosehappy/Snippets/blob/master/extract_macro_level_from_wsi_image_openslide_cli.py
 #
@@ -7,9 +7,9 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                slideExtract: extract thumbnails and macro-images ")
 print("")
-print("* Version          : v1.0.0")
+print("* Version          : v1.0.1")
 print("")
-print("* Last update      : 2020-12-28")
+print("* Last update      : 2020-12-29")
 print("* Written by       : choosehappy | https://github.com/choosehappy")
 print("* Edited by        : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("")
