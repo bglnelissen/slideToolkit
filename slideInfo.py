@@ -79,7 +79,7 @@ for fname in files:
         
     else:
         slide=openslide.OpenSlide(fname)
-        print("Slide format for [",fname,"]: " + str(slide.detect_format(fname)))
+        print("Showing some properties for slide [",fname,"] with format: " + str(slide.detect_format(fname)))
         print("Slide associated images:")
         for ai_key in slide.associated_images.keys():
           print("  " + str(ai_key) + ": " + str(slide.associated_images.get(ai_key)))
