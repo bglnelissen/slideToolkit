@@ -85,7 +85,7 @@ for fname in files:
             img = fimage.read_region((0, 0), level, fimage.level_dimensions[level])
         img = np.asarray(img)[:,:, 0:3]
 
-    elif args.verbose:
+    if args.verbose:
         print("Processing [",fname,"] at level [",level,"].")
         print('* image dimensions (height x width in pixels):', img.shape)
         img_size = img.size/1024 # to get kilobytes
