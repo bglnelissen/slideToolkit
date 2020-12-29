@@ -92,7 +92,7 @@ for fname in files:
             print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
             cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
         else:
-            print("Writing macro for [",fname,"] at level [",level,"].")
+            print("Writing images for [",fname,"] at level [",level,"].")
             cv2.imwrite(str(fnameout).replace("!!",str(level)),cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
