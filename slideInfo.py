@@ -9,65 +9,96 @@
 ### - get in level count
 #
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-print("                                      slideKeys: NDPI information ")
+print("                                      slideInfo: whole-slide image information ")
 print("")
-print("* Version          : v1.0.0")
+print("* Version          : v1.0.1")
 print("")
-print("* Last update      : 2020-12-28")
+print("* Last update      : 2020-12-29")
 print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("* Suggested for by : Toby Cornish")
 print("")
-print("* Description      : This script will get image keys for a given image for quick inspection. ")
+print("* Description      : This script will get whole-slide image information from (a list of given) images ")
+print("                     for quick inspection.")
 print("")
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
 # import required packages
-
+import numpy as np
 import sys
-import os
+import glob
+from pathlib import Path
 
 # for argument parser
 import argparse
 import textwrap
 
+# for openslide/openCV
+import cv2
+import os
 import openslide
 from openslide import *
 
-# svsPath = r'_small.svs'
-
 parser = argparse.ArgumentParser(
 	prog='slideNDPInfo',
-	description='This script will get image keys from a given image in a given folder for quick inspection.',
-	usage='slideNDPInfo [-h/--help] -i/--image path_to_image',
+	description='This script will get whole-slide image information from (a list of given) images for quick inspection.',
+	usage='slideNDPInfo [-h/--help] -i/--input.',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
 	epilog=textwrap.dedent("Copyright (c) 1979-2020 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
-parser.add_argument('-i','--image', help='Give the path to where the image resides, e.g. AE-SLIDES/HE/AE107.HE.ndpi', required=True)
+parser.add_argument('-v', '--verbose', help="Will get all available image properties.", default=False, action="store_true")
 
-try:
-	args = parser.parse_args()
-	print("We are extracting information from image [" + args.image + "].")
+requiredNamed = parser.add_argument_group('required named arguments')
 
-except SystemExit:
-	print("\nOh, computer says no! You must supply correct arguments when running a *** slideNDPInfo ***!\n")
-	parser.print_help()
-	exit()
+requiredNamed.add_argument('-i','--input',help="Input (directory containing files). Try: AE107.HE.ndpi or AE-SLIDES/HE/*.ndpi.", nargs="*")
+
+args = parser.parse_args()
+
+if not args.input:
+    print("\nOh, computer says no! You must supply correct arguments when running a *** slideMacro ***!")
+    print("Note that -i/--input is required. Try: AE107.HE.ndpi or AE-SLIDES/HE/*.ndpi.\n")
+    parser.print_help()
+    exit()
+
+if len(args.input) > 1:  # bash has sent us a list of files
+    files = args.input
+else:  # user sent us a wildcard, need to use glob to find files
+    files = glob.glob(args.input[0])
 
 # globals
-slide = openslide.OpenSlide(args.image)
 
 print('Python version: ',sys.version)
 print('OpenSlide version: ',openslide.__version__)
 print('OpenSlide library version: ', openslide.__library_version__)
-print('Available \'keys\' for image (i.e. \'associated_images.keys\'): ',slide.associated_images.keys())
 
-try:
-	macroIm = slide.associated_images['macro']
-	print('macro: ',macroIm.size)
-except OpenSlideError as macro_error:
-	print('error reading macro')
-	print(macro_error)
 
-slide.close()
+for fname in files:
+    if args.verbose:
+        slide=openslide.OpenSlide(fname)
+        print("Showing all image properties for [",fname,"]:")
+        for prop_key in slide.properties.keys():
+          print("  Property: " + str(prop_key) + ", value: " + str(slide.properties.get(prop_key)))
+        
+    else:
+        slide=openslide.OpenSlide(fname)
+        print("Slide format for [",fname,"]: " + str(slide.detect_format(fname)))
+        print("Slide associated images:")
+        for ai_key in slide.associated_images.keys():
+          print("  " + str(ai_key) + ": " + str(slide.associated_images.get(ai_key)))
+
+        macroIm = slide.associated_images['macro']
+        img = np.asarray(macroIm)[:,:, 0:3]
+        img_size = img.size/1024 # to get kilobytes
+        print('* key-image dimensions (height x width in pixels):', img.shape)
+        print('* key-image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
+        print("Slide dimensions: " + str(slide.dimensions))
+        objective_power = int(slide.properties[openslide.PROPERTY_NAME_OBJECTIVE_POWER])
+        print("Slide objective power: " + str(objective_power))
+
+        print('Available \'levels\': ',slide.level_count)
+        print("* level count: %d" % slide.level_count)
+        print("* level dimensions: " + str(slide.level_dimensions))
+        print("* level downsamples: " + str(slide.level_downsamples))
+
+    slide.close()
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")

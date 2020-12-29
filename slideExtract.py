@@ -18,20 +18,20 @@ print("                     for quick inspection.")
 print("")
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
+# import required packages
 import numpy as np
-import cv2
 import glob
+from pathlib import Path
 
 # for argument parser
 import argparse
 import textwrap
 
-from pathlib import Path
+# for openslide/openCV
+import cv2
 import os
 import openslide
-
-from PIL import Image
-import matplotlib.pyplot as plt
+from openslide import *
 
 parser = argparse.ArgumentParser(
 	prog='slideExtract',

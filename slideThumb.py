@@ -17,21 +17,21 @@ print("* Description      : This script will get thumbnails from (a list of give
 print("")
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
+# import required packages
 import numpy as np
-import cv2
 import glob
+from pathlib import Path
 
 # for argument parser
 from sys import exit, argv
 import argparse
 import textwrap
 
-from pathlib import Path
+# for openslide/openCV
+import cv2
 import os
 import openslide
-
-from PIL import Image
-import matplotlib.pyplot as plt
+from openslide import *
 
 parser = argparse.ArgumentParser(
 	prog='slideThumb',
