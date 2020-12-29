@@ -5,7 +5,7 @@
 #
 
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-print("                                   slideMacro: extract thumbnails images ")
+print("                                   slideMacro: extract macro images ")
 print("")
 print("* Version          : v1.0.0")
 print("")
