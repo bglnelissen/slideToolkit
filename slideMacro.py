@@ -34,11 +34,10 @@ import openslide
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# 
 parser = argparse.ArgumentParser(
 	prog='slideMacro',
 	description='This script will get macro-images at a given level of magnification from (a list of given) images for quick inspection.',
-	usage='slideMacro -i/--input; optional: -d/--display -o/--outdir -s/--suffix -t/--type -f/--force -v/--verbose; for help: -h/--help',
+	usage='slideMacro -i/--input -l/--level; optional: -d/--display -o/--outdir -s/--suffix -t/--type -f/--force -v/--verbose; for help: -h/--help',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
 	epilog=textwrap.dedent("Copyright (c) 1979-2020 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
 

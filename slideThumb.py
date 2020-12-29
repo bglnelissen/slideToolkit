@@ -33,7 +33,6 @@ import openslide
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# 
 parser = argparse.ArgumentParser(
 	prog='slideThumb',
 	description='This script will get thumbnails from given images for quick inspection.',
