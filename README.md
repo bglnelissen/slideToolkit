@@ -26,5 +26,5 @@ In conclusion, **slideToolKit** provides a free, powerful and versatile collecti
 #### Licence
 The MIT License (MIT): <http://opensource.org/licenses/MIT>.
 
-Copyright (c) 2014-2019, [Bas G.L. Nelissen](https://github.com/bglnelissen) & [Sander W. van der Laan](https://github.com/swvanderlaan), UMC Utrecht, Utrecht, the Netherlands.
+Copyright (c) 2014-2021, [Bas G.L. Nelissen](https://github.com/bglnelissen) & [Sander W. van der Laan](https://github.com/swvanderlaan), UMC Utrecht, Utrecht, the Netherlands.
 
