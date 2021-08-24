@@ -205,7 +205,7 @@ else
 	echo ""
 	echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
 	
-	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh)
+	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh ${EMASKTHRESHOLD} )
 	
 	### FOR DEBUG
 	### echo $THIS_SLIDEMASK
@@ -231,7 +231,7 @@ else
 	echo ""
 	echoitalic "* CellProfiler to analyze images."
 	
-	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/cellprofiler.errors -o ${PROJECTDIR}/logs/cellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh)
+	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/cellprofiler.errors -o ${PROJECTDIR}/logs/cellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} )
 	
 	### REMOVE THIS BREAK FOR PRODUCTION!
 	### When this break is active, only the first item 
@@ -243,7 +243,7 @@ else
 	echo ""
 	echoitalic "* WrapUp the work we have done, and clean house."
 	
-	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/wrapup.errors -o ${PROJECTDIR}/logs/wrapip.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh )
+	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/wrapup.errors -o ${PROJECTDIR}/logs/wrapip.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} )
 	
 		cd ..
 
