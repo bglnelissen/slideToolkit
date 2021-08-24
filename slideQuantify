@@ -162,6 +162,7 @@ else
 	UNIQUE_LABEL="V3" # should be argument
 
 	### FOR DEBUG
+	echocyan "Debug mode - processing debug-images."
 	DEBUGLIST="AE1088.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT"
 	for SLIDE_NUM in $DEBUGLIST; do
 # 	for SLIDE_NUM in "$FILESTART"*; do
@@ -208,8 +209,10 @@ else
 	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh ${EMASKTHRESHOLD} )
 	
 	### FOR DEBUG
-	### echo $THIS_SLIDEMASK
-	### echo $HOLD_JID_STRING
+	echocyan "Debug mode - listing slide number and job-id."
+	echo $THIS_SLIDEMASK
+	echo $HOLD_JID_STRING
+
 
 	### slide2Tiles
 	echo ""
