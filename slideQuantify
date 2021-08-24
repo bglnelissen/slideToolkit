@@ -144,8 +144,6 @@ QJOB_TIME_CP="09:00:00"
 # Set slideToolKit DIRECTORY
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
-TESTDIR="/hpc/dhl_ec/VirtualSlides/Projects/AE_20180305_SJAGER_HSSCHIPPER_FVERVERS_SBIJKERK/CD3_CD56_NKT"
-
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 8 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
@@ -207,7 +205,7 @@ else
 	echo ""
 	echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
 	
-	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${TESTDIR}/slideQuantify_mask.sh)
+	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh)
 	
 	### FOR DEBUG
 	### echo $THIS_SLIDEMASK
@@ -217,7 +215,7 @@ else
 	echo ""
 	echoitalic "* slide2Tiles to create tiles from images."
 	
-	JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.errors -o ${PROJECTDIR}/logs/slide2tiles.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${TESTDIR}/slideQuantify_tiling.sh)
+	JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.errors -o ${PROJECTDIR}/logs/slide2tiles.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_tiling.sh)
 	
 
 
@@ -225,7 +223,7 @@ else
 	echo ""
 	echoitalic "* slideNormalize for normalization of images."
 	
-	JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.errors -o ${PROJECTDIR}/logs/slidenormalize.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${TESTDIR}/slideQuantify_normalizing.sh)
+	JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.errors -o ${PROJECTDIR}/logs/slidenormalize.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_normalizing.sh)
 	
 
 
@@ -233,7 +231,7 @@ else
 	echo ""
 	echoitalic "* CellProfiler to analyze images."
 	
-	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/cellprofiler.errors -o ${PROJECTDIR}/logs/cellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${TESTDIR}/slideQuantify_cellprofiler.sh)
+	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/cellprofiler.errors -o ${PROJECTDIR}/logs/cellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh)
 	
 	### REMOVE THIS BREAK FOR PRODUCTION!
 	### When this break is active, only the first item 
@@ -245,7 +243,7 @@ else
 	echo ""
 	echoitalic "* WrapUp the work we have done, and clean house."
 	
-	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/wrapup.errors -o ${PROJECTDIR}/logs/wrapip.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${TESTDIR}/slideQuantify_wrapup.sh )
+	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/wrapup.errors -o ${PROJECTDIR}/logs/wrapip.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh )
 	
 		cd ..
 
