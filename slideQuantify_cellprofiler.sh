@@ -89,7 +89,7 @@ script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_cellprofiler.sh [arg1: path_to_cellprofiler_pipeline] "
+	echoerror "An example command would be: slideQuantify_cellprofiler [arg1: path_to_cellprofiler_pipeline] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!

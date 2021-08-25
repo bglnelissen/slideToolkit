@@ -88,7 +88,9 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup.sh "
+	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror ""
+	echoerror "An example command would be: slideQuantify_normalizing [arg1: 210]"
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -112,12 +114,12 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo ""
 ### REQUIRED | GENERALS	
-# STAIN="$1" # Depends on arg1
+EMASKTHRESHOLD="$1" # Depends on arg1
 
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 0 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_cellprofiler ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_normalizing ***!"
 		
 else
 
@@ -127,7 +129,7 @@ else
 		exit
 	fi
 	if [ ! -d *.tiles ]; then
-		(>&2 echo "*** ERROR *** No tiles to process. ")
+		(>&2 echo "*** WARNING *** No tiles to process. ")
 		exit; 
 	fi
 
@@ -139,18 +141,18 @@ else
 	module load slideToolKit;
 
 	mkdir -pv magick-tmp
-	export MAGICK_TMPDIR=$(pwd)/magick-tmp
-	export TMPDIR=$(pwd)/magick-tmp
+		export MAGICK_TMPDIR=$(pwd)/magick-tmp
+		export TMPDIR=$(pwd)/magick-tmp
 
 	for f in *.png; do
-		echo \"...Processing tile \$f\";
-		slideNormalize \$f;
-		slideEMask -c -f \$f -t "210"
+		echo "...Processing tile $f";
+		slideNormalize $f;
+		slideEMask -c -f $f -t "${EMASKTHRESHOLD}"
 		rm -v \$f;
 	done
 
 	# removing temporary files
-	rm -rfv magick-tmp
+	#rm -rfv magick-tmp
 
 	cd ..
 

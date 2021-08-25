@@ -89,7 +89,7 @@ script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] "
+	echoerror "An example command would be: slideQuantify_tiling [arg1: STAIN] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -138,20 +138,19 @@ else
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo \"The image-file is a NDPI and will be converted to .tif before tiling.\"
+		echo "The image-file is a NDPI and will be converted to .tif before tiling."
 		slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
 
 	elif [ -f *.tif ]; then
-		echo \"The image-file was a NDPI-converted .tif.\"
+		echo "The image-file was a NDPI-converted .tif."
 		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then
-		echo \"The image-file is a .TIF.\"
+		echo "The image-file is a .TIF."
 		slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
 
 	else
-		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
+		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. [image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]"
 		exit 1 
 	fi
 

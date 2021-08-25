@@ -89,7 +89,7 @@ script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify [arg1: 210]"
+	echoerror "An example command would be: slideQuantify_mask [arg1: 210]"
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -118,7 +118,7 @@ EMASKTHRESHOLD="$1" # Depends on arg1
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 1 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_tiling ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_mask ***!"
 		
 else
 
@@ -137,27 +137,27 @@ else
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo \"The image-file is a NDPI and will be converted to .tif before masking.\"
+		echo "The image-file is a NDPI and will be converted to .tif before masking."
 		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.tif ]; then 
-		echo \"The image-file was a NDPI-converted .tif.\"
+		echo "The image-file was a NDPI-converted .tif."
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.TIF ]; then 
-		echo \"The image-file is a .TIF.\"
+		echo "The image-file is a .TIF."
 		slideMask --layer 3 -f *.TIF;
 
 	else
-		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"	
+		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. [image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]"
 		exit 1 
 	fi
 
 	# running slideMask on the macro
 	for MACRO in $(ls *.macro.*); do 
 		slideEMask -f $MACRO -t ${EMASKTHRESHOLD}; 
+	
 	done
 
 	# removing temporary files
