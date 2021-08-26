@@ -234,7 +234,7 @@ else
 	echo ""
 	echoitalic "* CellProfiler to analyze images."
 	
-	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/cellprofiler.errors -o ${PROJECTDIR}/logs/cellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} )
+	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.errors -o ${PROJECTDIR}/logs/slidecellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} )
 	
 	### REMOVE THIS BREAK FOR PRODUCTION!
 	### When this break is active, only the first item 
@@ -246,7 +246,7 @@ else
 	echo ""
 	echoitalic "* WrapUp the work we have done, and clean house."
 	
-	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/wrapup.errors -o ${PROJECTDIR}/logs/wrapip.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} )
+	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.errors -o ${PROJECTDIR}/logs/slidewrapup.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} )
 	
 		cd ..
 

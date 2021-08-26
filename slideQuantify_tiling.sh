@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-25"
-echoitalic "* Version     : 2.0.1"
+echoitalic "* Last update : 2021-08-26"
+echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the tiling of images for slideToolKit"
 echoitalic "                analyses."
@@ -124,33 +124,34 @@ else
 
 	# checking if files exist - if so, skip this script
 
-	#if [[ -d *.tiles ]]
-	#then 
-	#    exit
-	#fi
+	if [[ -d *.tiles ]]
+	then 
+		exit
+	fi
 
 	# loading required modules 
-	module load ndpitools;
-	module load slideToolKit;
+	module load slideToolKit
+	module load ndpitools
 
 	mkdir -pv magick-tmp
 	export MAGICK_TMPDIR=$(pwd)/magick-tmp
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before tiling."
+		echo \"The image-file is a NDPI and will be converted to .tif before tiling.\"
 		slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
 
 	elif [ -f *.tif ]; then
-		echo "The image-file was a NDPI-converted .tif."
+		echo \"The image-file was a NDPI-converted .tif.\"
 		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then
-		echo "The image-file is a .TIF."
+		echo \"The image-file is a .TIF.\"
 		slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
 
 	else
-		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. [image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]"
+		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"
 		exit 1 
 	fi
 

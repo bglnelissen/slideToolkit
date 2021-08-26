@@ -103,8 +103,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-25"
-echoitalic "* Version     : 2.0.1"
+echoitalic "* Last update : 2021-08-26"
+echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the normalization of images for "
 echoitalic "                slideToolKit analyses."
@@ -137,9 +137,9 @@ else
 	cd *.tiles/;
 
 	# loading required modules 
-	module load slideNormalize;
-	module load slideToolKit;
-
+	module load slideToolKit
+	module load slideNormalize
+	
 	mkdir -pv magick-tmp
 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
 		export TMPDIR=$(pwd)/magick-tmp
@@ -148,7 +148,7 @@ else
 		echo "...Processing tile $f";
 		slideNormalize $f;
 		slideEMask -c -f $f -t "${EMASKTHRESHOLD}"
-		rm -v \$f;
+		rm -v $f;
 	done
 
 	# removing temporary files
@@ -157,8 +157,8 @@ else
 	cd ..
 
 	# listing files
-	ls -d -1 \$PWD/*tiles/*normalized* > files2cp.txt;
-	ls -d -1 \$PWD/*tiles/ENTROPY* >> files2cp.txt;
+	ls -d -1 $PWD/*tiles/*normalized* > files2cp.txt;
+	ls -d -1 $PWD/*tiles/ENTROPY* >> files2cp.txt;
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi

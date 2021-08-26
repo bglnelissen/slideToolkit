@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-25"
-echoitalic "* Version     : 2.0.1"
+echoitalic "* Last update : 2021-08-26"
+echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory using CellProfiler *after* "
@@ -131,7 +131,7 @@ else
 	fi
 
 	# loading required module
-	module load anaconda
+	module load anaconda/2-4.3.0
 
 	# creating necessary output directory
 	mkdir -pv cp_output

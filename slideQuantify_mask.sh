@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-25"
-echoitalic "* Version     : 2.0.1"
+echoitalic "* Last update : 2021-08-26"
+echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -137,26 +137,27 @@ else
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before masking."
+		echo \"The image-file is a NDPI and will be converted to .tif before masking.\"
 		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.tif ]; then 
-		echo "The image-file was a NDPI-converted .tif."
+		echo \"The image-file was a NDPI-converted .tif.\"
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.TIF ]; then 
-		echo "The image-file is a .TIF."
+		echo \"The image-file is a .TIF.\"
 		slideMask --layer 3 -f *.TIF;
 
 	else
-		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. [image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]"
+		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"
 		exit 1 
 	fi
 
 	# running slideMask on the macro
 	for MACRO in $(ls *.macro.*); do 
-		slideEMask -f $MACRO -t ${EMASKTHRESHOLD}; 
+		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
 	
 	done
 
