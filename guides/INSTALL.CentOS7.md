@@ -108,7 +108,7 @@ module load anaconda/3-8.202105
 ```
 
 
-### Step 4: installation required packages
+### Step 5: installation required packages
 
 
 ```
@@ -131,7 +131,7 @@ conda install -c bioconda bftools java-jdk
 ```
 
 
-### Step 4: installation slideToolkit
+### Step 6: installation slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -152,7 +152,67 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 
-### Step 5: installation CellProfiler
+### Step 7: make a module for slideToolKit
+
+Let's create a `modulefile` to make loading `slideToolKit` easy and fun.
+
+Create a text file with the following contents.
+
+```
+help(
+[[ slideToolKit(version 1.0) slideToolKit
+]])
+
+whatis("slideToolKit(version 1.0) slideToolKit")
+
+local version = "1.0"
+
+local base = "/hpc/local/$MY_DISTRO/$MY_GROUP/software/slideToolKit/" .. version 
+
+conflict("slideToolkit")
+
+prepend_path("PATH", base)
+
+load("gnu-parallel/20170122")
+prereq("gnu-parallel/20170122")
+
+load("zlib/1.2.8")
+prereq("zlib/1.2.8")
+
+load("imagemagick/6.9.3-10")
+prereq("imagemagick/6.9.3-10")
+
+load("openslide/3.4.1")
+prereq("openslide/3.4.1")
+
+load("libdmtx/0.7.4")
+prereq("libdmtx/0.7.4")
+
+load("dmtx-utils/0.7.4")
+prereq("dmtx-utils/0.7.4")
+
+load("graphicsmagick/1.3.26")
+prereq("graphicsmagick/1.3.26")
+
+```
+
+Save the text-file as `/hpc/local/CentOS7/dhl_ec/etc/modulefiles/slidetoolkit/version1.0.lua` in the `modulesfiles`-directory.
+
+Restart your shell:
+
+```
+source $HOME/.bashrc
+source $HOME/.bash_profile
+```
+
+You can now load your fresh `slideToolKit` installation:
+
+```
+module load slideToolKit/version1.0
+```
+
+
+### Step 8: installation CellProfiler
 
 Follow these instructions to install [CellProfiler](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-(Linux)).
 
@@ -170,7 +230,7 @@ source ~/.bash_profile
 And make sure you load the new modules:
 
 ```
-module load anaconda slideToolKit
+module load anaconda/3-8.202105 slideToolKit
 ```
 
 -------
@@ -179,7 +239,7 @@ module load anaconda slideToolKit
 - [x] add description on installation `anaconda`.
 - [x] add description on how to create `anaconda` module.
 - [x] add description on how to install required packages for `anaconda` and `slideToolKit`.
-- [.] add description on how to create `slideToolKit` module.
+- [x] add description on how to create `slideToolKit` module.
 - [.] add description on how to install `cellprofiler`.
 - [x] update manual instructions .
 
