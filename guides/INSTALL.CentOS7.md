@@ -45,13 +45,70 @@ If `anaconda` is available, make sure it is up-to-date.
 conda update -n base conda
 ```
 
-[instructions forthcoming]
+If `anaconda` is not available, you can grab a link here. Next, execute the following two lines in the root folder where you want `anaconda` to be installed, e.g. `/hpc/local/CentOS7/dhl_ec/software/`:
+
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+```
+
+```
+bash Anaconda3-2021.05-Linux-x86_64.sh
+```
+
+And follow the instructions. 
+
+If you don't want conda to be loaded on startup, you can execute the following command.
+
+```
+conda config --set auto_activate_base false
+```
+
+And don't forget to cleanup afterwards.
+
+```
+rm -v Anaconda3-2021.05-Linux-x86_64.sh
+```
+
+### Step 4: make a module for anaconda
+
+You can create a modulefile to make loading this particular `anaconda` installment easy and fun.
+
+Create a text file with the following contents.
+
+```
+help(
+[[ anaconda(version 3-8.202105) Anaconda, containing CellProfiler 4.1.3
+]])
+
+whatis("anaconda(version 3-8.202105) Anaconda, containing CellProfiler 4.1.3")
+
+local version = "3-8.202105"
+
+local base = "/hpc/local/$MY_DISTRO/$MY_GROUP/software/Anaconda3_2021_05"
+
+conflict("anaconda")
+
+prepend_path("PATH", pathJoin(base, "bin"))
+
+```
+
+Your administrator can tell you precisely where these `modulefiles` should be stored. In our case, they are in a folder `/hpc/local/CentOS7/dhl_ec/etc/modulefiles/anaconda` for our group. Save the text-file as `3-8.2021.05.lua` in the `modulesfiles`-directory.
+
+Restart your shell:
+
+```
+source $HOME/.bashrc
+source $HOME/.bash_profile
+```
+
+You can now load your fresh `anaconda` installation:
+
+```
+module load anaconda/3-8.202105
+```
 
 
-We will create a `module` for `anaconda`.
-
-
-### Step 3: installation required packages
+### Step 4: installation required packages
 
 
 ```
