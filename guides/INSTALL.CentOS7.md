@@ -45,7 +45,7 @@ If `anaconda` is available, make sure it is up-to-date.
 conda update -n base conda
 ```
 
-If `anaconda` is not available, you can grab a link here. Next, execute the following two lines in the root folder where you want `anaconda` to be installed, e.g. `/hpc/local/CentOS7/dhl_ec/software/`:
+If `anaconda` is not available, you can grab a [link here](https://www.anaconda.com/products/individual#linux). Next, execute the following two lines in the root folder where you want `anaconda` to be installed, e.g. `/hpc/local/CentOS7/dhl_ec/software/`:
 
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
@@ -71,7 +71,7 @@ rm -v Anaconda3-2021.05-Linux-x86_64.sh
 
 ### Step 4: make a module for anaconda
 
-You can create a modulefile to make loading this particular `anaconda` installment easy and fun.
+You can create a [`modulefile`](https://lmod.readthedocs.io/en/latest/015_writing_modules.html) to make loading this particular `anaconda` installment easy and fun.
 
 Create a text file with the following contents.
 
