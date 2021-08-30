@@ -109,8 +109,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-25"
-echoitalic "* Version     : 2.0.1"
+echoitalic "* Last update : 2021-08-30"
+echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory. "
@@ -239,21 +239,28 @@ else
 	### REMOVE THIS BREAK FOR PRODUCTION!
 	### When this break is active, only the first item 
 	### in the list of items to be processed will be processed.
-# 		INDEX=$((INDEX+1))
-# 		break;	
+	###
+	### OLD CODE
+	### INDEX=$((INDEX+1))
+	### break;	
+	
+	### NEW CODE
+	cd ..
 
+	INDEX=$((INDEX+1))
+	if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
+		break; 
+	fi
+	
+	
 	### Wrap Up
 	echo ""
 	echoitalic "* WrapUp the work we have done, and clean house."
 	
 	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.errors -o ${PROJECTDIR}/logs/slidewrapup.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} )
 	
-		cd ..
-
-		INDEX=$((INDEX+1))
-		if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
-			break; 
-		fi;
+	
+	# END OF for-loop
 	done
 
 
