@@ -12,7 +12,7 @@ NOWTIME = datetime.datetime.now()
 parser = argparse.ArgumentParser(
     prog='slideProcessor',
     description='This script processes all images of a given stain from the BULK and puts them in a sequentially numbered series of folders.',
-    usage='slideCopy [-h/--help] -s/--stain STAIN -p/--path PATH',
+    usage='slideProcessor [-h/--help] -s/--stain STAIN -p/--path PATH',
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog=textwrap.dedent("Copyright (c) 2018-2019 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl; Tim G.M. van de Kerkhof | t.g.m.vandekerkhof@umcutrecht.nl."))
 parser.add_argument('-s','--stain', help='Give the name of the stain, e.g. CD34', required=True)

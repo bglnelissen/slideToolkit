@@ -163,7 +163,12 @@ mkdir -p ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slideRename ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slideReset ~/bin/ && \
 	ln -s -f -v ~/git/slideToolKit/slideSQLheader ~/bin/ && \
-	ln -s -f -v ~/git/slideToolKit/slideThumb ~/bin/ 
+	ln -s -f -v ~/git/slideToolKit/slideThumb ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideExtract.py ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideInfo.py ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideMacro.py ~/bin/ && \
+	ln -s -f -v ~/git/slideToolKit/slideThumb.py ~/bin/
+ 
 ```
 
 #### Step 9 - Instal NDPITools
