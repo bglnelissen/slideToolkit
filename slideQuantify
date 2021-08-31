@@ -109,7 +109,7 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-30"
+echoitalic "* Last update : 2021-08-31"
 echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
@@ -155,7 +155,7 @@ else
 	mkdir -pv "$PROJECTDIR"/errors
 	rm -rfv "$FILESTART"*/magick-tmp
 
-	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" # should be argument
+	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
 	HOLD_JIDS=()
 	INDEX=0
 	BATCH_SIZE=5000 # should be argument, but how exactly does this work?
