@@ -144,7 +144,7 @@ else
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.tif ]; then 
-		echo \"The image-file was a NDPI-converted .tif.\"
+		echo \"The image-file is a (NDPI-converted) .tif.\"
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.TIF ]; then 

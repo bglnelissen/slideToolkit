@@ -215,7 +215,7 @@ else
 				slideMask --layer 0 -f *.tif;
 
 			elif [ -f *.tif ]; then 
-				echo "The image-file was a NDPI-converted .tif."
+				echo "The image-file is a (NDPI-converted) .tif."
 				# level should be an argument (easiest), or automatically determined (harder)
 				# slideMacro.py -i *.tif -l 0 -o $(pwd)
 				slideMask --layer 0 -f *.tif;

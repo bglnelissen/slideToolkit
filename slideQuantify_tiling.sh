@@ -140,11 +140,11 @@ else
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo \"The image-file is a NDPI and will be converted to .tif before tiling.\"
+		echo \"The image-file is a NDPI and should first be converted to .tif before tiling.\"
 		slide2Tiles --layer 0 -f *x40*.tif -m *.emask.png;
 
 	elif [ -f *.tif ]; then
-		echo \"The image-file was a NDPI-converted .tif.\"
+		echo \"The image-file is a (NDPI-converted) .tif.\"
 		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then

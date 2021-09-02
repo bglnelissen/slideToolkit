@@ -130,7 +130,7 @@ else
 		exit
 	fi
 	if [ ! -d *.tiles ]; then
-		(>&2 echo "*** WARNING *** No tiles to process. ")
+		(>&2 echo "*** ERROR *** No tiles to process. Create tiles first using slide2Tiles.")
 		exit; 
 	fi
 
