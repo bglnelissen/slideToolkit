@@ -125,7 +125,7 @@ else
 	# checking if masks exist - if so, skip this script
 	if [[ -s *mask.png ]] 
 	then 
-		echo \"..... Masked images already exists - moving on.\"
+		echo "..... Masked images already exists - moving on."
 		exit 
 	fi
 
@@ -139,34 +139,34 @@ else
 	export TMPDIR=$(pwd)/magick-tmp
 
 	if [ -f *.ndpi ]; then
-		echo \"The image-file is a NDPI and will be converted to .tif before masking.\"
+		echo "The image-file is a NDPI and will be converted to .tif before masking."
 		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.tif ]; then 
-		echo \"The image-file is a (NDPI-converted) .tif.\"
+		echo "The image-file is a (NDPI-converted) .tif."
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.TIF ]; then 
-		echo \"The image-file is a .TIF.\"
+		echo "The image-file is a .TIF."
 		# layer 3 is 20x Roche scanner
 		slideMask --layer 3 -f *.TIF;
 
 	else
-		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']\"
+		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
 		exit 1 
 	fi
 
 	# running slideMask on the macro
 	for MACRO in $(ls *.macro.*); do 
-		echo \"Running slideEMask on the macro-images.\"
+		echo "Running slideEMask on the macro-images."
 		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
 	
 	done
 
 	# removing temporary files
-	echo \"..... Removing temporary directory.\"
+	echo "..... Removing temporary directory."
 	rm -rfv magick-tmp
 
 ### END of if-else statement for the number of command-line arguments passed ###

@@ -127,18 +127,20 @@ else
 	# we check wether there is output already; if so, we exit
 	if [[ -d cp_output ]]
 	then 
-		echo \"..... CellProfiler was already run, or at least there is a cp_output-directory.\"
+		echo "..... CellProfiler was already run, or at least there is a cp_output-directory."
 		exit
 	fi
 
 	# loading required module
 	module load anaconda/3-8.2021.05
-
+# 	conda activate cp4
+	cellprofiler="/hpc/local/CentOS7/dhl_ec/software/Anaconda3_2021_05/envs/cp4/bin/cellprofiler"
+	
 	# creating necessary output directory
 	mkdir -pv cp_output
 
 	# running cellprofiler
-	echo \"...Running CellProfiler using $PIPELINE for $STAIN stained samples.\"
+	echo "...Running CellProfiler using $PIPELINE for $STAIN stained samples."
 	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 ### END of if-else statement for the number of command-line arguments passed ###

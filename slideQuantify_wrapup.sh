@@ -133,10 +133,10 @@ else
 	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
 	
 	# Randomly grab x (10) overlay images, and remove the rest
-	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+# 	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
 
 	# Collecting all the data
-	echo \"..... Creating [ results.txt ] and collecting data.\"
+	echo "..... Creating [ results.txt ] and collecting data."
 	echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
 	
 	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
@@ -160,22 +160,22 @@ else
 	# moving up to the $SLIDE_NUM directory again
 	cd ..
 	
-	echo \"..... Removing tiling directory and its contents.\";
+	echo "..... Removing tiling directory and its contents.";
 	# Randomly grab x (50) overlay images, and remove the rest
-	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-	rm -rfv *tiles/;
+# 	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+# 	rm -rfv *tiles/;
 
 	if [ -f *.ndpi ]; then 
-		echo \"..... Removing intermediate tif- & png-files converted from NDPI-files.\";
-		rm -v *x40*.tif; 
-		rm -v *x40*.png; 
+		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+# 		rm -v *x40*.tif; 
+# 		rm -v *x40*.png; 
 
 	fi;
 
-	echo \"..... Removing list of files to process.\";
-	rm -v files2cp.txt;
+	echo "..... Removing list of files to process.";
+# 	rm -v files2cp.txt;
 	
-	echo \"..... Gzipping result files.\";
+	echo "..... Gzipping result files.";
 	gzip -vf cp_output/${STAIN}*.gct;
 	gzip -vf cp_output/${STAIN}*.csv;
 	

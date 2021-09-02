@@ -126,7 +126,7 @@ else
 	# if the list of files to use in CellProfiler exist, we exit this script
 	if [[ -s files2cp.txt ]]
 	then
-		echo \"..... Normalization was already applied - moving on.\"
+		echo "..... Normalization was already applied - moving on."
 		exit
 	fi
 	if [ ! -d *.tiles ]; then
@@ -134,7 +134,7 @@ else
 		exit; 
 	fi
 
-	echo \"..... Tiles present, starting normalization.\"
+	echo "..... Tiles present, starting normalization."
 	# moving to the required directory
 	cd *.tiles/;
 
@@ -148,26 +148,26 @@ else
 		export TMPDIR=$(pwd)/magick-tmp
 
 	for IMAGE_TILE in *.png; do
-		echo \"...Processing tile [ $IMAGE_TILE ]\"
-		echo \"... - applying normalization ...\"
+		echo "...Processing tile [ $IMAGE_TILE ]"
+		echo "... - applying normalization ..."
 		slideNormalize $IMAGE_TILE;
 		
-		echo \"... - masking the normalized image ...\"
+		echo "... - masking the normalized image ..."
 		slideEMask -c -f $IMAGE_TILE -t "${EMASKTHRESHOLD}"
 		
-		echo \"... - removing intermediate $IMAGE_TILE ...\"
+		echo "... - removing intermediate $IMAGE_TILE ..."
 		rm -v $IMAGE_TILE;
 		
 	done
 
 	# removing temporary files
-	echo \"..... Removing temporary directory.\"
+	echo "..... Removing temporary directory."
 	rm -rfv magick-tmp
 
 	# moving back to the root of the $SLIDE_NUM directory
 	cd ..
 	
-	echo \"..... Collecting all normalized and masked tiles in a file for CellProfiler.\"
+	echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
 	ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt;
 	ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt;
 
