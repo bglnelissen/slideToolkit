@@ -119,6 +119,9 @@ RANDOM_SAMPLE="$2" # Depends on arg2
 # STAIN = "CD34"
 # OUTPUTFILENAME = "CD34slides.txt"
 
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
+
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 2 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
@@ -130,7 +133,7 @@ else
 	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
 	
 	# Randomly grab x (10) overlay images, and remove the rest
-	ls cp_output/*.png | shuf -n $(expr \$(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
 
 	# Collecting all the data
 	echo \"..... Creating [ results.txt ] and collecting data.\"
