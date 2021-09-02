@@ -141,14 +141,14 @@ else
 
 	# parsing SLIDE_NUM "$PWD"
 	# cut on . (period), output is 1
-	SLIDE_NUM=\$(basename \"$PWD\")
-	SAMPLE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
+	SLIDE_NUM=$(basename "$PWD")
+	SAMPLE_NUM=$(basename "$PWD") | cut -d'.' -f1
 	### DEBUG
 	### echo "Original slide number: $SLIDE_NUM"
 	### echo "Sample number: $SAMPLE_NUM"
 	SCRIPT_NAME="Colsums_${STAIN}.R"
 	
-	echo $SAMPLE_NUM $SLIDE_NUM $STAIN \$(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../results.txt;
+	echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../results.txt;
 	### we used to Gzip
 	### gzip -v ../results.txt;
 	head ../results.txt
