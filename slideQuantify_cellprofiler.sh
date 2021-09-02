@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-26"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-09-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory using CellProfiler *after* "
@@ -127,16 +127,18 @@ else
 	# we check wether there is output already; if so, we exit
 	if [[ -d cp_output ]]
 	then 
+		echo \"..... CellProfiler was already run, or at least there is a cp_output-directory.\"
 		exit
 	fi
 
 	# loading required module
-	module load anaconda/2-4.3.0
+	module load anaconda
 
 	# creating necessary output directory
 	mkdir -pv cp_output
 
 	# running cellprofiler
+	echo \"...Running CellProfiler using $PIPELINE for $STAIN stained samples.\"
 	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 ### END of if-else statement for the number of command-line arguments passed ###

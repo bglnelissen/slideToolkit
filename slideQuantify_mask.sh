@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-26"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-09-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -125,6 +125,7 @@ else
 	# checking if masks exist - if so, skip this script
 	if [[ -s *mask.png ]] 
 	then 
+		echo \"..... Masked images already exists - moving on.\"
 		exit 
 	fi
 
@@ -147,21 +148,24 @@ else
 
 	elif [ -f *.TIF ]; then 
 		echo \"The image-file is a .TIF.\"
+		# layer 3 is 20x Roche scanner
 		slideMask --layer 3 -f *.TIF;
 
 	else
 		echoerrorflash \"*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF' ]\"
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']\"
 		exit 1 
 	fi
 
 	# running slideMask on the macro
 	for MACRO in $(ls *.macro.*); do 
+		echo \"Running slideEMask on the macro-images.\"
 		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
 	
 	done
 
 	# removing temporary files
+	echo \"..... Removing temporary directory.\"
 	rm -rfv magick-tmp
 
 ### END of if-else statement for the number of command-line arguments passed ###

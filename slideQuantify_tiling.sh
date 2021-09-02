@@ -102,7 +102,7 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-26"
+echoitalic "* Last update : 2021-09-02"
 echoitalic "* Version     : 2.0.2"
 echo ""
 echoitalic "* Description : This script will start the tiling of images for slideToolKit"
@@ -126,6 +126,7 @@ else
 
 	if [[ -d *.tiles ]]
 	then 
+		echo \"..... Tiles directory already exists - moving on.\"
 		exit
 	fi
 
@@ -139,13 +140,14 @@ else
 
 	if [ -f *.ndpi ]; then
 		echo \"The image-file is a NDPI and will be converted to .tif before tiling.\"
-		slide2Tiles --layer 0 -f *x40*.tif -m *emask.png;
+		slide2Tiles --layer 0 -f *x40*.tif -m *.emask.png;
 
 	elif [ -f *.tif ]; then
 		echo \"The image-file was a NDPI-converted .tif.\"
 		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then
+		# layer 3 is 20x Roche scanner
 		echo \"The image-file is a .TIF.\"
 		slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
 
@@ -156,6 +158,7 @@ else
 	fi
 
 	# removing temporary files
+	echo \"..... Removing temporary directory.\"
 	rm -rfv magick-tmp
 
 ### END of if-else statement for the number of command-line arguments passed ###

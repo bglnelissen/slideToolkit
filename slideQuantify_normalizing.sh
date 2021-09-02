@@ -103,8 +103,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-26"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-09-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the normalization of images for "
 echoitalic "                slideToolKit analyses."
@@ -125,7 +125,8 @@ else
 
 	# if the list of files to use in CellProfiler exist, we exit this script
 	if [[ -s files2cp.txt ]]
-	then 
+	then
+		echo \"..... Normalization was already applied - moving on.\"
 		exit
 	fi
 	if [ ! -d *.tiles ]; then
@@ -133,6 +134,7 @@ else
 		exit; 
 	fi
 
+	echo \"..... Tiles present, starting normalization.\"
 	# moving to the required directory
 	cd *.tiles/;
 
@@ -144,21 +146,29 @@ else
 		export MAGICK_TMPDIR=$(pwd)/magick-tmp
 		export TMPDIR=$(pwd)/magick-tmp
 
-	for f in *.png; do
-		echo "...Processing tile $f";
-		slideNormalize $f;
-		slideEMask -c -f $f -t "${EMASKTHRESHOLD}"
-		rm -v $f;
+	for IMAGE_TILE in *.png; do
+		echo \"...Processing tile [ $IMAGE_TILE ]\"
+		echo \"... - applying normalization ...\"
+		slideNormalize $IMAGE_TILE;
+		
+		echo \"... - masking the normalized image ...\"
+		slideEMask -c -f $IMAGE_TILE -t "${EMASKTHRESHOLD}"
+		
+		echo \"... - removing intermediate $IMAGE_TILE ...\"
+		rm -v $IMAGE_TILE;
+		
 	done
 
 	# removing temporary files
-	#rm -rfv magick-tmp
+	echo \"..... Removing temporary directory.\"
+	rm -rfv magick-tmp
 
+	# moving back to the root of the $SLIDE_NUM directory
 	cd ..
-
-	# listing files
-	ls -d -1 $PWD/*tiles/*normalized* > files2cp.txt;
-	ls -d -1 $PWD/*tiles/ENTROPY* >> files2cp.txt;
+	
+	echo \"..... Collecting all normalized and masked tiles in a file for CellProfiler.\"
+	ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt;
+	ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt;
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi

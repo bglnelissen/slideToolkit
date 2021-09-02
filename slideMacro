@@ -96,16 +96,16 @@ options:
 
 
 examples:
-  $SCRIPTNAME "file.ndpi"
-  $SCRIPTNAME  --file="file.ndpi"
-  $SCRIPTNAME  -f "file.ndpi"
-  $SCRIPTNAME  -f "file.ndpi --macrosuffix=".layer5"
+  $SCRIPTNAME "file.TIF"
+  $SCRIPTNAME  --file="file.TIF"
+  $SCRIPTNAME  -f "file.TIF"
+  $SCRIPTNAME  -f "file.TIF --macrosuffix=".layer5"
 
 print a job list:
-  find "\$(pwd)" -iname "*.ndpi" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") --file "{}" \;
+  find "\$(pwd)" -iname "*.TIF" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") --file "{}" \;
 
 print a job list for 'slurm':
-    find "\$(pwd)" -iname "*.ndpi" -type f \\
+    find "\$(pwd)" -iname "*.TIF" -type f \\
           -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
           -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
           -exec echo "--file=\""{}"\" " \;

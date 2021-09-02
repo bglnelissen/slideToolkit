@@ -94,6 +94,9 @@ script_arguments_error() {
 	echoerror "- Argument #6  -- email address to send aborted/error jobs too, e.g. y.name@umcutrecht.nl."
 	echoerror "- Argument #7  -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: BEGIN=begin of job; END=end of job; FAIL=abort of job; ALL=all message job; NONE=no mail is send."
 	echoerror "- Argument #8  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #9  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
+	echoerror "- Argument #10  -- Batch size. A number to indicate the batch size, e.g. '5000'. [OPTIONAL]"
+	echoerror "- Argument #11  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'. [OPTIONAL]"
 	echoerror ""
 	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.txt] [arg6: y.name@umcutrecht.nl] [arg7: a] [arg8: 210]"
 	echoerror ""
@@ -109,8 +112,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-31"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-09-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory. "
@@ -128,6 +131,12 @@ OUTPUTFILENAME="$5" # Depends on arg5
 EMAIL="$6" # Depends on arg6
 MAILSETTING="$7" # Depends on arg7
 EMASKTHRESHOLD="$8" # Depends on arg8
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+UNIQUE_LABEL=${9-V1} # Depends on arg9
+BATCH_SIZE=${10-5000} # Depends on arg10
+RANDOM_SAMPLE=${11-20} # Depends on arg11
 
 QJOB_MEM_SLIDEMASK="100G"
 QJOB_TIME_SLIDEMASK="02:30:00"
@@ -158,13 +167,14 @@ else
 	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
 	HOLD_JIDS=()
 	INDEX=0
-	BATCH_SIZE=5000 # should be argument, but how exactly does this work?
-	UNIQUE_LABEL="V3" # should be argument
-
+# 	BATCH_SIZE=5000 # should be argument, but how exactly does this work?
+# 	UNIQUE_LABEL="V3" # should be argument
+	
+	cd $PROJECTDIR
+	
 	### FOR DEBUG
 	echocyan "Debug mode - processing debug-images."
-	DEBUGLIST="AE1088.UMC.CD3_CD56_NKT"
-# 	DEBUGLIST="AE1088.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT"
+	DEBUGLIST="AE1088.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT"
 	for SLIDE_NUM in $DEBUGLIST; do
 # 	for SLIDE_NUM in "$FILESTART"*; do
 		sleep 1
@@ -189,6 +199,7 @@ else
 		cd "$SLIDE_NUM" || exit
 		echo ""
 	
+		# Checking if an analysis was done before
 		if [[ -s cp_output/"$STAIN"_Image.csv.gz ]]; then 
 			echoitalic "Checking if this file was processed before; cp_output/${STAIN}_Image.csv.gz should be present ....."
 			ls -lh cp_output/*.gz
@@ -205,7 +216,7 @@ else
 
 	### slideEMask for macro, and NDPISplit when necessary
 	echo ""
-	echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
+	echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary. [ $THIS_SLIDEMASK ]"
 	
 	JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.errors -o ${PROJECTDIR}/logs/slidemask.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh ${EMASKTHRESHOLD} )
 	
@@ -217,25 +228,34 @@ else
 
 	### slide2Tiles
 	echo ""
-	echoitalic "* slide2Tiles to create tiles from images."
+	echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
 	
 	JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.errors -o ${PROJECTDIR}/logs/slide2tiles.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_tiling.sh)
 	
 
-
 	### slideNormalize
 	echo ""
-	echoitalic "* slideNormalize for normalization of images."
+	echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
 	
 	JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.errors -o ${PROJECTDIR}/logs/slidenormalize.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_normalizing.sh ${EMASKTHRESHOLD} )
 	
 
-
 	### CellProfiler
 	echo ""
-	echoitalic "* CellProfiler to analyze images."
+	echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
 	
 	JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.errors -o ${PROJECTDIR}/logs/slidecellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} )
+		
+	
+	### Wrap Up
+	echo ""
+	echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ]"
+	
+	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.errors -o ${PROJECTDIR}/logs/slidewrapup.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${RANDOM_SAMPLE} )
+	
+
+	echo "* Moving back to the project directory [$PROJECTDIR]"
+	cd $PROJECTDIR
 	
 	### REMOVE THIS BREAK FOR PRODUCTION!
 	### When this break is active, only the first item 
@@ -246,20 +266,10 @@ else
 	### break;	
 	
 	### NEW CODE
-	cd ..
-
 	INDEX=$((INDEX+1))
 	if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
 		break; 
 	fi
-	
-	
-	### Wrap Up
-	echo ""
-	echoitalic "* WrapUp the work we have done, and clean house."
-	
-	JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.errors -o ${PROJECTDIR}/logs/slidewrapup.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} )
-	
 	
 	# END OF for-loop
 	done

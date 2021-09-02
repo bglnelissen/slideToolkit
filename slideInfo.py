@@ -102,7 +102,7 @@ for fname in files:
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
-print("+ Copyright (c) 1979-2020 Toby Cornish, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands             +")
+print("+ Copyright (c) 1979-2021 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
 print("+                                                                                                                 +")
 print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and               +")
 print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including       +")
