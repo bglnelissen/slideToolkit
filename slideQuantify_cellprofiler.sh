@@ -132,7 +132,7 @@ else
 	fi
 
 	# loading required module
-	module load anaconda
+	module load anaconda/3-8.2021.05
 
 	# creating necessary output directory
 	mkdir -pv cp_output

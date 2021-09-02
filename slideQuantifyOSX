@@ -405,6 +405,7 @@ else
 # 		gzip -vf cp_output/${STAIN}*.gct;
 # 		gzip -vf cp_output/${STAIN}*.csv;
 
+		echo ""
 		echo "* Moving back to the project directory [$PROJECTDIR]"
 		cd $PROJECTDIR
 		

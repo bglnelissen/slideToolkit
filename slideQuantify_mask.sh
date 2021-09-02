@@ -130,6 +130,7 @@ else
 	fi
 
 	# loading required modules 
+	module load anaconda/3-8.2021.05
 	module load slideToolKit
 	module load ndpitools
 
