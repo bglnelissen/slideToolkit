@@ -13,7 +13,9 @@ A typical [workflow](images/slideToolkit.workflow.png) consists of four consecut
 - The third step (tiles), creates multiple manageable tiles to count. 
 - In the fourth step (analysis), tissue is analyzed and results are stored in a data set. Using this method, two consecutive measurements of 303 slides showed an intraclass correlation of 0.99 ([Vrijenhoek J.E.P. _et al._](https://www.ncbi.nlm.nih.gov/pubmed/25541691)).
 
+
 <img align="center" width="640" height="503" src=images/slideToolkit.workflow.small.png>
+
 _The slideToolKit workflow._
 
 In conclusion, **slideToolKit** provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
