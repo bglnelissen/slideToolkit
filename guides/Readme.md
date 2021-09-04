@@ -60,11 +60,13 @@ In digital image manipulation, a mask defines what part of the image will be ana
 The tools designed for step 2:
 
 - `slideDirectory`, create a staging directory per slide.
-- `slideThumb`, create slide thumbnail, including label.
-- `slideMask`, create a scaled mask and macro version from a slide.
+- `slideThumb`, create slide thumbnail, including label (in *PNG* format).
+- `slideMacro`, create a scaled macro version from a slide (in *PNG* format).
+- `slideEntropyMasker`, create image masks form PNG-files.
 
-Sometimes `slideMask` will be unable to make proper masks, especially when the contrast between tissue and background is very low. One can than divert to `slideMaskEntropy.py` which takes a PNG-file and makes a mask off of it.
+Note: As sometimes the former `slideMask` was unable to make proper masks, especially when the contrast between tissue and background is very low, we created `slideEntropyMasker`.
 
+###### UPDATE THIS SECTION #####
 ###### Installation instructions for `slideMaskEntropy.py`:
 `pip install numpy matplotlib scikit-image`
 
@@ -72,6 +74,9 @@ Sometimes `slideMask` will be unable to make proper masks, especially when the c
 We assume that `slideMask` has been run, but all the *.mask.png are of bad quality.
 
 `for FILE in $(pwd)/*.macro.PNG ; do echo "* Processing [ "$FILE" ]..."; slideMaskEntropy.py "$FILE"; done`
+
+###### ----------- #####
+
 
 ##### Step 3 - tiles
 Image analysis of memory intensive, whole 20x representations of the digitized slides is currently impossible due to hardware and software limitations. The goal of this step is to create multiple smaller images (i.e. tiles) from the 20x whole slide image. An upscaled version of the mask is placed over the 20x whole slide image (in our example this is layer 3 of the multi layered TIFF). Image manipulation on 20x sized whole slide images requires large amounts of computer RAM. To make it possible for computers without sufficient RAM to handle these files, the slideToolkit uses a memory-mapped disk file of the program memory. Using disk mapped memory files (ImageMagick .mpc files), the slideToolkit can efficiently extract all tiles. Without a mask, a faster and more memory efficient method is used using the openslide library.
@@ -89,8 +94,8 @@ CellProfiler is able to output its measurements in SQL/CSV format. Were the SQL 
 
 The tools designed for step 4:
 
- - `slideJobsCellProfiler`, outputs a list of jobs for CellProfiler
- - `slideSQLheader`, fetch table headers from CellProfiler SQL output for CSV file
+ - `slideJobsCellProfiler`, outputs a list of jobs for CellProfiler.
+ - `slideSQLheader`, fetch table headers from CellProfiler SQL output for CSV file.
 
 ---
 
@@ -118,20 +123,17 @@ The programs and libraries you need to run the slideToolkit:
 - [Openslide](http://openslide.org) >= version 3.4
 - [Perl](http://www.perl.org) >= version 5
 - [slideToolkit](https://github.com/swvanderlaan/slideToolkit)
+- [NDPItools](https://www.imnc.in2p3.fr/pagesperso/deroulers/software/ndpitools/), click the link at 'Mac OS 10.6 and later' on the right side; follow the installation instructions.
 
 *The latest stable version of these programs and libraries should be sufficient. There is one catch, the Lib TIFF library supports the TIFF64 (aka BigTIFF) format since version 4.*
 
 
 ### Installation instructions:
-Installation instructions for OS X and Linux can be found in this repo.
+Installation instructions for OS X and Linux can be found in this repo. *We are working on updates!*
 
-<<<<<<< HEAD
-- [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan](INSTALL.OSX.md) *(Completely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
+- [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan/Sierra/High Sierra](INSTALL.OSX.md) *(Largely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
 - [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu.12.04.LTS-PrecisePangolin.md) *(CellProfiler instructions incomplete)*
 - [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
 - *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
 
-*Finally a 'thank you' for the developers of ImageMagick and CellProfiler, for there support and excelent software.*
-=======
-*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packeges for there support and excelent software*
->>>>>>> bglnelissen/master
+*Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packages for there support and excellent software.*

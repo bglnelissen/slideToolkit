@@ -1,0 +1,445 @@
+#!/bin/bash
+
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+OPAQUE='\033[2m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
+
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+### Regarding changing the 'type' of the things printed with 'echo'
+### Refer to: 
+### - http://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
+### - http://misc.flogisoft.com/bash/tip_colors_and_formatting
+### - http://unix.stackexchange.com/questions/37260/change-font-in-echo-command
+
+### echo -e "\033[1mbold\033[0m"
+### echo -e "\033[3mitalic\033[0m" ### THIS DOESN'T WORK ON MAC!
+### echo -e "\033[4munderline\033[0m"
+### echo -e "\033[9mstrikethrough\033[0m"
+### echo -e "\033[31mHello World\033[0m"
+### echo -e "\x1B[31mHello World\033[0m"
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echocyan { 
+    echo -e "${CYAN}${1}${NONE}" 
+}
+
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
+
+# errors
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+
+# errors no option
+function echoerrornooption { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
+}
+
+### MESSAGE FUNCTIONS
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2016-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
+script_arguments_error() {
+	echoerror "$1" # ERROR MESSAGE
+	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror "- Argument #4  -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
+	echoerror "- Argument #5  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #6  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #7  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
+	echoerror "- Argument #8  -- Batch size. A number to indicate the batch size, e.g. '5000'. [OPTIONAL]"
+	echoerror "- Argument #9  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'. [OPTIONAL]"
+	echoerror ""
+	echoerror "An example command would be: slideQuantifyOSX [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.txt] [arg6: 210]"
+	echoerror ""
+	echoerror "Please note that this command should be run within the working directory (Argument #3)."
+
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+  	exit 1
+}
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                               slideQuantifyOSX"
+echo ""
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "                Yipei Song"
+echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
+echoitalic "* Last update : 2021-09-04"
+echoitalic "* Version     : 2.0.3"
+echo ""
+echoitalic "* Description : This script will start the quantification for a given stain"
+echoitalic "                in a given project directory on macOS, for instance"
+echoitalic "                your iMac, mac mini or MacBook"
+echo ""
+echocyan "NOTE: this *only* works on macOS (10.14.5+) with Anaconda 3.8 and brew."
+echo ""
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+echo ""
+### REQUIRED | GENERALS	
+STAIN="$1" # Depends on arg1
+PIPELINE="$2" # Depends on arg2
+PROJECTDIR="$3" # Depends on arg3
+FILESTART="$4" # Depends on arg4
+OUTPUTFILENAME="$5" # Depends on arg5
+EMASKTHRESHOLD="$6" # Depends on arg6
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+UNIQUE_LABEL=${7-V1} # Depends on arg7
+BATCH_SIZE=${8-5000} # Depends on arg8
+RANDOM_SAMPLE=${9-50} # Depends on arg9
+
+### Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="$HOME/git/swvanderlaan/slideToolKit"
+
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 6 ]]; then 
+	echo "Oh, computer says no! Number of arguments found "$#"."
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantifyOSX ***!"
+		
+else
+	echobold "Cleaning up house, first."
+	rm -rfv "$FILESTART*"/magick-tmp
+
+	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
+# 	HOLD_JIDS=()
+	INDEX=0
+	#BATCH_SIZE=5000 # should be argument, but how exactly does this work?
+	#UNIQUE_LABEL="V3" # should be argument
+
+	cd $PROJECTDIR
+	
+	### FOR DEBUG
+	### FOR DEBUG
+	### echocyan "Debug mode - processing debug-images."
+	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT"
+	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT"
+	### for SLIDE_NUM in $DEBUGLIST; do
+	### for SLIDE_NUM in AE1088.UMC.CD3_CD56_NKT; do
+	### AE1088.UMC.CD3_CD56_NKT AE1165.UMC.CD3_CD56_NKT AE1249.UMC.CD3_CD56_NKT AE1462.UMC.CD3_CD56_NKT AE1468.UMC.CD3_CD56_NKT AE1495.UMC.CD3_CD56_NKT AE1548.UMC.CD3_CD56_NKT AE1550.UMC.CD3_CD56_NKT AE1701.UMC.CD3_CD56_NKT AE1707.CD3_CD56_NKT.v2 AE1710.UMC.CD3_CD56_NKT AE1713.UMC.CD3_CD56_NKT AE1722.UMC.CD3_CD56_NKT AE1731.UMC.CD3_CD56_NKT AE1732.UMC.CD3_CD56_NKT AE1737.UMC.CD3_CD56_NKT AE1750.UMC.CD3_CD56_NKT AE1771.UMC.CD3_CD56_NKT AE1780.UMC.CD3_CD56_NKT AE1781.UMC.CD3_CD56_NKT AE1857.UMC.CD3_CD56_NKT.2 AE1858.UMC.CD3_CD56_NKT AE1872.UMC.CD3_CD56_NKT AE1878.UMC.CD3_CD56_NKT AE1897.UMC.CD3_CD56_NKT AE1969.UMC.CD3_CD56_NKT AE2107.UMC.CD3_CD56_NKT AE2131.UMC.CD3_CD56_NKT AE2138.CD45CD3.v2goed AE2139.UMC.CD3_CD56_NKT.2 AE2157.CD3_CD56_NKT.v2 AE2160.UMC.CD3_CD56_NKT AE2163.UMC.CD3_CD56_NKT.2 AE2170.UMC.CD3_CD56_NKT AE2176.UMC.CD3_CD56_NKT AE2183.UMC.CD3_CD56_NKT AE2188.UMC.CD3_CD56_NKT AE2197.CD3_CD56_NKT.v2 AE21A.UMC.CD3_CD56_NKT.2 AE21B.UMC.CD3_CD56_NKT.2 AE2200.CD3_CD56_NKT.v2 AE2211.UMC.CD3_CD56_NKT AE2227.UMC.CD3_CD56_NKT AE2254.UMC.CD3_CD56_NKT AE2255.UMC.CD3_CD56_NKT AE2259.UMC.CD3_CD56_NKT AE2270.UMC.CD3_CD56_NKT.2 AE2281.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE2293.UMC.CD3_CD56_NKT AE2295.UMC.CD3_CD56_NKT AE2296.CD3_CD56_NKT.v2 AE2296.UMC.CD3_CD56_NKT.2 AE2364.UMC.CD3_CD56_NKT AE2376.UMC.CD3_CD56_NKT AE2385.UMC.CD3_CD56_NKT AE2427.UMC.CD3_CD56_NKT.2 AE2433.UMC.CD3_CD56_NKT.2 AE2539.UMC.CD3_CD56_NKT AE2601.CD3_CD56_NKT.v2 AE2601.UMC.CD3_CD56_NKT.2 AE2613.UMC.CD3_CD56_NKT AE2637.UMC.CD3_CD56_NKT AE2649.UMC.CD3_CD56_NKT.2 AE2658.UMC.CD3_CD56_NKT AE2659.UMC.CD3_CD56_NKT AE2682.UMC.CD3_CD56_NKT AE2684.UMC.CD3_CD56_NKT AE2753.UMC.CD3_CD56_NKT AE2754.CD3_CD56_NKT.v2 AE2754.UMC.CD3_CD56_NKT.2 AE2757.UMC.CD3_CD56_NKT AE2759.UMC.CD3_CD56_NKT AE276.UMC.CD3_CD56_NKT AE285.UMC.CD3_CD56_NKT AE2953.CD3_CD56_NKT.v2 AE2953.UMC.CD3_CD56_NKT.2 AE2963.CD3_CD56_NKT.v2 AE2963.UMC.CD3_CD56_NKT.2 AE296.UMC.CD3_CD56_NKT AE2973.UMC.CD3_CD56_NKT.2 AE2990.UMC.CD3_CD56_NKT.2 AE3023.CD3_CD56_NKT.v2 AE3023.UMC.CD3_CD56_NKT.2 AE3136.UMC.CD3_CD56_NKT.2 AE3148.CD3_CD56_NKT.v2 AE3148.UMC.CD3_CD56_NKT.2 AE3251.CD3_CD56_NKT.v2 AE3251.UMC.CD3_CD56_NKT.2 AE3255.CD3_CD56_NKT.v2 AE3255.UMC.CD3_CD56_NKT.2 AE3305.UMC.CD3_CD56_NKT AE3348.UMC.CD3_CD56_NKT.2 AE3350.UMC.CD3_CD56_NKT.2 AE3680.UMC.CD3_CD56_NKT AE3690.UMC.CD3_CD56_NKT.2 AE3691.UMC.CD3_CD56_NKT.2 AE3762.UMC.CD3_CD56_NKT.2 AE3763.UMC.CD3_CD56_NKT.2 AE3764.UMC.CD3_CD56_NKT.2 AE3769.UMC.CD3_CD56_NKT.2 AE3777.UMC.CD3_CD56_NKT AE3795.UMC.CD3_CD56_NKT AE3796.UMC.CD3_CD56_NKT AE3886.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT AE410.UMC.CD3_CD56_NKT AE424.UMC.CD3_CD56_NKT AE460.UMC.CD3_CD56_NKT AE488.UMC.CD3_CD56_NKT AE737.UMC.CD3_CD56_NKT AE815.UMC.CD3_CD56_NKT AE826.UMC.CD3_CD56_NKT AE838.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT
+	### for SLIDE_NUM in AE1088.UMC.CD3 AE1165.UMC.CD3_CD56_NKT AE1249.UMC.CD3_CD56_NKT AE1462.UMC.CD3_CD56_NKT AE1468.UMC.CD3_CD56_NKT AE1495.UMC.CD3_CD56_NKT AE1548.UMC.CD3_CD56_NKT AE1550.UMC.CD3_CD56_NKT AE1701.UMC.CD3_CD56_NKT AE1707.CD3_CD56_NKT.v2 AE1710.UMC.CD3_CD56_NKT AE1713.UMC.CD3_CD56_NKT AE1722.UMC.CD3_CD56_NKT AE1731.UMC.CD3_CD56_NKT AE1732.UMC.CD3_CD56_NKT AE1737.UMC.CD3_CD56_NKT AE1750.UMC.CD3_CD56_NKT AE1771.UMC.CD3_CD56_NKT AE1780.UMC.CD3_CD56_NKT AE1781.UMC.CD3_CD56_NKT AE1857.UMC.CD3_CD56_NKT.2 AE1858.UMC.CD3_CD56_NKT AE1872.UMC.CD3_CD56_NKT AE1878.UMC.CD3_CD56_NKT AE1897.UMC.CD3_CD56_NKT AE1969.UMC.CD3_CD56_NKT AE2107.UMC.CD3_CD56_NKT AE2131.UMC.CD3_CD56_NKT AE2138.CD45CD3.v2goed AE2139.UMC.CD3_CD56_NKT.2 AE2157.CD3_CD56_NKT.v2 AE2160.UMC.CD3_CD56_NKT AE2163.UMC.CD3_CD56_NKT.2 AE2170.UMC.CD3_CD56_NKT AE2176.UMC.CD3_CD56_NKT AE2183.UMC.CD3_CD56_NKT AE2188.UMC.CD3_CD56_NKT AE2197.CD3_CD56_NKT.v2 AE21A.UMC.CD3_CD56_NKT.2 AE21B.UMC.CD3_CD56_NKT.2 AE2200.CD3_CD56_NKT.v2 AE2211.UMC.CD3_CD56_NKT AE2227.UMC.CD3_CD56_NKT AE2254.UMC.CD3_CD56_NKT AE2255.UMC.CD3_CD56_NKT AE2259.UMC.CD3_CD56_NKT AE2270.UMC.CD3_CD56_NKT.2 AE2281.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE2293.UMC.CD3_CD56_NKT AE2295.UMC.CD3_CD56_NKT AE2296.CD3_CD56_NKT.v2 AE2296.UMC.CD3_CD56_NKT.2 AE2364.UMC.CD3_CD56_NKT AE2376.UMC.CD3_CD56_NKT AE2385.UMC.CD3_CD56_NKT AE2427.UMC.CD3_CD56_NKT.2 AE2433.UMC.CD3_CD56_NKT.2 AE2539.UMC.CD3_CD56_NKT AE2601.CD3_CD56_NKT.v2 AE2601.UMC.CD3_CD56_NKT.2 AE2613.UMC.CD3_CD56_NKT AE2637.UMC.CD3_CD56_NKT AE2649.UMC.CD3_CD56_NKT.2 AE2658.UMC.CD3_CD56_NKT AE2659.UMC.CD3_CD56_NKT AE2682.UMC.CD3_CD56_NKT AE2684.UMC.CD3_CD56_NKT AE2753.UMC.CD3_CD56_NKT AE2754.CD3_CD56_NKT.v2 AE2754.UMC.CD3_CD56_NKT.2 AE2757.UMC.CD3_CD56_NKT AE2759.UMC.CD3_CD56_NKT AE276.UMC.CD3_CD56_NKT AE285.UMC.CD3_CD56_NKT AE2953.CD3_CD56_NKT.v2 AE2953.UMC.CD3_CD56_NKT.2 AE2963.CD3_CD56_NKT.v2 AE2963.UMC.CD3_CD56_NKT.2 AE296.UMC.CD3_CD56_NKT AE2973.UMC.CD3_CD56_NKT.2 AE2990.UMC.CD3_CD56_NKT.2 AE3023.CD3_CD56_NKT.v2 AE3023.UMC.CD3_CD56_NKT.2 AE3136.UMC.CD3_CD56_NKT.2 AE3148.CD3_CD56_NKT.v2 AE3148.UMC.CD3_CD56_NKT.2 AE3251.CD3_CD56_NKT.v2 AE3251.UMC.CD3_CD56_NKT.2 AE3255.CD3_CD56_NKT.v2 AE3255.UMC.CD3_CD56_NKT.2 AE3305.UMC.CD3_CD56_NKT AE3348.UMC.CD3_CD56_NKT.2 AE3350.UMC.CD3_CD56_NKT.2 AE3680.UMC.CD3_CD56_NKT AE3690.UMC.CD3_CD56_NKT.2 AE3691.UMC.CD3_CD56_NKT.2 AE3762.UMC.CD3_CD56_NKT.2 AE3763.UMC.CD3_CD56_NKT.2 AE3764.UMC.CD3_CD56_NKT.2 AE3769.UMC.CD3_CD56_NKT.2 AE3777.UMC.CD3_CD56_NKT AE3795.UMC.CD3_CD56_NKT AE3796.UMC.CD3_CD56_NKT AE3886.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT AE410.UMC.CD3_CD56_NKT AE424.UMC.CD3_CD56_NKT AE460.UMC.CD3_CD56_NKT AE488.UMC.CD3_CD56_NKT AE737.UMC.CD3_CD56_NKT AE815.UMC.CD3_CD56_NKT AE826.UMC.CD3_CD56_NKT AE838.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT; do
+
+	for SLIDE_NUM in $FILESTART*; do
+	
+		sleep 1
+		THIS_SLIDE=${SLIDE_NUM/\//}
+		THIS_SLIDEMASK=${THIS_SLIDE}_slideMask_${UNIQUE_LABEL}
+		THIS_SLIDE2TILES=${THIS_SLIDE}_slide2Tiles_${UNIQUE_LABEL}
+		THIS_SLIDENORMALIZE=${THIS_SLIDE}_slideNormalize_${UNIQUE_LABEL}
+		THIS_CELLPROFILER=${THIS_SLIDE}_CellProfiler_${UNIQUE_LABEL}
+		THIS_WRAPUP=${THIS_SLIDE}_WrapUp_${UNIQUE_LABEL}
+
+		echobold "Processing images of file [ ${SLIDE_NUM} ] in directory [ ${PROJECTDIR} ] for staining [ ${STAIN} ] -- at index [ ${INDEX} ] with total batch size [ ${BATCH_SIZE} ]."	
+
+		cd "$SLIDE_NUM" || exit
+		echo ""
+	
+		# Checking if an analysis was done before
+		if [[ -s cp_output/"$STAIN"_Image.csv.gz ]]; then 
+			echoitalic "Checking if this file was processed before; cp_output/${STAIN}_Image.csv.gz should be present ....."
+			ls -lh cp_output/*.gz
+			cd .. ; 
+			INDEX=$((INDEX+1)); 
+			echo "..... Analysis was already done!"; 
+			continue; 
+		fi
+		
+		echo "..... Processing file for the first time."
+		echo "..... Removing previous logs."
+		rm -rfv "$PROJECTDIR"/logs/"$SLIDE_NUM"*
+		rm -rfv "$PROJECTDIR"/errors/"$SLIDE_NUM"*
+
+		### slideEMask for macro, and NDPISplit when necessary
+		echo ""
+		echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary."
+
+		# checking if masks exist - if so, skip this script
+		if [ -s *mask.png ]; then 
+			echo "..... Masked images already exists - moving on."
+
+		else
+
+			mkdir -pv magick-tmp
+			export MAGICK_TMPDIR=$(pwd)/magick-tmp
+			export TMPDIR=$(pwd)/magick-tmp
+
+			# Note that slideMask automatically determines what the layer of the macro is
+			if [ -f *.ndpi ]; then
+				echo "The image-file is a NDPI and will be converted to .tif before masking."
+				ndpisplit -x40 -z0 *.ndpi
+
+				# level should be an argument (easiest), or automatically determined (harder)
+				# slideMacro.py -i *.ndpi -l 5 -o $(pwd)
+				slideMask --layer 0 -f *.tif;
+
+			elif [ -f *.tif ]; then 
+				echo "The image-file is a (NDPI-converted) .tif."
+				# level should be an argument (easiest), or automatically determined (harder)
+				# slideMacro.py -i *.tif -l 0 -o $(pwd)
+				slideMask --layer 0 -f *.tif;
+
+			elif [ -f *.TIF ]; then 
+				echo "The image-file is a .TIF."
+				# level should be an argument (easiest), or automatically determined (harder)
+				# slideMacro.py -i *.TIF -l 3 -o $(pwd)
+				slideMask -f *.TIF;
+
+			else
+				echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+				[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
+				exit 1 
+			fi
+		
+			# running slideEMask on the macro
+			for MACRO in $(ls *.macro.png); do 
+				echo "Running slideEMask on the macro-images."
+				slideEMask -f $MACRO -t $EMASKTHRESHOLD; 
+
+			done
+
+			# removing temporary files
+			echo "..... Removing temporary directory."
+			rm -rfv magick-tmp
+		
+		fi
+		
+	
+		### slide2Tiles
+		echo ""
+		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
+		
+		### NOTE: this does not work locally on macOS
+		if [ -d *.tiles ]; then 
+			echo "..... Tiles directory already exists - moving on."
+		
+		else
+
+			mkdir -pv magick-tmp
+			export MAGICK_TMPDIR=$(pwd)/magick-tmp
+			export TMPDIR=$(pwd)/magick-tmp
+
+			if [ -f *.ndpi ]; then
+				echo "The image-file is a NDPI and should first be converted to .tif before tiling."
+				ndpisplit -x40 -z0 *.ndpi
+				slide2Tiles --layer 0 -f *x40*.tif -m *.emask.png --verbose;
+	
+			elif [ -f *.tif ]; then
+				echo "The image-file is a (NDPI-converted) .tif."
+				slide2Tiles --layer 0 -f *.tif -m *.emask.png --verbose;
+	
+			elif [ -f *.TIF ]; then
+				echo "The image-file is a .TIF."
+				slide2Tiles --layer 4 -f *.TIF -m *.emask.png --verbose;
+	
+			else
+				echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+				[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
+				exit 1 
+			fi
+		
+			echo "..... Removing temporary directory."
+			rm -rfv magick-tmp
+		fi
+		
+
+		### slideNormalize
+		echo ""
+		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]."
+		
+		### NOTE: this does not work locally on macOS
+		if [ -f files2cp.txt ]; then 
+			echo "..... Normalization was already applied - moving on."
+		
+		else
+			echo "..... Checking existence of tiles."
+			### DEBUG
+			### ls $PROJECTDIR/$SLIDE_NUM/*.tiles/;
+
+			if [ ! -d *.tiles ]; then
+				(>&2 echo "*** ERROR *** No tiles to process. Create tiles first using slide2Tiles.")
+				exit; 
+		
+			else
+				echo "..... Tiles present, starting normalization."
+				# moving to appropriate directory
+				cd *.tiles
+
+				mkdir -pv magick-tmp
+				export MAGICK_TMPDIR=$(pwd)/magick-tmp
+				export TMPDIR=$(pwd)/magick-tmp
+		
+				for IMAGE_TILE in *.png; do
+					echo "...Processing tile [ $IMAGE_TILE ]"
+					echo "... - applying normalization ..."
+					slideNormalize $IMAGE_TILE
+		
+					echo "... - masking the normalized image ..."
+					slideEMask -c -f $IMAGE_TILE -t $ENTROPY_THRESHOLD
+					
+					echo "... - removing intermediate $IMAGE_TILE ..."
+					rm -v $IMAGE_TILE;
+		
+				done
+				echo "..... Removing temporary directory."
+				rm -rfv magick-tmp
+			
+				# moving back to the root of the $SLIDE_NUM directory
+				cd ..
+			
+				echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
+# 				ls -d -1 $(pwd)/*tiles/
+				ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt
+				ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt
+				
+			fi
+
+		fi
+
+		### CellProfiler
+		### This does not work on macOS Mojave 10.14.5 because we need vigra.
+		### However installing this comes with issues: https://github.com/ukoethe/vigra/issues/468
+		### There is no issue running it on macOS Big Sur 11.5.1+.
+		
+		echo ""
+		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
+		
+		if [ -z "$(ls -A cp_output)" ]; then 
+			echo "..... > checking CellProfiler version..."
+			cellprofiler --version
+			
+			echo "..... > making output directory..."
+			mkdir -pv cp_output
+			
+			echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
+			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
+
+		else
+			echo "..... CellProfiler was already run, or at least there is a 'cp_output'-directory."
+			
+		fi
+		
+
+		### Wrap Up
+		### 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
+		### 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
+		###    Colsums.R
+		### 3. we remove tiles, and other files we don't need
+		echo ""
+		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ] "
+
+		# Randomly grab x (50) overlay images, and remove the rest
+		ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+
+		# Collecting all the data
+		echo "..... Creating [ results.txt ] and collecting data."
+		echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
+		
+		# Moving into the cellprofiler output directory for the given $SLIDE_NUM
+		cd cp_output;
+		
+		# parsing SLIDE_NUM "$PWD"
+		# cut on . (period), output is 1
+		SAMPLE_NUM=$(echo $SLIDE_NUM | cut -d'.' -f1)
+		### DEBUG
+		### echo "Original slide number: $SLIDE_NUM"
+		### echo "Sample number: $SAMPLE_NUM"
+		SCRIPT_NAME="Colsums_${STAIN}.R"
+		echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME ) >> ../results.txt;
+		### we used to Gzip
+		### gzip -v ../results.txt;
+		head ../results.txt
+		cat ../results.txt | wc -l
+		# moving up to the $SLIDE_NUM directory again
+		cd ..
+		
+		echo "..... Removing tiling directory and its contents.";
+		# Randomly grab x (50) overlay images, and remove the rest
+		ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+# 		rm -rfv *tiles/;
+		if [ -f *.ndpi ]; then 
+			echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+# 			rm -v *x40*.tif; 
+# 			rm -v *x40*.png; 
+		fi;
+		
+		echo "..... Removing list of files to process.";
+# 		rm -v files2cp.txt;
+
+		echo "..... Gzipping result files.";
+# 		gzip -vf cp_output/${STAIN}*.gct;
+# 		gzip -vf cp_output/${STAIN}*.csv;
+
+		echo ""
+		echo "* Moving back to the project directory [$PROJECTDIR]"
+		cd $PROJECTDIR
+		
+		### REMOVE THIS BREAK FOR PRODUCTION!
+		### When this break is active, only the first item 
+		### in the list of items to be processed will be processed.
+		###
+		### OLD CODE
+		### INDEX=$((INDEX+1))
+		### break;	
+		
+		### NEW CODE
+		INDEX=$((INDEX+1))
+		if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
+			break; 
+		fi
+
+	# END OF for-loop
+	done
+
+
+### END of if-else statement for the number of command-line arguments passed ###
+fi
+
+script_copyright_message

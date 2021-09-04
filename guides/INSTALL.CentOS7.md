@@ -1,4 +1,4 @@
-CentOS 7 ~ HPC-version - slideToolkit installation instructions
+CentOS 7 ~ Anaconda-version - slideToolkit installation instructions
 ============
 
 The slideToolkit is a set of scripts that requires other programs and libraries to run. Here we explain the dependencies and show instructions on how to install these dependencies. The required dependencies can change and might break your current slideToolkit installation. 
@@ -25,246 +25,113 @@ NOTE: these instructions are for CentOS7 on a high-performance computer cluster,
 
 ------------
 
-#### Update and prepare
-To make installing easier, we will add the current user to the sudoers file, this makes it possible to run `sudo`. Replace USERNAME with your username.
+## Anaconda version
 
-```
-sudo adduser USERNAME sudo
-```
+The HPC is managed and user do not normally have admin rights. Therefore it is advised to install a distribution of `anaconda`.
 
-The system must be up-to-date. Install updates, answer --yes to everything. Make sure you stay on CentOS version 6.6 as this guide is meant for CentOS 6.6 only. This can take a while.
-
-```
-su -c 'yum -y update'
-```
-
-Binairies are executed from your local `bin` folder. Create your `~/bin` and add it to your PATH if needed.
-
-```
-mkdir -p ~/bin && \
-if ! [[ "$PATH" =~ ($HOME/bin:|~/bin:) ]] ; then \
-	printf "\n# Add ~/bin to your PATH\nexport PATH=\"~/bin:\$PATH\" \n" >> ~/.profile
-	fi
-```
-
-Now we are up to date, and ready to continue the installation.
-
-#### Install required libraries and packages using apt-get
+### Step 1: check what is available on the system
 Let's first check whether some packages are installed already.
 
 ```
 for PACK in curl cvs gcc gcc-c++ gimp git libtool openjpeg perl svn vim wget giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel; do echo "* checking [ "$PACK" ]...."; command -v "$PACK"; echo "---------"; echo ""; done
 ```
 
-Now you can just install the packages that returned empty. In our case, we will install the remaining important packages (and their dependencies) we need. First we update the `yum` `Repodata` cache.
+### Step 2: installation anaconda
+We require `anaconda` to have full control on the installation of required libraries and packages for `slideToolKit`.
+
+If `anaconda` is available, make sure it is up-to-date.
 
 ```
-yum makecache fast
+conda update -n base conda
 ```
 
-```
-su -c 'yum -y install autoconf automake cmake gcc-c++ \
-    gimp openjpeg giflib-devel libjpeg-devel libtiff-devel libpng-devel freetype-devel'
-```
-
-# wmctrl
-# zbar-tools
-
-
-#### Install parallel
-Install the latest version of GNU Parallel. First create and go to the src directory, then download and extract parallel.
+If `anaconda` is not available, you can grab a [link here](https://www.anaconda.com/products/individual#linux). Next, execute the following two lines in the root folder where you want `anaconda` to be installed, e.g. `/hpc/local/CentOS7/dhl_ec/software/`:
 
 ```
-mkdir -p ~/src && cd ~/src && \\
-    wget http://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 && \
-	tar jxf parallel-latest.tar.bz2 && \
-	rm parallel-latest.tar.bz2
-```
-
-Install parallel
-
-```
-cd ~/src/parallel-*
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-
-#### Install zlib
-Install the latest zlib compression libraries. First create and go to the src directory, then download and extract zlib.
-
-```
-mkdir -p ~/src && cd ~/src && \\
-    wget http://zlib.net/zlib-1.2.8.tar.gz -O zlib-1.2.8.tar.gz && \
-	tar xzvf zlib-1.2.8.tar.gz && \
-	rm zlib-1.2.8.tar.gz
-```
-Install zlib.
-
-```
-cd ~/src/zlib-1.2.8
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-
-#### Install libtiff
-Install the latest libtiff library using cvs. When `cvs` asks for a password for the anonymous login, just press enter. We need libtiff 4.* for BigTIFF support. First create and go to the cvs directory, then download and extract libtiff.
-
-```
-mkdir -p ~/cvs && cd ~/cvs
-```
-```
-cvs -d :pserver:cvsanon:@cvs.maptools.org:/cvs/maptools/cvsroot checkout libtiff
-```
-Install libtiff.
-
-```
-cd ~/cvs/libtiff
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-
-#### Install JPEG2000
-```
-mkdir -p ~/svn && cd ~/svn
-```
-```
-svn checkout http://openjpeg.googlecode.com/svn/trunk/ openjpeg
-```
-Install openjpeg.
-
-```
-cd ~/svn/openjpeg
+wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 ```
 
 ```
-cmake . && make && su -c "make install" && make clean
+bash Anaconda3-2021.05-Linux-x86_64.sh
+```
+
+And follow the instructions. 
+
+If you don't want conda to be loaded on startup, you can execute the following command.
+
+```
+conda config --set auto_activate_base false
+```
+
+And don't forget to cleanup afterwards.
+
+```
+rm -v Anaconda3-2021.05-Linux-x86_64.sh
+```
+
+### Step 4: make a module for anaconda
+
+You can create a [`modulefile`](https://lmod.readthedocs.io/en/latest/015_writing_modules.html) to make loading this particular `anaconda` installment easy and fun.
+
+Create a text file with the following contents.
+
+```
+help(
+[[ anaconda(version 3-8.202105) Anaconda, containing CellProfiler 4.1.3
+]])
+
+whatis("anaconda(version 3-8.202105) Anaconda, containing CellProfiler 4.1.3")
+
+local version = "3-8.202105"
+
+local base = "/hpc/local/$MY_DISTRO/$MY_GROUP/software/Anaconda3_2021_05"
+
+conflict("anaconda")
+
+prepend_path("PATH", pathJoin(base, "bin"))
+
+```
+
+Your administrator can tell you precisely where these `modulefiles` should be stored. In our case, they are in a folder `/hpc/local/CentOS7/dhl_ec/etc/modulefiles/anaconda` for our group. Save the text-file as `3-8.2021.05.lua` in the `modulesfiles`-directory.
+
+Restart your shell:
+
+```
+source $HOME/.bashrc
+source $HOME/.bash_profile
+```
+
+You can now load your fresh `anaconda` installation:
+
+```
+module load anaconda/3-8.202105
 ```
 
 
-#### Install ImageMagick
-Download and install the latest version ImageMagick from there website. First create and go to the src directory, then download and extract ImageMagick.
+### Step 5: installation required packages
+
 
 ```
-mkdir -p ~/src/ && cd ~/src
-```
-```
-wget http://www.imagemagick.org/download/ImageMagick.tar.gz -O ImageMagick.tar.gz && \
-	tar xzfv ImageMagick.tar.gz && \
-	rm ImageMagick.tar.gz
+conda install -c anaconda automake cmake enum34 requests libtiff libpng freetype zlib numpy scipy cython 
 ```
 
-Install ImageMagick.
 
 ```
-cd ~/src/ImageMagick*
-```
-```
-./configure && make && su -c "make install" && make clean
+conda install -c c4aarch64 autoconf
 ```
 
-After the ImageMagick installation we need to examine the libraries, update links and cache where necessary. Else ImageMagick would work properly.
 
 ```
-sudo ldconfig /usr/local/lib
+conda install -c conda-forge zbar openjpeg giflib libjpeg-turbo wmctrl parallel pylibdmtx imagemagick matplotlib gtk3 
 ```
 
-#### Install openslide [openjpeg not found error]
-Download the latest version of openslide from github. Pull if already exists; clone if none existing. First create and go to the git directory, then download the source.
 
 ```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/openslide/.git ]; then \
-		cd ~/git/openslide && git pull; \
-	else \
-		cd ~/git/ && git clone git://github.com/openslide/openslide.git; \
-	fi
+conda install -c bioconda bftools java-jdk
 ```
 
-Install openslide.
 
-```
-cd ~/git/openslide
-```
-```
-autoreconf -i
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-
-#### Install bfconvert
-Download and install the latest version of bfconvert. First create and go to the usr directory, then download and extract bftools.
-
-```
-mkdir -p ~/usr && cd ~/usr
-```
-```
-wget http://downloads.openmicroscopy.org/latest/bio-formats5/artifacts/bftools.zip && \
-    unzip -o bftools.zip && \
-    rm bftools.zip
-```
-No need to configure the bftools. We only need to add symbolic links in `~/bin`, this will make the BioFormats availabe within your PATH. Adding the bftools to your PATH is obligatory for the slideToolkit to find its dependencies.
-
-```
-mkdir -p ~/bin/ && ln -s -f -v ~/usr/bftools/bfconvert ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/domainlist ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/formatlist ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/ijview ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/mkfake ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/showinf ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/tiffcomment ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlindent ~/bin/ && \
-    ln -s -f -v ~/usr/bftools/xmlvalid ~/bin/
-```
-
-#### Install datamatrix barcode libraries [error: dmtx lib not found]
-Download and install the latest version of the datamatrix barcode libraries and binairies (`dmtx`) from sourceforge using git. First create and go to the git directory, then download and extract the libraries.
-
-```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/libdmtx/.git ]; then \
-		cd ~/git/libdmtx && git pull; \
-	else \
-		cd ~/git/ && git clone git://libdmtx.git.sourceforge.net/gitroot/libdmtx/libdmtx; \
-	fi
-```
-Install the datamatrix barcode libraries
-
-```
-cd ~/git/libdmtx && mkdir -p m4 && autoreconf --force --install
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-Now the binairies. First create and go to the git directory, then download and extract the binairies.
-
-```
-mkdir -p ~/git/ && cd ~/git
-```
-```
-if [ -d ~/git/dmtx-utils/.git ]; then \
-		cd ~/git/dmtx-utils && git pull; \
-	else \
-		cd ~/git/ && git clone git://git.code.sf.net/p/libdmtx/dmtx-utils; \
-	fi
-```
-
-Install the datamatrix barcode binairies.
-
-```
-cd ~/git/dmtx-utils && mkdir -p m4 && autoreconf --force --install
-```
-```
-./configure && make && su -c "make install" && make clean
-```
-#### Install slideToolkit
+### Step 6: installation slideToolkit
 Download and install the latest version of the slideToolkit from github. First create and go to the git directory, then download the slideToolkit.
 
 ```
@@ -274,7 +141,7 @@ mkdir -p ~/git/ && cd ~/git
 if [ -d ~/git/slideToolkit/.git ]; then \
 		cd ~/git/slideToolkit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/bglnelissen/slideToolkit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/slideToolKit.git; \
 	fi
 ```
 
@@ -285,35 +152,97 @@ mkdir -p ~/bin/ && ln -s -f -v ~/git/slideToolkit/slide* ~/bin/
 ```
 
 
-#### Install CellProfiler
-Instructions for CentOS 6 taken from on [cellprofiler.org](http://www.cellprofiler.org).
+### Step 7: make a module for slideToolKit
 
-Create repository file for yum.
+Let's create a `modulefile` to make loading `slideToolKit` easy and fun.
 
-```
-mkdir -p /etc/yum.repos.d && \
-if ! [[ -f /etc/yum.repos.d/cellprofiler.repo ]] ; then \
-    su -c 'printf "\n[cellprofiler]\n\
-name=CellProfiler for CentOS 6\n\
-baseurl=http://www.cellprofiler.org/linux/centos6/\n\
-enabled=1\n\
-gpgcheck=0\n" > /etc/yum.repos.d/cellprofiler.repo';
-    fi
-```
-Install CellProfiler using yum.
-```
-su -c 'yum -y install cellprofiler'
-```
-
-#### Cleanup, restart & you're done!
-Fix linked libraries.
+Create a text file with the following contents.
 
 ```
-sudo ldconfig
-```
-Restart.
+help(
+[[ slideToolKit(version 1.0) slideToolKit
+]])
+
+whatis("slideToolKit(version 1.0) slideToolKit")
+
+local version = "1.0"
+
+local base = "/hpc/local/$MY_DISTRO/$MY_GROUP/software/slideToolKit/" .. version 
+
+conflict("slideToolkit")
+
+prepend_path("PATH", base)
+
+load("gnu-parallel/20170122")
+prereq("gnu-parallel/20170122")
+
+load("zlib/1.2.8")
+prereq("zlib/1.2.8")
+
+load("imagemagick/6.9.3-10")
+prereq("imagemagick/6.9.3-10")
+
+load("openslide/3.4.1")
+prereq("openslide/3.4.1")
+
+load("libdmtx/0.7.4")
+prereq("libdmtx/0.7.4")
+
+load("dmtx-utils/0.7.4")
+prereq("dmtx-utils/0.7.4")
+
+load("graphicsmagick/1.3.26")
+prereq("graphicsmagick/1.3.26")
 
 ```
-sudo reboot
+
+Save the text-file as `/hpc/local/CentOS7/dhl_ec/etc/modulefiles/slidetoolkit/version1.0.lua` in the `modulesfiles`-directory.
+
+Restart your shell:
+
 ```
+source $HOME/.bashrc
+source $HOME/.bash_profile
+```
+
+You can now load your fresh `slideToolKit` installation:
+
+```
+module load slideToolKit/version1.0
+```
+
+
+### Step 8: installation CellProfiler
+
+Follow these instructions to install [CellProfiler](https://github.com/CellProfiler/CellProfiler/wiki/Source-installation-(Linux)).
+
+[instructions forthcoming]
+
+
+
+## Cleanup, restart & you're done!
+Source your `bash_profile`.
+
+```
+source ~/.bash_profile
+```
+
+And make sure you load the new modules:
+
+```
+module load anaconda/3-8.202105 slideToolKit
+```
+
+-------
+## To do
+
+- [x] add description on installation `anaconda`.
+- [x] add description on how to create `anaconda` module.
+- [x] add description on how to install required packages for `anaconda` and `slideToolKit`.
+- [x] add description on how to create `slideToolKit` module.
+- [.] add description on how to install `cellprofiler`.
+- [x] update manual instructions .
+
+
+
 

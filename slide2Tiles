@@ -91,7 +91,6 @@ EOF
 
 # help message
 helpMessage() {
-verbose_debug "helpMessage()"
 cat <<- EOF
 ${SCRIPTNAME}: ${DESCRIPTIONSHORT}
 

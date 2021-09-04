@@ -1,0 +1,321 @@
+#!/bin/bash
+#
+# Description: Create scaled mask and macro from a virtual slide
+#
+# The MIT License (MIT)
+# Copyright (c) 2014-2020, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+# Variables
+SCRIPTNAME=$(basename $0)
+DESCRIPTIONSHORT="Create *.png from a virtual slide."
+DEPENDENCIES=("convert")
+SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+DEFAULT_MACROSUFFIX=".macro"
+DEFAULT_MACRO_THUMBSIZE="" #"2000x2000" # Maximum size of macro image
+DEFAULT_IM_ARGS="" # convert arguments # -verbose
+DEFAULT_SLURMARGS="--time 00:05:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
+
+# Errors go to stderr
+err() {
+  echo "${SCRIPTNAME} ERROR: $@" >&2
+}
+
+# usage message
+usage() {
+cat <<- EOF
+$SCRIPTNAME --help for more information.
+EOF
+}
+
+# version info
+version() {
+cat << EOF
+slideToolKit 0.1 beta
+($SCRIPTNAME is part of the slideToolKit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014-2020, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+EOF
+}
+
+
+# help message
+helpMessage() {
+cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
+usage:
+  $SCRIPTNAME [options] -f <filename>
+
+options:
+  -f, --file <filename>         virtual slide to create mask from
+
+  [--macrosuffix] <text>        macro suffix ["$DEFAULT_MACROSUFFIX"]
+  [-l, --layer] <integer>       force specific layer by layer id
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
+  [--ignore-dependencies]       ignores all dependencies, but gives warning
+
+  --help                        display this help
+  --version                     display version and license information
+
+
+examples:
+  $SCRIPTNAME "file.TIF"
+  $SCRIPTNAME  --file="file.TIF"
+  $SCRIPTNAME  -f "file.TIF"
+  $SCRIPTNAME  -f "file.TIF --macrosuffix=".layer5"
+
+print a job list:
+  find "\$(pwd)" -iname "*.TIF" -printf 'slideMacro is processing file [ %p ].\n' -exec $(command -v "$SCRIPTNAME") --file "{}" \;
+
+print a job list for 'slurm':
+    find "\$(pwd)" -iname "*.TIF" -type f \\
+          -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
+          -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
+          -exec echo "--file=\""{}"\" " \;
+
+dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
+
+You can extract a layer to quickly inspect the image. This program will
+use 'convert' to create a '*.macro.png'-file for you which you can
+inspect. The 'macro'-image is a layer within the original TIF file.
+Pipe the 'multiple folders at once' output in 'parallel' for parallel
+processing.
+For some slides, the virtual slide format is not known. For these
+instances you need to run slideInfo to find the correct layer manually.
+When the layer is identified (approximately 2000x2000 pixels), use
+the --layer flag.
+
+NOTE #1: by default we set -quiet to remove warnings such as those described
+here: https://stackoverflow.com/questions/27608124/imagemagick-how-to-get-rid-of-tiffwarnings-768-message-about-unknown-field-wh
+
+The slideToolkit and all its tools are released under the terms of the MIT license.
+The slideToolkit (C) 2014-2020, Bas G.L. Nelissen, Sander W. van der Laan,
+UMC Utrecht, the Netherlands.
+Report issues at https://github.com/swvanderlaan/slideToolkit/issues.
+
+EOF
+}
+# Menu
+# Empty variables
+FILE=""
+LAYER=""
+MACROSUFFIX=""
+# illegal option
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+$(usage)
+EOF
+exit 1
+}
+# loop through options
+while :
+do
+  case $1 in
+    -h)
+      usage
+      exit 0 ;;
+    --help | -\?)
+      helpMessage
+      exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
+    -f | --file)
+      FILE=$2
+      shift 2 ;;
+    --file=*)
+      FILE=${1#*=}
+      shift ;;
+    -l | --layer)
+      LAYER=$2
+      shift 2 ;;
+    --layer=*)
+      LAYER=${1#*=}
+      shift ;;
+    --macrosuffix)
+      MACROSUFFIX=$2
+      shift 2 ;;
+    --macrosuffix=*)
+      MACROSUFFIX=${1#*=}
+      shift ;;
+    --convert-args=*) # Equal sign and quotes are required for this option. If not, the convert arguments are seen as slideRename options.
+      IM_ARGS=${1#*=}
+      shift ;;
+    --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+# DEFAULTS
+# set FILE
+if [ "$FILE" != "" ]; then
+  FILE="$FILE"
+else
+  FILE="$1"
+fi
+# set MACROSUFFIX default
+if [ "$MACROSUFFIX" != "$DEFAULT_MACROSUFFIX" ]; then
+  MACROSUFFIX="$MACROSUFFIX"
+else
+  MACROSUFFIX="$DEFAULT_MACROSUFFIX"
+fi
+# set IM_ARGS default
+if [ "$IM_ARGS" != "" ]; then
+  IM_ARGS="$IM_ARGS"
+else
+  IM_ARGS="$DEFAULT_IM_ARGS"
+fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
+fi
+
+# requirements
+checkRequirements() {
+  if ! [[ -f "$FILE" ]] ; then
+    err "No such file: $FILE"
+    usage
+    exit 1
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
+  fi
+}
+# get mask function for each type of scanner
+getMacro(){
+  # get thumb by layer id
+  LAYER="$LAYER"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroiScanHT(){
+  # layer 8 contains the macro
+  LAYER=8
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroAperio(){
+  # the third to last layer contains the macro
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  LAYER="$(($NR_LAYERS - 3))"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroLeica(){
+  LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+getMacroHamamatsu(){
+  LAYER=5 # 5 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  # convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1%  "$MACRO"
+}
+getMacroiScan(){
+  LAYER=7 # 7 determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert -quiet $IM_ARGS  "$FILEFULL[$LAYER]" -resize "${DEFAULT_MACRO_THUMBSIZE}>" -fuzz 1% -transparent "#ECECEC"  "$MACRO"
+}
+
+# actual program
+programOutput(){
+  # set variables
+  LAYER="$LAYER"
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
+  EXTENSION="${BASENAME##*.}"         # extension
+  FILEPATH="${FILEFULL%.*}"           # full path, no extension
+  FILENAME="${BASENAME%.*}"           # filename, no extension"
+  MACRO="${FILEPATH}${MACROSUFFIX}.png"
+
+  # check metadata for scanner data
+  if [ "$LAYER" != "" ]; then
+    getMacro # layer is set, do it the easy way
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
+    getMacroiScanHT # iScanHT found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Aperio" | wc -l | awk '{print $1}')" ]]; then
+    getMacroAperio  # Aperio found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Leica" | wc -l | awk '{print $1}')" ]]; then
+    getMacroLeica  # Leica found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Hamamatsu" | wc -l | awk '{print $1}')" ]]; then
+    getMacroHamamatsu  # Hamamatsu found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScan" | wc -l | awk '{print $1}')" ]]; then
+    getMacroiScan  # Ventana iScan found
+  else    err "Unknown virtual slide format: $FILEFULL"
+    err "You probably want to set --layer manually."
+    err "Run slideInfo for layer information."
+    usage
+    exit 1
+  fi
+
+}
+# all check?
+checkRequirements
+checkDependencies
+
+# lets go!
+# actual program
+programOutput
