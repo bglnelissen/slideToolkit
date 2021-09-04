@@ -156,6 +156,7 @@ else
 	### cellprofiler="/hpc/local/CentOS7/dhl_ec/software/Anaconda3_2021_05/envs/cp4/bin/cellprofiler"
 	
 	# creating necessary output directory
+	echo "..... > making output directory..."
 	mkdir -pv cp_output
 
 	# running cellprofiler
