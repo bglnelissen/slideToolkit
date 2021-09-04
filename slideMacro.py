@@ -7,11 +7,11 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideMacro: extract macro images ")
 print("")
-print("* Version          : v1.0.0")
+print("* Version          : v1.0.1")
 print("")
-print("* Last update      : 2020-12-29")
-print("* Written by       : choosehappy | https://github.com/choosehappy")
-print("* Edited by        : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("* Last update      : 2021-08-31")
+print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
 print("* Description      : This script will get macro-images at a given level of magnification from ")
 print("                     (a list of given) images for quick inspection.")
@@ -100,7 +100,9 @@ for fname in files:
         # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
         img_r = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
         cv2.imshow(print('Display image [',fname,'] at level [',level,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
+        print('(hit any key on the image to close)') # how waitKey works
         
+        # waitKey - ref: https://stackoverflow.com/questions/22274789/cv2-imshow-function-is-opening-a-window-that-always-says-not-responding-pyth
         # 'waitKey' allows us to wait for a key stroke 
         # when a image window is open
         # By leaving it blank it just waits for any key to be 
@@ -110,7 +112,8 @@ for fname in files:
         cv2.waitKey()
         # This closes all open windows 
         # Failure to place this will cause your program to hang
-        cv2.destroyAllWindows() 
+        cv2.destroyAllWindows()
+        cv2.waitKey(1)
     elif args.verbose:
         print("Processing [",fname,"] at level [",level,"].")
         print('* image dimensions (height x width in pixels):', img.shape)
@@ -123,7 +126,7 @@ for fname in files:
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
-print("+ Copyright (c) 1979-2020 choosehappy, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands             +")
+print("+ Copyright (c) 1979-2021 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
 print("+                                                                                                                 +")
 print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and               +")
 print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including       +")
