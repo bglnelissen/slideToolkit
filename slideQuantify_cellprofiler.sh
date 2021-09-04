@@ -102,7 +102,7 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
+echoitalic "* Last update : 2021-09-04"
 echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
@@ -132,15 +132,27 @@ else
 	fi
 
 	# loading required module
+	echo "..... > loading required anaconda module..."
 	module load anaconda/3-8.2021.05
-# 	conda activate cp4
-	cellprofiler="/hpc/local/CentOS7/dhl_ec/software/Anaconda3_2021_05/envs/cp4/bin/cellprofiler"
+	
+	### Loading the CellProfiler-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	eval "$(conda shell.bash hook)"
+	conda activate cp4
+	
+	echo "..... > checking CellProfiler version..."
+	cellprofiler --version
+	
+	### DEBUG
+	### Direct could be used, and does seem to work
+	### cellprofiler="/hpc/local/CentOS7/dhl_ec/software/Anaconda3_2021_05/envs/cp4/bin/cellprofiler"
 	
 	# creating necessary output directory
 	mkdir -pv cp_output
 
 	# running cellprofiler
-	echo "...Running CellProfiler using $PIPELINE for $STAIN stained samples."
+	echo "..... Running CellProfiler using $PIPELINE for $STAIN stained samples."
 	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 ### END of if-else statement for the number of command-line arguments passed ###
