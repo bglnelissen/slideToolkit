@@ -1,4 +1,4 @@
-[slideToolKit](https://github.com/swvanderlaan/slideToolKit)<img align="right" height="200" src=images/slideToolKit_logo_print_transparent.png>
+[slideToolKit](https://github.com/swvanderlaan/slideToolKit)<img align="right" src=images/slideToolKit_logo_print_transparent.png>
 ============
 
 **slideToolKit**: _an assistive toolset for the histological quantification of whole slide images_
