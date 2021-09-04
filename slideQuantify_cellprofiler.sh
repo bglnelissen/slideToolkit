@@ -88,8 +88,10 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #2  -- name of the stain as it appears in the filenames, e.g. FIBRIN. [OPTIONAL]"
+	echoerror "- Argument #3  -- slidenumber being processed (should contain no spaces). [OPTIONAL]"
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_cellprofiler [arg1: path_to_cellprofiler_pipeline] "
+	echoerror "An example command would be: slideQuantify_cellprofiler [arg1: path_to_cellprofiler_pipeline] [arg2: STAIN] [arg3: slide_number] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -103,7 +105,7 @@ echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerk
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2021-09-04"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Version     : 2.0.4"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory using CellProfiler *after* "
@@ -115,7 +117,11 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo ""
 ### REQUIRED | GENERALS	
 PIPELINE="$1" # Depends on arg1
-#PIPELINE="/hpc/local/CentOS7/dhl_ec/software/slideToolKit/pipeLines/FIBRIN.V1.1.cppipe"
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+STAIN=${2-unknown} # Depends on arg2
+SLIDE_NUM=${3-unknown} # Depends on arg2
 
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 1 ]]; then 
@@ -131,6 +137,7 @@ else
 		exit
 	fi
 
+	echo "..... Starting CellProfiler run."
 	# loading required module
 	echo "..... > loading required anaconda module..."
 	module load anaconda/3-8.2021.05
@@ -152,7 +159,7 @@ else
 	mkdir -pv cp_output
 
 	# running cellprofiler
-	echo "..... Running CellProfiler using $PIPELINE for $STAIN stained samples."
+	echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
 	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 ### END of if-else statement for the number of command-line arguments passed ###
