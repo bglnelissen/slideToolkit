@@ -171,6 +171,8 @@ else
 	ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt;
 	ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt;
 
+	echo "..... Normalizing successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 

@@ -169,6 +169,8 @@ else
 	echo "..... Removing temporary directory."
 	rm -rfv magick-tmp
 
+	echo "..... Masking successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 

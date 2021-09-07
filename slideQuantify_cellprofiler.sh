@@ -163,6 +163,8 @@ else
 	echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
 	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
+	echo "..... CellProfiler successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 

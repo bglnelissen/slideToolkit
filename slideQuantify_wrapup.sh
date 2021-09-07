@@ -179,7 +179,8 @@ else
 	gzip -vf cp_output/${STAIN}*.gct;
 	gzip -vf cp_output/${STAIN}*.csv;
 	
-
+	echo "..... Wrapping up this slideToolKit run successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 
