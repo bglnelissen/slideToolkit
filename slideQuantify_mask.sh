@@ -140,7 +140,9 @@ else
 
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and will be converted to .tif before masking."
-		if [ -f *.ndpi ]; then  ndpisplit -x40 -z0 *.ndpi; fi
+		if [ -f *.ndpi ]; then  
+			ndpisplit -x20 -z0 *.ndpi; 
+		fi
 		slideMask --layer 0 -f *.tif;
 
 	elif [ -f *.tif ]; then 

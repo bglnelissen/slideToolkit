@@ -88,9 +88,10 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
+	echoerror "- Argument #2  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #3  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: RANDOM_SAMPLE] "
+	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: Image.csv] [arg3: RANDOM_SAMPLE] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -114,16 +115,17 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
-OUTPUTFILENAME=${STAIN}_slides.txt
-RANDOM_SAMPLE="$2" # Depends on arg2
-# STAIN = "CD34"
-# OUTPUTFILENAME = "CD34slides.txt"
+OUTPUTFILENAME="$2" # Depends on arg2
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+RANDOM_SAMPLE=${3-50} # Depends on arg11
 
 # Set slideToolKit DIRECTORY
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 2 ]]; then 
+if [[ $# -lt 3 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_wrapup ***!"
 		
@@ -132,8 +134,8 @@ else
 	### DEBUG
 	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
 	
-	# Randomly grab x (10) overlay images, and remove the rest
-# 	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+	# Randomly grab x (50) overlay images, and remove the rest
+	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
 	# Collecting all the data
 	echo "..... Creating [ results.txt ] and collecting data."
@@ -162,18 +164,22 @@ else
 	
 	echo "..... Removing tiling directory and its contents.";
 	# Randomly grab x (50) overlay images, and remove the rest
-# 	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-# 	rm -rfv *tiles/;
+	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
 	if [ -f *.ndpi ]; then 
 		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
-# 		rm -v *x40*.tif; 
-# 		rm -v *x40*.png; 
+		### We used to work at 40x
+		### rm -v *x40*.tif; 
+		### rm -v *x40*.png; 
+		### Remember - we work at 20x
+		rm -v *x20*.tif; 
+		rm -v *x20*.png; 
+
 
 	fi;
 
-	echo "..... Removing list of files to process.";
-# 	rm -v files2cp.txt;
+	echo "..... Gzipping list of files to process.";
+	gzip -v files2cp.txt;
 	
 	echo "..... Gzipping result files.";
 	gzip -vf cp_output/${STAIN}*.gct;
