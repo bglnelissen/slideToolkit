@@ -88,8 +88,10 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #3  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] "
+	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: Image.csv] [arg3: RANDOM_SAMPLE] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -102,8 +104,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-08-26"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-09-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the wrap up of a slideToolKit analysis."
 echoitalic "                This is SLURM based."
@@ -113,40 +115,78 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
-OUTPUTFILENAME=${STAIN}_slides.txt
-# STAIN = "CD34"
-# OUTPUTFILENAME = "CD34slides.txt"
+OUTPUTFILENAME="$2" # Depends on arg2
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+RANDOM_SAMPLE=${3-50} # Depends on arg11
+
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 1 ]]; then 
+if [[ $# -lt 3 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_wrapup ***!"
 		
 else
+	
+	### DEBUG
+	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
+	
+	# Randomly grab x (50) overlay images, and remove the rest
+	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
-	#SBATCH --output=slidemask_out_%j.log     # Standard output and error log
-	ls cp_output/*.png | shuf -n \$(expr \$(ls cp_output/*.png | wc -l) - 10) | xargs rm;
-	echo 'SLIDE_NUM ${STAIN}' > results.txt;
+	# Collecting all the data
+	echo "..... Creating [ results.txt ] and collecting data."
+	echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
+	
+	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
 	cd cp_output;
-	SLIDE_NUM=\$(basename \"$PWD\") | cut -d'.' -f1
-	echo $SLIDE_NUM \$(Rscript $SLIDETOOLKITDIR/utilities/Colsums.R $STAIN $OUTPUTFILENAME) >> ../results.txt;
+
+	# parsing SLIDE_NUM "$PWD"
+	# cut on . (period), output is 1
+	SLIDE_NUM=$(basename "$PWD")
+	SAMPLE_NUM=$(basename "$PWD") | cut -d'.' -f1
+	### DEBUG
+	### echo "Original slide number: $SLIDE_NUM"
+	### echo "Sample number: $SAMPLE_NUM"
+	SCRIPT_NAME="Colsums_${STAIN}.R"
+	
+	echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../results.txt;
+	### we used to Gzip
+	### gzip -v ../results.txt;
+	head ../results.txt
+	cat ../results.txt | wc -l
+	
+	# moving up to the $SLIDE_NUM directory again
 	cd ..
-	rm -rfv *tiles/;
+	
+	echo "..... Removing tiling directory and its contents.";
+	# Randomly grab x (50) overlay images, and remove the rest
+	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
 	if [ -f *.ndpi ]; then 
-		echo \"Removing intermediate tif- & png-files converted from NDPI-files.\";
-		rm -v *x40*.tif; 
-		rm -v *x40*.png; 
+		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+		### We used to work at 40x
+		### rm -v *x40*.tif; 
+		### rm -v *x40*.png; 
+		### Remember - we work at 20x
+		rm -v *x20*.tif; 
+		rm -v *x20*.png; 
+
 
 	fi;
 
-	echo \"Removing list of files to process.\";
-	rm -v files2cp.txt;
-	echo \"Gzipping result files.\";
+	echo "..... Gzipping list of files to process.";
+	gzip -v files2cp.txt;
+	
+	echo "..... Gzipping result files.";
 	gzip -vf cp_output/${STAIN}*.gct;
 	gzip -vf cp_output/${STAIN}*.csv;
 	
-
+	echo "..... Wrapping up this slideToolKit run successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 

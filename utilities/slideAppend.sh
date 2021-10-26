@@ -138,7 +138,7 @@ else
 	i=0 # Reset a counter
 	echo ""
 	echoitalic "Collecting data for:"
-	for filename in "${STUDYTYPE}"*/cp_output/"${STAIN}"_"${RESULTSFILENAME}"; do 
+	for filename in "$STUDYTYPE"*/cp_output/"${STAIN}"_"${RESULTSFILENAME}"; do 
 		if [ "$filename"  != "$OutFileName" ] ; then # Avoid recursion
 		
 			cols=$(zcat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
