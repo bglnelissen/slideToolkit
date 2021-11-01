@@ -66,7 +66,7 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolKit 1.2
+slideToolKit 1.1
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
@@ -88,6 +88,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 Edits by Sander W. van der Laan | http://github.com/swvanderlaan.
+
 EOF
 }
 
@@ -151,9 +152,11 @@ manually. Use the --layer flag to set the correct layer. The amount
 --overlap is only affective on one side, the left tile overlaps the tile
 on the right, and the top tile overlaps the tile below.
 
-The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
-UMC Utrecht, Utrecht, the Netherlands.
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
+
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
 
 EOF

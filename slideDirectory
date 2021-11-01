@@ -3,9 +3,8 @@
 # Description: Create a staging directorie per slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
-# Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, 
-# UMC Utrecht, the Netherlands.
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -69,6 +68,8 @@ in all copies or substantial portions of the Software.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
 EOF
 }
 

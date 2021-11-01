@@ -3,7 +3,8 @@
 # Description: Batch rename slides
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -77,8 +78,8 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolkit 0.1 beta
-($SCRIPTNAME is part of the slideToolkit)
+slideToolKit 1.1
+($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
 Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
@@ -97,6 +98,8 @@ in all copies or substantial portions of the Software.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
 EOF
 }
 
@@ -164,10 +167,12 @@ Code). Image manipulation can be done befor previewing the slide using
 the --convert-args flag, the equal sign ('=') and surrounding quotes "'"
 are required.
 
-The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
-Report issues at https://github.com/bglnelissen/slideToolkit/issues.
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
 
+Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
 EOF
 }
 
