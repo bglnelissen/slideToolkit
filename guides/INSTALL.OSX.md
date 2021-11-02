@@ -91,7 +91,22 @@ Now, we are ready to install the latest `ImageMagick` from brew 🍺 and from _s
 brew install -s imagemagick 
 ```
 
-Note: We need ImageMagick 7+ which is ported from ImageMagick 6 and has an important change with respect to images. It has improved with respect to high dynamic range imaging (HDRI) by default. The default in IM7 is to update the RGBA channels. Previously in IMv6, the default was RGB. To handle this `slide2Tiles`, which uses `convert` from IM7 was edit to handle these channels: `-channel RGB -negate`.[For reference check this link.](https://imagemagick.org/script/porting.php)
+Note: We need ImageMagick 7+ (IM7) which is ported from ImageMagick 6 (IM6) and has an important change with respect to images. It has improved with respect to high dynamic range imaging (HDRI) by default. The default in IM7 is to update the RGBA channels. Previously in IMv6, the default was RGB. To handle this `slide2Tiles`, which uses `convert` from IM7 was edited to handle these channels: 
+
+Old IM6 version:
+
+```
+convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+```
+
+
+New IM7 version:
+
+```
+convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+```
+
+For reference check [this link](https://imagemagick.org/script/porting.php).
 
 #### Step 6 - Install the bioformat tools.
 Install the latest version of BioFormats, including `bfconvert`.
