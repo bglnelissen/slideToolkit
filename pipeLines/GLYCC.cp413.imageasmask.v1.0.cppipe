@@ -87,7 +87,7 @@ ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Set values greater than 1 equal to 1?:Yes
     Replace invalid values with 0?:Yes
     Ignore the image masks?:No
-    Name the output image:Tissue_object
+    Name the output image:ImageAfterMath
     Image or measurement?:Image
     Select the first image:OriginalGray
     Multiply the first image by:1.0
@@ -98,7 +98,7 @@ ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Measurement:
 
 Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the input image:Tissue_object
+    Select the input image:ImageAfterMath
     Name the output image:OriginalGray_smooth
     Select smoothing method:Gaussian Filter
     Calculate artifact diameter automatically?:No
@@ -215,9 +215,9 @@ IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_nu
 MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse Nuclei (red) in the previously defined DAB tissue (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:DAB_object_mask
-    Use objects or an image as a mask?:Objects
+    Use objects or an image as a mask?:Image
     Select object for mask:DAB_object
-    Select image for mask:DAB
+    Select image for mask:Tissue_Masked_DAB_channel
     Invert the mask?:No
 
 OverlayOutlines:[module_num:14|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['The next outline is ontop of the previous one.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]

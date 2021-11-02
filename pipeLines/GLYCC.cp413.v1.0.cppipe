@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:5
 DateRevision:413
 GitHash:
-ModuleCount:17
+ModuleCount:16
 HasImagePlaneDetails:False
 
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.', '', 'Settings converted from legacy pipeline.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
@@ -56,7 +56,7 @@ Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_windo
 ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['Create gray channel, this is used to find tissue (green)', 'Red is ussually a good channel for tissue.', 'RGB should also be fine.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Original
     Conversion method:Combine
-    Image type:Channels
+    Image type:RGB
     Name the output image:OriginalGray
     Relative weight of the red channel:1
     Relative weight of the green channel:1
@@ -78,27 +78,8 @@ ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_
     Relative weight of the channel:1
     Image name:Channel1
 
-ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Operation:Invert
-    Raise the power of the result by:1.0
-    Multiply the result by:1.0
-    Add to result:0.0
-    Set values less than 0 equal to 0?:Yes
-    Set values greater than 1 equal to 1?:Yes
-    Replace invalid values with 0?:Yes
-    Ignore the image masks?:No
-    Name the output image:Tissue_object
-    Image or measurement?:Image
-    Select the first image:OriginalGray
-    Multiply the first image by:1.0
-    Measurement:
-    Image or measurement?:Image
-    Select the second image:None
-    Multiply the second image by:1.0
-    Measurement:
-
-Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the input image:Tissue_object
+Smooth:[module_num:6|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:OriginalGray
     Name the output image:OriginalGray_smooth
     Select smoothing method:Gaussian Filter
     Calculate artifact diameter automatically?:No
@@ -106,7 +87,7 @@ Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_windo
     Edge intensity difference:0.1
     Clip intensities to 0 and 1?:Yes
 
-IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify Tissue areas (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+IdentifyPrimaryObjects:[module_num:7|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify Tissue areas (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:OriginalGray_smooth
     Name the primary objects to be identified:Tissue_object
     Typical diameter of objects, in pixel units (Min,Max):120,5000000
@@ -144,7 +125,7 @@ IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_num
     # of deviations:2
     Thresholding method:Default
 
-UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Split HE and DAB into separate channels']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+UnmixColors:[module_num:8|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Split HE and DAB into separate channels']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Stain count:2
     Select the input color image:Original
     Name the output image:DAB
@@ -158,7 +139,7 @@ UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_
     Green absorbance:0.685713
     Blue absorbance:0.368178
 
-MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:9|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:Tissue_Masked_DAB_channel
     Use objects or an image as a mask?:Objects
@@ -166,7 +147,7 @@ MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_w
     Select image for mask:DAB
     Invert the mask?:No
 
-MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse HE in the previously defined Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse HE in the previously defined Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Hematoxylin
     Name the output image:Tissue_Masked_HE_channel
     Use objects or an image as a mask?:Objects
@@ -174,7 +155,7 @@ MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_w
     Select image for mask:Hematoxylin
     Invert the mask?:No
 
-IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify DAB positive areas (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+IdentifyPrimaryObjects:[module_num:11|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify DAB positive areas (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Tissue_Masked_DAB_channel
     Name the primary objects to be identified:DAB_object
     Typical diameter of objects, in pixel units (Min,Max):6,5000000
@@ -212,15 +193,15 @@ IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_nu
     # of deviations:2
     Thresholding method:Default
 
-MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse Nuclei (red) in the previously defined DAB tissue (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:12|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse Nuclei (red) in the previously defined DAB tissue (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:DAB_object_mask
     Use objects or an image as a mask?:Objects
     Select object for mask:DAB_object
-    Select image for mask:DAB
+    Select image for mask:Tissue_Masked_DAB_channel
     Invert the mask?:No
 
-OverlayOutlines:[module_num:14|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['The next outline is ontop of the previous one.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+OverlayOutlines:[module_num:13|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['The next outline is ontop of the previous one.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Display outlines on a blank image?:No
     Select image on which to display outlines:Original
     Name the output image:OrigOverlay
@@ -232,7 +213,7 @@ OverlayOutlines:[module_num:14|svn_version:'Unknown'|variable_revision_number:4|
     Select outline color:#FB0207
     Select objects to display:DAB_object
 
-SaveImages:[module_num:15|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:['Save outlined images', 'These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+SaveImages:[module_num:14|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:['Save outlined images', 'These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the type of image to save:Image
     Select the image to save:OrigOverlay
     Select method for constructing file names:From image filename
@@ -251,12 +232,12 @@ SaveImages:[module_num:15|svn_version:'Unknown'|variable_revision_number:15|show
     Base image folder:Elsewhere...|
     How to save the series:T (Time)
 
-MeasureImageAreaOccupied:[module_num:16|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:['Measure Tissue (green) and HE nuclei (blue) and DAB (yellow) and area (red).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Measure the area occupied by:Objects
-    Select binary images to measure:DAB_object_mask, Tissue_Masked_DAB_channel, Tissue_Masked_HE_channel
+MeasureImageAreaOccupied:[module_num:15|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:['Measure Tissue (green) and HE nuclei (blue) and DAB (yellow) and area (red).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Measure the area occupied by:Binary Image
+    Select binary images to measure:DAB, DAB_object_mask, Hematoxylin, OrigOverlay, Original, OriginalGray, OriginalGray_smooth, Tissue_Masked_DAB_channel, Tissue_Masked_HE_channel
     Select object sets to measure:DAB_object, Tissue_object
 
-ExportToSpreadsheet:[module_num:17|svn_version:'Unknown'|variable_revision_number:13|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+ExportToSpreadsheet:[module_num:16|svn_version:'Unknown'|variable_revision_number:13|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the column delimiter:Comma (",")
     Add image metadata columns to your object data file?:Yes
     Add image file and folder names to your object data file?:No
