@@ -79,7 +79,7 @@ brew install automake wget jpeg libpng libtiff parallel openslide wmctrl zbar
 ```
 
 #### Step 5 - Install `ImageMagick`.
-First, we will uninstall *all* previous installations of `ImageMagick`, before we build it from source.
+First, we will uninstall *all* previous installations of `ImageMagick`, before we build it from source. 
 
 ```
 brew uninstall --ignore-dependencies --force imagemagick
@@ -90,6 +90,8 @@ Now, we are ready to install the latest `ImageMagick` from brew 🍺 and from _s
 ```
 brew install -s imagemagick 
 ```
+
+Note: We need ImageMagick 7+ which is ported from ImageMagick 6 and has an important change with respect to images. It has improved with respect to high dynamic range imaging (HDRI) by default. The default in IM7 is to update the RGBA channels. Previously in IMv6, the default was RGB. To handle this `slide2Tiles`, which uses `convert` from IM7 was edit to handle these channels: `-channel RGB -negate`.[For reference check this link.](https://imagemagick.org/script/porting.php)
 
 #### Step 6 - Install the bioformat tools.
 Install the latest version of BioFormats, including `bfconvert`.
