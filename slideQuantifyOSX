@@ -111,8 +111,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-04"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Last update : 2021-11-02"
+echoitalic "* Version     : 2.0.4"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory on macOS, for instance"
@@ -277,7 +277,9 @@ else
 	
 			elif [ -f *.TIF ]; then
 				echo "The image-file is a .TIF."
-				slide2Tiles --layer 4 -f *.TIF -m *.emask.png --verbose;
+				### old layer selection - it should fit the above mask-creation layer-selection
+				### slide2Tiles --layer 8 -f *.TIF -m *.emask.png --verbose;
+				slide2Tiles -f *.TIF -m *.emask.png --verbose;
 	
 			else
 				echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
@@ -325,7 +327,7 @@ else
 					slideEMask -c -f $IMAGE_TILE -t $ENTROPY_THRESHOLD
 					
 					echo "... - removing intermediate $IMAGE_TILE ..."
-					rm -v $IMAGE_TILE;
+					#rm -v $IMAGE_TILE;
 		
 				done
 				echo "..... Removing temporary directory."
@@ -353,69 +355,69 @@ else
 		
 		if [ -z "$(ls -A cp_output)" ]; then 
 			echo "..... > checking CellProfiler version..."
-			cellprofiler --version
+# 			cellprofiler --version
 			
 			echo "..... > making output directory..."
 			mkdir -pv cp_output
 			
 			echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
-			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
+# 			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 		else
 			echo "..... CellProfiler was already run, or at least there is a 'cp_output'-directory."
 			
 		fi
 		
-
-		### Wrap Up
-		### 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
-		### 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
-		###    Colsums.R
-		### 3. we remove tiles, and other files we don't need
-		echo ""
-		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ] "
-
-		# Randomly grab x (50) overlay images, and remove the rest
-		ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-
-		# Collecting all the data
-		echo "..... Creating [ results.txt ] and collecting data."
-		echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
-		
-		# Moving into the cellprofiler output directory for the given $SLIDE_NUM
-		cd cp_output;
-		
-		# parsing SLIDE_NUM "$PWD"
-		# cut on . (period), output is 1
-		SAMPLE_NUM=$(echo $SLIDE_NUM | cut -d'.' -f1)
-		### DEBUG
-		### echo "Original slide number: $SLIDE_NUM"
-		### echo "Sample number: $SAMPLE_NUM"
-		SCRIPT_NAME="Colsums_${STAIN}.R"
-		echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME ) >> ../results.txt;
-		### we used to Gzip
-		### gzip -v ../results.txt;
-		head ../results.txt
-		cat ../results.txt | wc -l
-		# moving up to the $SLIDE_NUM directory again
-		cd ..
-		
-		echo "..... Removing tiling directory and its contents.";
-		# Randomly grab x (50) overlay images, and remove the rest
-		ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-# 		rm -rfv *tiles/;
-		if [ -f *.ndpi ]; then 
-			echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
-# 			rm -v *x40*.tif; 
-# 			rm -v *x40*.png; 
-		fi;
-		
-		echo "..... Removing list of files to process.";
-# 		rm -v files2cp.txt;
-
-		echo "..... Gzipping result files.";
-# 		gzip -vf cp_output/${STAIN}*.gct;
-# 		gzip -vf cp_output/${STAIN}*.csv;
+# 
+# 		### Wrap Up
+# 		### 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED
+# 		### 2. we get the data (in STAIN_Image.txt) for each study number (SLIDE_NUM) in 'cp_output' using >> OUT-COMMENTED
+# 		###    Colsums.R
+# 		### 3. we remove tiles, and other files we don't need
+# 		echo ""
+# 		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ] "
+# 
+# 		# Randomly grab x (50) overlay images, and remove the rest
+# # 		ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+# 
+# 		# Collecting all the data
+# 		echo "..... Creating [ results.txt ] and collecting data."
+# 		echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
+# 		
+# 		# Moving into the cellprofiler output directory for the given $SLIDE_NUM
+# 		cd cp_output;
+# 		
+# 		# parsing SLIDE_NUM "$PWD"
+# 		# cut on . (period), output is 1
+# 		SAMPLE_NUM=$(echo $SLIDE_NUM | cut -d'.' -f1)
+# 		### DEBUG
+# 		### echo "Original slide number: $SLIDE_NUM"
+# 		### echo "Sample number: $SAMPLE_NUM"
+# 		SCRIPT_NAME="Colsums_${STAIN}.R"
+# 		echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME ) >> ../results.txt;
+# 		### we used to Gzip
+# 		### gzip -v ../results.txt;
+# 		head ../results.txt
+# 		cat ../results.txt | wc -l
+# 		# moving up to the $SLIDE_NUM directory again
+# 		cd ..
+# 		
+# 		echo "..... Removing tiling directory and its contents.";
+# 		# Randomly grab x (50) overlay images, and remove the rest
+# # 		ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
+# # 		rm -rfv *tiles/;
+# 		if [ -f *.ndpi ]; then 
+# 			echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+# # 			rm -v *x40*.tif; 
+# # 			rm -v *x40*.png; 
+# 		fi;
+# 		
+# 		echo "..... Removing list of files to process.";
+# # 		rm -v files2cp.txt;
+# 
+# 		echo "..... Gzipping result files.";
+# # 		gzip -vf cp_output/${STAIN}*.gct;
+# # 		gzip -vf cp_output/${STAIN}*.csv;
 
 		echo ""
 		echo "* Moving back to the project directory [$PROJECTDIR]"

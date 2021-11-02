@@ -102,8 +102,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Last update : 2021-11-02"
+echoitalic "* Version     : 2.0.4"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -152,7 +152,7 @@ else
 	elif [ -f *.TIF ]; then 
 		echo "The image-file is a .TIF."
 		# layer 3 is 20x Roche scanner
-		slideMask --layer 3 -f *.TIF;
+		slideMask -f *.TIF;
 
 	else
 		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 

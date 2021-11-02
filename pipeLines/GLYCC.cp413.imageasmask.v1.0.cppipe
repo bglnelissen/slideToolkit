@@ -161,7 +161,7 @@ UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_
 MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:Tissue_Masked_DAB_channel
-    Use objects or an image as a mask?:Objects
+    Use objects or an image as a mask?:Image
     Select object for mask:Tissue_object
     Select image for mask:DAB
     Invert the mask?:No
@@ -169,7 +169,7 @@ MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_w
 MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse HE in the previously defined Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Hematoxylin
     Name the output image:Tissue_Masked_HE_channel
-    Use objects or an image as a mask?:Objects
+    Use objects or an image as a mask?:Image
     Select object for mask:Tissue_object
     Select image for mask:Hematoxylin
     Invert the mask?:No
