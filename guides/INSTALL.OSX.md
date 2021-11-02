@@ -96,7 +96,7 @@ Note: We need ImageMagick 7+ (IM7) which is ported from ImageMagick 6 (IM6) and 
 Old IM6 version:
 
 ```
-convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
 ```
 
 
