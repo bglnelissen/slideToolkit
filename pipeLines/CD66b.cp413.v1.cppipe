@@ -8,7 +8,7 @@ HasImagePlaneDetails:False
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.', '', 'Settings converted from legacy pipeline.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     :
     Filter images?:Custom
-    Select the rule criteria:or (file does contain ".tile.tissue.png") (file does contain "ENTROPY_")
+    Select the rule criteria:or (file does contain ".tile.tissue.png") (file doesnot contain "ENTROPY_")
 
 Metadata:[module_num:2|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.', '', 'Settings converted from legacy pipeline.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Extract metadata?:Yes
@@ -42,26 +42,20 @@ NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|sho
     Assign a name to:Images matching rules
     Select the image type:Grayscale image
     Name to assign these images:DNA
-    Match metadata:[{'Original': 'Y', 'EntropyImage': 'Y'}, {'Original': 'X', 'EntropyImage': 'X'}, {'Original': 'NR', 'EntropyImage': 'NR'}, {'Original': 'STAIN', 'EntropyImage': 'STAIN'}]
+    Match metadata:[{'Original': 'Y'}, {'Original': 'X'}, {'Original': 'NR'}, {'Original': 'STAIN'}]
     Image set matching method:Metadata
     Set intensity range from:Image metadata
-    Assignments count:2
+    Assignments count:1
     Single images count:0
     Maximum intensity:255.0
     Process as 3D?:No
     Relative pixel spacing in X:1.0
     Relative pixel spacing in Y:1.0
     Relative pixel spacing in Z:1.0
-    Select the rule criteria:and (file doesnot contain "ENTROPY_") (file doesnot contain ".counted") (file does contain ".tile.tissue.png")
+    Select the rule criteria:and (file doesnot contain ".counted") (file does contain ".tile.tissue.png")
     Name to assign these images:Original
     Name to assign these objects:Cell
     Select the image type:Color image
-    Set intensity range from:Image metadata
-    Maximum intensity:255.0
-    Select the rule criteria:and (file does contain "ENTROPY_")
-    Name to assign these images:EntropyImage
-    Name to assign these objects:Nucleus
-    Select the image type:Binary mask
     Set intensity range from:Image metadata
     Maximum intensity:255.0
 
@@ -114,7 +108,7 @@ ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Multiply the second image by:1.0
     Measurement:
 
-Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Tissue_object
     Name the output image:OriginalGray_smooth
     Select smoothing method:Gaussian Filter
@@ -161,7 +155,7 @@ IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_num
     # of deviations:2
     Thresholding method:Default
 
-UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Split HE and DAB into separate channels']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Split HE and DAB into separate channels']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Stain count:2
     Select the input color image:Original
     Name the output image:DAB
@@ -175,7 +169,7 @@ UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_
     Green absorbance:0.685713
     Blue absorbance:0.368178
 
-MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:['Only analyse HE in the previously defined Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse HE in the previously defined Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Hematoxylin
     Name the output image:Tissue_Masked_HE_channel
     Use objects or an image as a mask?:Objects
@@ -183,7 +177,7 @@ MaskImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:3|show_w
     Select image for mask:Tissue_object_green
     Invert the mask?:No
 
-MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB
     Name the output image:Tissue_Masked_DAB_channel
     Use objects or an image as a mask?:Objects
@@ -229,7 +223,7 @@ IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_nu
     # of deviations:2
     Thresholding method:Default
 
-MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Only analyse DAB in the previously defined Tissue']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Tissue_Masked_HE_channel
     Name the output image:DAB_stain_image
     Use objects or an image as a mask?:Objects
@@ -237,7 +231,7 @@ MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_w
     Select image for mask:Tissue_object_green
     Invert the mask?:No
 
-IdentifyPrimaryObjects:[module_num:14|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify nuclei (green) in DAB positive areas (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+IdentifyPrimaryObjects:[module_num:14|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify nuclei (green) in DAB positive areas (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:DAB_stain_image
     Name the primary objects to be identified:DAB_Nuclei_object
     Typical diameter of objects, in pixel units (Min,Max):2,10
@@ -275,18 +269,18 @@ IdentifyPrimaryObjects:[module_num:14|svn_version:'Unknown'|variable_revision_nu
     # of deviations:2
     Thresholding method:Default
 
-OverlayOutlines:[module_num:15|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['The next outline is ontop of the previous one.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+OverlayOutlines:[module_num:15|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['The next outline is ontop of the previous one. DAB nuclei are red, DAB areas are yellow, Tissue is green.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Display outlines on a blank image?:No
     Select image on which to display outlines:Original
     Name the output image:OrigOverlay
     Outline display mode:Color
     Select method to determine brightness of outlines:Max of image
     How to outline:Inner
-    Select outline color:Green
+    Select outline color:#FB0207
     Select objects to display:DAB_Nuclei_object
-    Select outline color:#F7F40A
+    Select outline color:#FFFF0A
     Select objects to display:DAB_object
-    Select outline color:black
+    Select outline color:#118002
     Select objects to display:Tissue_object
 
 SaveImages:[module_num:16|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:['Save outlined images', 'These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
@@ -309,8 +303,8 @@ SaveImages:[module_num:16|svn_version:'Unknown'|variable_revision_number:15|show
     How to save the series:T (Time)
 
 MeasureImageAreaOccupied:[module_num:17|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:['Measure Tissue (black) and DAB-HE nuclei (green) and DAB area (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Measure the area occupied by:Both
-    Select binary images to measure:DAB, Hematoxylin, OriginalGray, Tissue_object
+    Measure the area occupied by:Objects
+    Select binary images to measure:DAB, Hematoxylin, OriginalGray
     Select object sets to measure:DAB_Nuclei_object, DAB_object, Tissue_object
 
 ExportToSpreadsheet:[module_num:18|svn_version:'Unknown'|variable_revision_number:13|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
