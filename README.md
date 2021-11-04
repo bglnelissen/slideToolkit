@@ -22,7 +22,7 @@ In conclusion, **slideToolKit** provides a free, powerful and versatile collecti
 
 
 #### Installation
-Installation instructions for CentOS 6+, Ubuntu and Mac OS X Mountain Lion+ can be found in [guides](https://github.com/swvanderlaan/slideToolKit/tree/master/guides). A proper wiki is forthcoming.
+Detailed instructions on using **slideToolKit** can be found in the wiki.
 
 
 #### Citations
