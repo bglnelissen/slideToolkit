@@ -133,7 +133,7 @@ Installation instructions for OS X and Linux can be found in this repo. *We are 
 
 - [INSTALL - OS X 10.[8/9/10/11.[x]] - Mountain Lion/Mavericks/Yosemite/El Capitan/Sierra/High Sierra](INSTALL.OSX.md) *(Largely updated - mostly applicable to Ubuntu or CentOS6.6+ too)*
 - [INSTALL - Ubuntu 12.04 LTS - Precise Pangolin](INSTALL.Ubuntu.12.04.LTS-PrecisePangolin.md) *(CellProfiler instructions incomplete)*
-- [INSTALL - CentOS 7](INSTALL.CentOS7.md) *(In progress)*
+- [INSTALL - CentOS 7](INSTALL.CentOS7.admin.md) *(In progress)*
 - *We have not planned to create installation instructions for Microsoft Windows. Try to run CentOS 6.6+ within [VirtualBox](https://www.virtualbox.org) instead.*
 
 *Finally a 'thank you' for the teams of ImageMagick, CellProfiler and all the other great software packages for there support and excellent software.*
