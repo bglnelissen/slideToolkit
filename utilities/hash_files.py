@@ -15,11 +15,11 @@ def get_hashsums(file_path):
 #     hash_sums['sha512sum'] = hashlib.sha512()
 
     with open(file_path, 'rb') as fd:
-        data_chunk = fd.read(1024)
+        data_chunk = fd.read(65536)
         while data_chunk:
               for hashsum in hash_sums.keys():
                   hash_sums[hashsum].update(data_chunk)
-              data_chunk = fd.read(1024)
+              data_chunk = fd.read(65536)
 
     results = od()
     for key,value in hash_sums.items():
