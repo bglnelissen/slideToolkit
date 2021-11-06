@@ -27,6 +27,9 @@ import os
 import openslide
 from openslide import *
 
+# for cellprofiler
+import cellprofiler
+
 utc = arrow.utcnow()
 
 # argument parser
@@ -54,6 +57,7 @@ print("Printing the installed versions.")
 print('* Python version: ',sys.version)
 print('* OpenSlide version: ',openslide.__version__)
 print('* OpenSlide library version: ', openslide.__library_version__)
+print('* CellProfiler version: ', cellprofiler.__version__)
 
 print("\nTesting the argument parsing of your birth date.")
 print(f"UTC time is = {utc}")

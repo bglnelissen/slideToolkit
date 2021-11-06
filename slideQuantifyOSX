@@ -111,8 +111,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-02"
-echoitalic "* Version     : 2.0.4"
+echoitalic "* Last update : 2021-11-06"
+echoitalic "* Version     : 2.0.5"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory on macOS, for instance"
@@ -149,6 +149,15 @@ else
 	echobold "Cleaning up house, first."
 	rm -rfv "$FILESTART*"/magick-tmp
 
+	echobold "Starting up the virtual environment."
+	
+	source activate cp4
+	
+	echobold "Testing the virtual environment."
+	
+	python $SLIDETOOLKITDIR/slideToolKitTest.py
+	
+	echobold "Alright. All is set."
 	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
 # 	HOLD_JIDS=()
 	INDEX=0
@@ -355,13 +364,13 @@ else
 		
 		if [ -z "$(ls -A cp_output)" ]; then 
 			echo "..... > checking CellProfiler version..."
-# 			cellprofiler --version
+			cellprofiler --version
 			
 			echo "..... > making output directory..."
 			mkdir -pv cp_output
 			
 			echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
-# 			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
+			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
 		else
 			echo "..... CellProfiler was already run, or at least there is a 'cp_output'-directory."
