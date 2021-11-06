@@ -153,9 +153,10 @@ else
 	
 	source activate cp4
 	
-	echobold "Testing the virtual environment."
-	
-	python $SLIDETOOLKITDIR/slideToolKitTest.py
+	### FOR DEBUG
+	### echobold "Testing the virtual environment."
+	### 
+	### python $SLIDETOOLKITDIR/slideToolKitTest.py
 	
 	echobold "Alright. All is set."
 	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
@@ -166,7 +167,6 @@ else
 
 	cd $PROJECTDIR
 	
-	### FOR DEBUG
 	### FOR DEBUG
 	### echocyan "Debug mode - processing debug-images."
 	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT"
