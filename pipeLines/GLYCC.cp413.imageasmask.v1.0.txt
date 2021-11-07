@@ -16,7 +16,7 @@
 
 [   4] [Groups]
   The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.
-  
+    
   Settings converted from legacy pipeline.
 
 [   5] [ColorToGray]
@@ -27,7 +27,7 @@
 [   6] [ImageMath]
 
 [   7] [Smooth]
-  Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)
+  Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green)
 
 [   8] [IdentifyPrimaryObjects]
   Identify Tissue areas (green)

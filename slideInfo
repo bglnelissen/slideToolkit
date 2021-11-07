@@ -48,7 +48,7 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolKit 1.1
+slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>

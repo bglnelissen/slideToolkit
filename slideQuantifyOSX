@@ -1,4 +1,32 @@
 #!/bin/bash
+#
+# Description: slideQuantify for local (macOS) use to debug and test workflows and
+#              CellProfiler pipelines, or simply to analyze (small) batches of 
+#              slides locally.
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 ### Creating display functions
 ### Setting colouring
@@ -336,7 +364,7 @@ else
 					slideEMask -c -f $IMAGE_TILE -t $ENTROPY_THRESHOLD
 					
 					echo "... - removing intermediate $IMAGE_TILE ..."
-					rm -v $IMAGE_TILE;
+# 					rm -v $IMAGE_TILE;
 		
 				done
 				echo "..... Removing temporary directory."
@@ -354,29 +382,29 @@ else
 
 		fi
 
-		### CellProfiler
-		### This does not work on macOS Mojave 10.14.5 because we need vigra.
-		### However installing this comes with issues: https://github.com/ukoethe/vigra/issues/468
-		### There is no issue running it on macOS Big Sur 11.5.1+.
-		
-		echo ""
-		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
-		
-		if [ -z "$(ls -A cp_output)" ]; then 
-			echo "..... > checking CellProfiler version..."
-			cellprofiler --version
-			
-			echo "..... > making output directory..."
-			mkdir -pv cp_output
-			
-			echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
-			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
-
-		else
-			echo "..... CellProfiler was already run, or at least there is a 'cp_output'-directory."
-			
-		fi
-		
+# 		### CellProfiler
+# 		### This does not work on macOS Mojave 10.14.5 because we need vigra.
+# 		### However installing this comes with issues: https://github.com/ukoethe/vigra/issues/468
+# 		### There is no issue running it on macOS Big Sur 11.5.1+.
+# 		
+# 		echo ""
+# 		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
+# 		
+# 		if [ -z "$(ls -A cp_output)" ]; then 
+# 			echo "..... > checking CellProfiler version..."
+# 			cellprofiler --version
+# 			
+# 			echo "..... > making output directory..."
+# 			mkdir -pv cp_output
+# 			
+# 			echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
+# 			cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
+# 
+# 		else
+# 			echo "..... CellProfiler was already run, or at least there is a 'cp_output'-directory."
+# 			
+# 		fi
+# 		
 # 
 # 		### Wrap Up
 # 		### 1. we randomly grap 10 masked & tiled PNG-files to keep for post-analysis check >> OUT-COMMENTED

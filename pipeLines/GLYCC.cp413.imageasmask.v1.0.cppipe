@@ -48,7 +48,7 @@ NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|sho
     Set intensity range from:Image metadata
     Maximum intensity:255.0
 
-Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.', '', 'Settings converted from legacy pipeline.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.', '  ', 'Settings converted from legacy pipeline.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Do you want to group your images?:No
     grouping metadata count:1
     Metadata category:None
@@ -97,7 +97,7 @@ ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Multiply the second image by:1.0
     Measurement:
 
-Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:ImageAfterMath
     Name the output image:OriginalGray_smooth
     Select smoothing method:Gaussian Filter

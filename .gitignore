@@ -40,3 +40,4 @@ Thumbs.db
 
 development/
 upgrade_study/
+*.imageset_tested.csv
