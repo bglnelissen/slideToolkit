@@ -336,7 +336,7 @@ else
 					slideEMask -c -f $IMAGE_TILE -t $ENTROPY_THRESHOLD
 					
 					echo "... - removing intermediate $IMAGE_TILE ..."
-					#rm -v $IMAGE_TILE;
+					rm -v $IMAGE_TILE;
 		
 				done
 				echo "..... Removing temporary directory."

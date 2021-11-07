@@ -1,0 +1,60 @@
+[   1] [Images]
+  To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.
+  
+  Settings converted from legacy pipeline.
+
+[   2] [Metadata]
+  The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.
+  
+  Settings converted from legacy pipeline.
+
+[   3] [NamesAndTypes]
+  The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.
+  
+  Settings converted from legacy pipeline.
+  Please change any color images from Load as Grayscale image to Load as Color image.
+
+[   4] [Groups]
+  The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.
+  
+  Settings converted from legacy pipeline.
+
+[   5] [ColorToGray]
+  Create gray channel, this is used to find tissue (green)
+  Red is ussually a good channel for tissue.
+  RGB should also be fine.
+
+[   6] [ImageMath]
+
+[   7] [Smooth]
+  Smooth away the dust using a Gaussion Filter. This is used to find Tissue (green)
+
+[   8] [IdentifyPrimaryObjects]
+  Identify Tissue areas (green)
+
+[   9] [UnmixColors]
+  Split HE and DAB into separate channels
+
+[  10] [MaskImage]
+  Only analyse DAB in the previously defined Tissue
+
+[  11] [MaskImage]
+  Only analyse HE in the previously defined Tissue (green)
+
+[  12] [IdentifyPrimaryObjects]
+  Identify DAB positive areas (yellow)
+
+[  13] [MaskImage]
+  Only analyse Nuclei (red) in the previously defined DAB tissue (yellow)
+
+[  14] [OverlayOutlines]
+  The next outline is ontop of the previous one.
+
+[  15] [SaveImages]
+  Save outlined images
+  These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.
+
+[  16] [MeasureImageAreaOccupied]
+  Measure Tissue (green) and HE nuclei (blue) and DAB (yellow) and area (red).
+
+[  17] [ExportToSpreadsheet]
