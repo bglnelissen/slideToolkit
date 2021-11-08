@@ -174,17 +174,17 @@ else
 
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and should first be converted to .tif before tiling."
-		ndpisplit -x40 -z0 *.ndpi
+		ndpisplit -x20 -z0 *.ndpi
 		slide2Tiles --layer 0 -f *x20*.tif -m *.emask.png;
 
 	elif [ -f *.tif ]; then
 		echo "The image-file is a (NDPI-converted) .tif."
-		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
+		slide2Tiles --layer 0 -f *x20*.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then
 		# layer 3 is 20x Roche scanner
 		echo "The image-file is a .TIF."
-		slide2Tiles -f *.TIF -m *.emask.png;
+		slide2Tiles --layer 3 -f *.TIF -m *.emask.png;
 
 	else
 		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 

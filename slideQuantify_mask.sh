@@ -176,15 +176,16 @@ else
 		if [ -f *.ndpi ]; then  
 			ndpisplit -x20 -z0 *.ndpi; 
 		fi
-		slideMask --layer 0 -f *.tif;
+		slideMask --layer 0 -f *x20*.tif;
 
 	elif [ -f *.tif ]; then 
 		echo "The image-file is a (NDPI-converted) .tif."
-		slideMask --layer 0 -f *.tif;
+		slideMask --layer 0 -f *x20*.tif;
 
 	elif [ -f *.TIF ]; then 
 		echo "The image-file is a .TIF."
 		# layer 3 is 20x Roche scanner
+		# the macro-image is needed for this: slideMask automatically determines this
 		slideMask -f *.TIF;
 
 	else
