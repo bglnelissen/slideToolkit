@@ -434,7 +434,7 @@ verbose_debug "createTilesConvert()"
   # Reference: https://imagemagick.org/script/porting.php
   # IF this script is causing problems, it's probably due to this difference.
   # THEORETICALLY slideToolKit in combination with CellProfiler 2.2.0, Java 8, Xcode,
-  # and homebrew should work out-of-the-box without `-channel RGB `. No guarantee though.
+  # and homebrew should work out-of-the-box without `-channel RGB -negate`. No guarantee though.
   #
   convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
 
