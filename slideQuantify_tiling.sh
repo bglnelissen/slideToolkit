@@ -174,6 +174,7 @@ else
 
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and should first be converted to .tif before tiling."
+		ndpisplit -x40 -z0 *.ndpi
 		slide2Tiles --layer 0 -f *x20*.tif -m *.emask.png;
 
 	elif [ -f *.tif ]; then
