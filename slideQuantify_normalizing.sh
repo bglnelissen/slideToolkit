@@ -165,7 +165,13 @@ else
 	cd *.tiles/;
 
 	# loading required modules 
-	module load anaconda/3-8.2021.05
+	### Loading the CellProfiler-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	eval "$(conda shell.bash hook)"
+	conda activate cp4
+	
+# 	module load anaconda/3-8.2021.05
 	module load slideToolKit
 	module load slideNormalize
 	
