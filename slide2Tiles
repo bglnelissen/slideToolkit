@@ -426,11 +426,16 @@ verbose_debug "createTilesConvert()"
   date1="$(date +'%s')"
   # convert -limit area "${MEMORYLIMIT}" "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
   # convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
-  # Update to convert, having to do with the difference between IM6 and IM7 causing a 
-  # (weird) behaviour where the non-masked area is completely whitened. 
+  
+  # 20211108: There was an update to convert, having to do with the difference 
+  # between IM6 and IM7 causing a (weird) behaviour where the non-masked area is 
+  # completely whitened. 
   # Obviously we do not want this, this cause the tiling to go all wonky.
   # Reference: https://imagemagick.org/script/porting.php
   # IF this script is causing problems, it's probably due to this difference.
+  # THEORETICALLY slideToolKit in combination with CellProfiler 2.2.0, Java 8, Xcode,
+  # and homebrew should work out-of-the-box without `-channel RGB `. No guarantee though.
+  #
   convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
 
   date2="$(date +'%s')"
