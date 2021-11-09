@@ -164,7 +164,6 @@ else
 	eval "$(conda shell.bash hook)"
 	conda activate cp4
 	
-# 	module load anaconda/3-8.2021.05
 	module load slideToolKit
 	module load ndpitools
 

@@ -164,6 +164,7 @@ else
 	fi
 
 	echo "..... Starting CellProfiler run."
+
 	# loading required module
 	echo "..... > loading required anaconda module..."
 	module load anaconda/3-8.2021.05

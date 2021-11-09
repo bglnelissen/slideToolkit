@@ -228,7 +228,6 @@ else
 		### echo $THIS_SLIDEMASK
 		### echo $HOLD_JID_STRING
 
-
 		### slide2Tiles
 		echo ""
 		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
