@@ -92,9 +92,9 @@ script_arguments_error() {
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
 	echoerror "- Argument #2  -- study type of the analysis, e.g. AE or AAA."
 	echoerror "- Argument #3  -- image file type, e.g. TIF, NDPI."
-	echoerror "- Argument #4  -- (the path to) the filename, e.g. Image.csv.gz, the script will automatically append STAIN, e.g. STAIN_Image.csv.gz"
+	echoerror "- Argument #4  -- (the path to) the filename, e.g. Image.gct.gz, the script will automatically append STAIN, e.g. STAIN_Image.gct.gz"
 	echoerror ""
-	echoerror "An example command would be: slideAppendGCT [arg1: STAIN] [arg2: STUDYTYPE ] [arg3: IMAGETYPE ] [arg4: Output_Image.csv.gz] "
+	echoerror "An example command would be: slideAppendGCT [arg1: STAIN] [arg2: STUDYTYPE ] [arg3: IMAGETYPE ] [arg4: Output_Image.gct.gz] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -124,7 +124,7 @@ RESULTSFILENAME="$4"
 
 if [[ $# -lt 4 ]]; then 
 	echoerrorflash "Oh, computer says no! Number of arguments found $#."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideAppend ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideAppendGCT ***!"
 
 else
 
@@ -141,7 +141,7 @@ else
 	for filename in "$STUDYTYPE"*/cp_output/"${STAIN}"_"${RESULTSFILENAME}"; do 
 		if [ "$filename"  != "$OutFileName" ] ; then # Avoid recursion
 		
-			cols=$(zcat "$filename" | awk -F\t '{ print NF }' | uniq | wc -l)
+			cols=$(zcat "$filename" | tail -n +3 | awk -F'\t' '{ print NF }' | uniq | wc -l)
 			if [[ "$cols" -gt 1 ]]; then
 				STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
 				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
@@ -152,14 +152,14 @@ else
 					echoitalic " First file no. $i: [ ${filename} ] ..."
 					### DEBUG
 					### echo "DEBUG: check head first file"
-					### zcat "$filename" | head -1
-					zcat "$filename" | tail -2 #> "$OutFileName" # Copy header if it is the first file
+					### zcat "$filename" | tail -n +3 | head -1
+					zcat "$filename" | tail -n +3 > "$OutFileName" # Copy header if it is the first file
 				else
 					echoitalic " File no. $i: [ ${filename} ] ..."
 					### DEBUG
 					### echo "DEBUG: check head next file"
-					### zcat "$filename" | head -2
-					#zcat "$filename" | tail -n +2 >> "$OutFileName" # Append from the 2nd line each file
+					### zcat "$filename" | tail -n +4 | head -1
+					zcat "$filename" | tail -n +4 >> "$OutFileName" # Append from the 2nd line each file
 					
 					### DEBUG
 					### ls -lh "$OutFileName"
@@ -172,7 +172,10 @@ else
 	echo ""
 	echoitalic "Gzipping the shizzle."
 	gzip -vf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.gct
-	zcat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.gct.gz | head -3
+	### DEBUG
+	### echo "DEBUG: check heads and tails of concatenated output file"
+	### zcat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.gct.gz | head -3
+	### zcat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.gct.gz | tail
 	
 	echo ""
 	echoitalic "Checking the log -- note: no results is a good thing."
