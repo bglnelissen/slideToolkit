@@ -95,7 +95,7 @@ script_arguments_error() {
 	echoerror "- Argument #7  -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: BEGIN=begin of job; END=end of job; FAIL=abort of job; ALL=all message job; NONE=no mail is send."
 	echoerror "- Argument #8  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
 	echoerror "- Argument #9  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
-	echoerror "- Argument #10  -- Batch size. A number to indicate the batch size, e.g. '5000'. [OPTIONAL]"
+	echoerror "- Argument #10  -- Batch size. A number to indicate the batch size, e.g. '5000'. This enables running only few samples for testing or debugging purposes. [OPTIONAL]"
 	echoerror "- Argument #11  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'. [OPTIONAL]"
 	echoerror ""
 	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.csv] [arg6: y.name@umcutrecht.nl] [arg7: a] [arg8: 210]"
@@ -112,8 +112,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-08"
-echoitalic "* Version     : 2.0.5"
+echoitalic "* Last update : 2021-11-10"
+echoitalic "* Version     : 2.0.6"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory. "
@@ -250,7 +250,7 @@ else
 	
 		JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 		### FOR DEBUG
-		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.errors -o ${PROJECTDIR}/logs/slidecellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
+		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 		
 	
 		### Wrap Up
