@@ -129,8 +129,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-02"
-echoitalic "* Version     : 2.0.4"
+echoitalic "* Last update : 2021-11-10"
+echoitalic "* Version     : 2.0.5"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -150,8 +150,7 @@ if [[ $# -lt 1 ]]; then
 else
 
 	# checking if masks exist - if so, skip this script
-	if [[ -s *mask.png ]] 
-	then 
+	if [ -f *.emask.png ] || [ -f *.mask.png ]; then 
 		echo "..... Masked images already exists - moving on."
 		exit 
 	fi
