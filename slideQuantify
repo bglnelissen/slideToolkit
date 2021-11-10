@@ -96,7 +96,7 @@ script_arguments_error() {
 	echoerror "- Argument #8  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
 	echoerror "- Argument #9  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
 	echoerror "- Argument #10  -- Batch size. A number to indicate the batch size, e.g. '5000'. This enables running only few samples for testing or debugging purposes. [OPTIONAL]"
-	echoerror "- Argument #11  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'. [OPTIONAL]"
+	echoerror "- Argument #11  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20', by default set at '50'. [OPTIONAL]"
 	echoerror ""
 	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.csv] [arg6: y.name@umcutrecht.nl] [arg7: a] [arg8: 210]"
 	echoerror ""
