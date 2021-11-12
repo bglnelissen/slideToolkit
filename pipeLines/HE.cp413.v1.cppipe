@@ -8,7 +8,7 @@ HasImagePlaneDetails:False
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     :
     Filter images?:Custom
-    Select the rule criteria:or (file does contain ".tile.tissue.png") (file does contain "ENTROPY_")
+    Select the rule criteria:or (file does contain ".normalized.tile.tissue.png") (file does contain "ENTROPY_")
 
 Metadata:[module_num:2|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Extract metadata?:Yes
@@ -97,7 +97,7 @@ ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_
 
 Smooth:[module_num:6|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:OrigGray
-    Name the output image:FilteredImage
+    Name the output image:ImageAfterMath
     Select smoothing method:Gaussian Filter
     Calculate artifact diameter automatically?:No
     Typical artifact diameter:20.0
@@ -115,7 +115,7 @@ ImageMath:[module_num:7|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Ignore the image masks?:No
     Name the output image:Tissue_object
     Image or measurement?:Image
-    Select the first image:OrigGray
+    Select the first image:ImageAfterMath
     Multiply the first image by:1.0
     Measurement:
     Image or measurement?:Image
@@ -175,12 +175,12 @@ UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_
     Green absorbance:0.5
     Blue absorbance:0.5
 
-IdentifyPrimaryObjects:[module_num:10|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify total HE area (red).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+IdentifyPrimaryObjects:[module_num:10|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify total HE area (blue).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:HE
     Name the primary objects to be identified:HE_Nuclei
-    Typical diameter of objects, in pixel units (Min,Max):8,20
+    Typical diameter of objects, in pixel units (Min,Max):12,36
     Discard objects outside the diameter range?:Yes
-    Discard objects touching the border of the image?:No
+    Discard objects touching the border of the image?:Yes
     Method to distinguish clumped objects:Intensity
     Method to draw dividing lines between clumped objects:Intensity
     Size of smoothing filter:10
@@ -199,7 +199,7 @@ IdentifyPrimaryObjects:[module_num:10|svn_version:'Unknown'|variable_revision_nu
     Thresholding method:Otsu
     Threshold smoothing scale:0
     Threshold correction factor:1.0
-    Lower and upper bounds on threshold:0.60,1.0
+    Lower and upper bounds on threshold:0.70,1.0
     Manual threshold:0.0
     Select the measurement to threshold with:None
     Two-class or three-class thresholding?:Three classes
@@ -213,16 +213,16 @@ IdentifyPrimaryObjects:[module_num:10|svn_version:'Unknown'|variable_revision_nu
     # of deviations:2
     Thresholding method:Minimum Cross-Entropy
 
-OverlayOutlines:[module_num:11|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['Measure total tissue area (green) and total HE positive stain (red)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+OverlayOutlines:[module_num:11|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:['Measure total tissue area (green) and total HE positive stain (blue)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Display outlines on a blank image?:No
-    Select image on which to display outlines:OrigGray
+    Select image on which to display outlines:Original
     Name the output image:OrigOverlay
     Outline display mode:Color
     Select method to determine brightness of outlines:Max of image
     How to outline:Inner
     Select outline color:#118002
     Select objects to display:Tissue
-    Select outline color:#FB0207
+    Select outline color:#0000FF
     Select objects to display:HE_Nuclei
 
 SaveImages:[module_num:12|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
