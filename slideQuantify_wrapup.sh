@@ -131,8 +131,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Last update : 2021-11-12"
+echoitalic "* Version     : 2.0.4"
 echo ""
 echoitalic "* Description : This script will start the wrap up of a slideToolKit analysis."
 echoitalic "                This is SLURM based."
@@ -161,12 +161,9 @@ else
 	### DEBUG
 	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
 	
-	# Randomly grab x (50) overlay images, and remove the rest
-	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
-
 	# Collecting all the data
 	echo "..... Creating [ results.txt ] and collecting data."
-	echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
+	echo 'SampleID Slide_number Stain STAIN_per_Tissue_area' > results.txt;
 	
 	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
 	cd cp_output;
@@ -188,22 +185,25 @@ else
 	
 	# moving up to the $SLIDE_NUM directory again
 	cd ..
-	
-	echo "..... Removing tiling directory and its contents.";
-	# Randomly grab x (50) overlay images, and remove the rest
-	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
-	if [ -f *.ndpi ]; then 
-		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
-		### We used to work at 40x
-		### rm -v *x40*.tif; 
-		### rm -v *x40*.png; 
-		### Remember - we work at 20x
-		rm -v *x20*.tif; 
-		rm -v *x20*.png; 
+	echo "..... Removing overlay images:"
+	echo "Randomly grab x (50) overlay images, and remove the rest."
+	### ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
-
-	fi;
+	echo "..... Removing tiling directory and its contents."
+	echo "Randomly grab x (50) overlay images, and remove the rest"
+# 	### ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
+# 
+# 	if [ -f *.ndpi ]; then 
+# 		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+# 		### We used to work at 40x
+# 		### rm -v *x40*.tif; 
+# 		### rm -v *x40*.png; 
+# 		### Remember - we work at 20x
+# 		### rm -v *x20*.tif; 
+# 		### rm -v *x20*.png; 
+# 
+# 	fi;
 
 	echo "..... Gzipping list of files to process.";
 	gzip -v files2cp.txt;
