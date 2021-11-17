@@ -1,31 +1,4 @@
 #!/bin/bash
-#
-# Description: Creates masks for images using slideEMask as part of a slideQuantify
-#              job-session.
-# 
-# The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
-# UMC Utrecht, Utrecht, the Netherlands.
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included
-# in all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# 
 
 ### Creating display functions
 ### Setting colouring
@@ -85,6 +58,13 @@ function echoerrorflashnooption {
     echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
 }
 
+function echosucces { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
+
 ### MESSAGE FUNCTIONS
 script_copyright_message() {
 	echo ""
@@ -112,99 +92,30 @@ script_copyright_message() {
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 }
 
-script_arguments_error() {
-	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
-	echoerror ""
-	echoerror "An example command would be: slideQuantify_mask [arg1: 210]"
-	echoerror ""
-	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	# The wrong arguments are passed, so we'll exit the script now!
-	exit 1
-}
-
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                          slideQuantify: Masking"
+echobold "                               slideCopy"
 echo ""
-echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
-echoitalic "                Yipei Song"
+echoitalic "* Written by  : Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-17"
-echoitalic "* Version     : 2.0.6"
+echoitalic "* Last update : 2021-11-16"
+echoitalic "* Version     : 1.0.0"
 echo ""
-echoitalic "* Description : This script will start the masking of images for slideToolKit"
-echoitalic "                analyses."
-echoitalic "                This is SLURM based."
+echoitalic "* Description : This script will copy a hardcode list of files for a "
+echoitalic "                given project directory. "
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 echo ""
 ### REQUIRED | GENERALS	
-EMASKTHRESHOLD="$1" # Depends on arg1
 
-### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 1 ]]; then 
-	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_mask ***!"
-		
-else
 
-	# checking if masks exist - if so, skip this script
-	if [ -f *.emask.png ] || [ -f *.mask.png ]; then 
-		echo "..... Masked images already exists - moving on."
-		exit 
-	fi
+FILES=""
+BULK_STORAGE="/data/isi/d/dhl/ec/VirtualSlides/AE-SLIDES/HE"
 
-	# loading required modules
-	### Loading the CellProfiler-Anaconda3.8 environment
-	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
-	eval "$(conda shell.bash hook)"
-	conda activate cp4
+for f in $FILES; do
+	echo "processing [ $f ]"
+	cp -vn ${BULK_STORAGE}/${f} _extra
 	
-	module load slideToolKit
-	module load ndpitools
-
-	mkdir -pv magick-tmp
-	export MAGICK_TMPDIR=$(pwd)/magick-tmp
-	export TMPDIR=$(pwd)/magick-tmp
-
-	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before masking."
-		ndpisplit -x20 -z0 *.ndpi; 
-		slideMask --layer 0 -f *x20*.tif;
-
-	elif [ -f *.tif ]; then 
-		echo "The image-file is a (NDPI-converted) .tif."
-		slideMask --layer 0 -f *x20*.tif;
-
-	elif [ -f *.TIF ]; then 
-		echo "The image-file is a .TIF."
-		# layer 3 is 20x Roche scanner
-		# the macro-image is needed for this: slideMask automatically determines this
-		slideMask -f *.TIF;
-
-	else
-		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
-		exit 1 
-	fi
-
-	# running slideMask on the macro
-	for MACRO in $(ls *.macro.*); do 
-		echo "Running slideEMask on the macro-images."
-		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
-	
-	done
-
-	# removing temporary files
-	echo "..... Removing temporary directory."
-	rm -rfv magick-tmp
-
-	echo "..... Masking successfully finished"
-	
-### END of if-else statement for the number of command-line arguments passed ###
-fi
+done
 
 script_copyright_message
-

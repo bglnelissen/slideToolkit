@@ -19,7 +19,7 @@ args = commandArgs(trailingOnly=TRUE)
 # cat("\n..... reading data\n")
 # read the data
 df = fread(input = paste0(args[1], "_", args[2]), 
-           verbose = FALSE, showProgress = TRUE)
+           verbose = TRUE, showProgress = TRUE)
 
 # for debug
 #df[1:10,]

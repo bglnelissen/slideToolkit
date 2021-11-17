@@ -89,12 +89,10 @@ script_copyright_message() {
 }
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- study type of the analysis, e.g. AE or AAA."
-	echoerror "- Argument #3  -- image file type, e.g. TIF, NDPI."
-	echoerror "- Argument #4  -- (the path to) the filename, e.g. Image.csv.gz, the script will automatically append STAIN, e.g. STAIN_Image.csv.gz"
+	echoerror "- Argument #1  -- name of the recode file which contains two columns (old and new name) WITHOUT header."
+	echoerror "- Argument #2  -- (the path to) the images"
 	echoerror ""
-	echoerror "An example command would be: slideAppend [arg1: STAIN] [arg2: STUDYTYPE ] [arg3: IMAGETYPE ] [arg4: Output_Image.csv.gz] "
+	echoerror "An example command would be: rename.files.sh [arg1: rename.files.txt] [arg2: some/dir/here] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
   	exit 1
@@ -105,8 +103,8 @@ echobold "                              rename.files"
 echobold ""
 echobold "* Written by  : Sander W. van der Laan"
 echobold "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echobold "* Last update : 2021-11-04"
-echobold "* Version     : 1.1"
+echobold "* Last update : 2021-11-16"
+echobold "* Version     : 1.2"
 echobold ""
 echobold "* Description : This script will rename files based on a two arguments and a."
 echobold "                file containing the old and new names."
@@ -125,11 +123,6 @@ echo "--------------------------------------------------------------------------
 echobold "Checking input."
 
 echo ""
-### REQUIRED | GENERALS	
-STAIN="$1" # Depends on arg1
-STUDYTYPE="$2"
-IMAGETYPE="$3"
-RESULTSFILENAME="$4"
 
 if [[ $# -lt 2 ]]; then 
 	echoerrorflash "Oh, computer says no! Number of arguments found $#."
