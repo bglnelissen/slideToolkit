@@ -114,8 +114,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-07"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Last update : 2021-11-18"
+echoitalic "* Version     : 1.0.1"
 echo ""
 echoitalic "* Description : This script will check the contents of error files for a "
 echoitalic "                given project directory. "
@@ -178,17 +178,17 @@ else
 			SLIDE_NUM=$(basename "$ERRORFILE") | cut -d'.' -f2
 			ERROR_MESSAGE=$(grep "${ERROR_PATTERN}" "${ERRORFILE}")
 			
-# 			N_IMAGES_ANALYZED=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+			N_IMAGES_ANALYZED=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
 						
 			echoerrorflash "*** ERROR ***  The error-file [ $ERRORFILENAME ] contains an error. We'll keep it there for review and check the contents."
-# 			echoerror "> number of images analyzed................: ${N_IMAGES_ANALYZED}"
+			echoerror "> number of images analyzed................: ${N_IMAGES_ANALYZED}"
 # 			echoerror "> error message............................: ${ERROR_MESSAGE}"
 			echoerror ""
 			echo "${SLIDE_NUM} ${ERRORFILENAME} ${ERROR_MESSAGE} " >> ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
 			
 		else
-	    	
-	    	ERRORFILENAME=$(basename $ERRORFILE )
+			
+			ERRORFILENAME=$(basename $ERRORFILE )
 			SLIDE_NUM=$(basename "$ERRORFILE") | cut -d'.' -f2
 
 			N_IMAGES_ANALYZED=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
@@ -203,14 +203,14 @@ else
 			tail ${ERRORFILE}
 			echosucces "####################################################################################"
 			
-# 			echosucces "> number of images analyzed..................: ${N_IMAGES_ANALYZED}"
+			echosucces "> number of images analyzed..................: ${N_IMAGES_ANALYZED}"
 # 			echosucces "> success message............................: ${SUCCESSMESSAGE}"
 			echosucces ""
 			echo "${SLIDE_NUM} ${ERRORFILENAME} ${SUCCESSMESSAGEREADME} " >> ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
 
 			BASENAME_ERRORFILE=$(basename ERRORFILENAME .errors)
 
-			echo "Removing files [ ${PROJECTDIR}/[errors/logs]/[.errors/.log] ]..."
+# 			echo "Removing files [ ${PROJECTDIR}/[errors/logs]/[.errors/.log] ]..."
 # 			rm -v ${PROJECTDIR}/errors/${ERRORFILENAME}
 # 			rm -v ${PROJECTDIR}/logs/${BASENAME_ERRORFILE}.log
 		
