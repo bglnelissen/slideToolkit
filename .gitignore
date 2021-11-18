@@ -42,6 +42,7 @@ Thumbs.db
 ######################
 # We want to exclude *input* and *output* images (i.e. tiles, NDPI, TIFs); 
 # these are 1) personal data, and 2) too large.
+upgrade_study/_temp/*
 upgrade_study/CD68/AE1468.CD68/*
 upgrade_study/EVG/AE2937.EVG/*
 upgrade_study/EVG/_AE2633.EVG.910/*
