@@ -192,18 +192,18 @@ else
 
 	echo "..... Removing tiling directory and its contents."
 	echo "Randomly grab x (50) overlay images, and remove the rest"
-# 	### ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
-# 
-# 	if [ -f *.ndpi ]; then 
-# 		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
-# 		### We used to work at 40x
-# 		### rm -v *x40*.tif; 
-# 		### rm -v *x40*.png; 
-# 		### Remember - we work at 20x
-# 		### rm -v *x20*.tif; 
-# 		### rm -v *x20*.png; 
-# 
-# 	fi;
+	### ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
+
+	if [ -f *.ndpi ]; then 
+		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+		### We used to work at 40x
+		### rm -v *x40*.tif; 
+		### rm -v *x40*.png; 
+		### Remember - we work at 20x
+		### rm -v *x20*.tif; 
+		### rm -v *x20*.png; 
+
+	fi;
 
 	echo "..... Gzipping list of files to process.";
 	gzip -v files2cp.txt;
