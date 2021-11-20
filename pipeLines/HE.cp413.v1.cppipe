@@ -234,7 +234,7 @@ SaveImages:[module_num:12|svn_version:'Unknown'|variable_revision_number:15|show
     Number of digits:4
     Append a suffix to the image file name?:Yes
     Text to append to the image name:.counted
-    Saved file format:npy
+    Saved file format:png
     Output file location:Default Output Folder|
     Image bit depth:8-bit integer
     Overwrite existing files without warning?:Yes
@@ -251,7 +251,7 @@ MeasureImageAreaOccupied:[module_num:13|svn_version:'Unknown'|variable_revision_
 
 ExportToSpreadsheet:[module_num:14|svn_version:'Unknown'|variable_revision_number:13|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the column delimiter:Comma (",")
-    Add image metadata columns to your object data file?:No
+    Add image metadata columns to your object data file?:Yes
     Add image file and folder names to your object data file?:No
     Select the measurements to export:No
     Calculate the per-image mean values for object measurements?:Yes
@@ -263,7 +263,7 @@ ExportToSpreadsheet:[module_num:14|svn_version:'Unknown'|variable_revision_numbe
     Select the image to use as the identifier:None
     Select the metadata to use as the identifier:FileName_Original
     Export all measurement types?:Yes
-    Press button to select measurements:
+    Press button to select measurements:Image|Metadata_FileLocation,Image|Metadata_T_NUMBER,Image|Metadata_X,Image|Metadata_Series,Image|Metadata_STAIN,Image|Metadata_Date,Image|Metadata_NR,Image|Metadata_Y,Image|Metadata_Frame,Image|Width_Original,Image|MD5Digest_Original,Image|AreaOccupied_Perimeter_HE_Nuclei,Image|AreaOccupied_Perimeter_Tissue,Image|AreaOccupied_TotalArea_HE_Nuclei,Image|AreaOccupied_TotalArea_Tissue,Image|AreaOccupied_AreaOccupied_HE_Nuclei,Image|AreaOccupied_AreaOccupied_Tissue,Image|Frame_Original,Image|Threshold_SumOfEntropies_HE_Nuclei,Image|Threshold_SumOfEntropies_Tissue,Image|Threshold_FinalThreshold_HE_Nuclei,Image|Threshold_FinalThreshold_Tissue,Image|Threshold_WeightedVariance_Tissue,Image|Threshold_WeightedVariance_HE_Nuclei,Image|Threshold_OrigThreshold_HE_Nuclei,Image|Threshold_OrigThreshold_Tissue,Image|PathName_Original,Image|Group_Index,Image|Group_Number,Image|Count_Tissue,Image|Count_HE_Nuclei,Image|ModuleError_10IdentifyPrimaryObjects,Image|ModuleError_03NamesAndTypes,Image|ModuleError_09UnmixColors,Image|ModuleError_07ImageMath,Image|ModuleError_06Smooth,Image|ModuleError_08IdentifyPrimaryObjects,Image|ModuleError_12SaveImages,Image|ModuleError_11OverlayOutlines,Image|ModuleError_05ColorToGray,Image|ModuleError_13MeasureImageAreaOccupied,Image|ModuleError_01Images,Image|ModuleError_02Metadata,Image|ModuleError_04Groups,Image|ExecutionTime_10IdentifyPrimaryObjects,Image|ExecutionTime_02Metadata,Image|ExecutionTime_06Smooth,Image|ExecutionTime_12SaveImages,Image|ExecutionTime_03NamesAndTypes,Image|ExecutionTime_11OverlayOutlines,Image|ExecutionTime_05ColorToGray,Image|ExecutionTime_01Images,Image|ExecutionTime_09UnmixColors,Image|ExecutionTime_13MeasureImageAreaOccupied,Image|ExecutionTime_07ImageMath,Image|ExecutionTime_08IdentifyPrimaryObjects,Image|ExecutionTime_04Groups,Image|Series_Original,Image|Height_Original,Image|URL_Original,Image|Scaling_Original,Image|FileName_Original,Experiment|CellProfiler_Version,Experiment|Modification_Timestamp,Experiment|Pipeline_Pipeline,Experiment|Run_Timestamp,Tissue|Location_Center_X,Tissue|Location_Center_Y,Tissue|Location_Center_Z,Tissue|Number_Object_Number,HE_Nuclei|Location_Center_Y,HE_Nuclei|Location_Center_X,HE_Nuclei|Location_Center_Z,HE_Nuclei|Number_Object_Number
     Representation of Nan/Inf:NaN
     Add a prefix to file names?:Yes
     Filename prefix:HE_
