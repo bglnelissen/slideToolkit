@@ -8,7 +8,7 @@ HasImagePlaneDetails:False
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     :
     Filter images?:Custom
-    Select the rule criteria:and (file does contain ".normalized.tile.tissue.png") (file doesnot contain "ENTROPY_")
+    Select the rule criteria:and (file does contain ".normalized.tile.tissue.png")
 
 Metadata:[module_num:2|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Extract metadata?:Yes
@@ -84,7 +84,7 @@ ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_
     Relative weight of the channel:1.0
     Image name:Channel1
 
-Smooth:[module_num:6|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Smooth:[module_num:6|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:OrigGray
     Name the output image:ImageAfterMath
     Select smoothing method:Gaussian Filter
@@ -150,7 +150,7 @@ IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_num
     # of deviations:2
     Thresholding method:Otsu
 
-UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Unmix the colors. Hematoxylin (blueish for nuclei) and Eosin (pinkish for tissue).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+UnmixColors:[module_num:9|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Unmix the colors. Hematoxylin (blueish for nuclei) and Eosin (pinkish for tissue).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Stain count:2
     Select the input color image:Original
     Name the output image:HE
