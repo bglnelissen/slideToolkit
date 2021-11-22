@@ -37,6 +37,7 @@ dependencies:
 - jpeg
 - wmctrl
 - zbar
+- tclap
 - pip:
     - cellprofiler==4.1.3
     - arrow
