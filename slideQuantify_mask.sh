@@ -129,8 +129,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-17"
-echoitalic "* Version     : 2.0.6"
+echoitalic "* Last update : 2021-11-23"
+echoitalic "* Version     : 2.0.7"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -169,6 +169,7 @@ else
 	export MAGICK_TMPDIR=$(pwd)/magick-tmp
 	export TMPDIR=$(pwd)/magick-tmp
 
+	echo "Extracting a macro-image from the image-file prior to masking."
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and will be converted to .tif before masking."
 		ndpisplit -x20 -z0 *.ndpi; 
@@ -190,12 +191,15 @@ else
 		exit 1 
 	fi
 
-	# running slideMask on the macro
-	for MACRO in $(ls *.macro.*); do 
-		echo "Running slideEMask on the macro-images."
-		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
-	
-	done
+	echo "Running slideNormalize and slidEMask on the macro-images."
+# 	for MACRO in $(ls *.macro.png); do 
+		echo "... normalizing the macro-images"
+# 		slideNormalize ${MACRO}
+		slideNormalize *.macro.png;
+		echo "... entropy masking the normalized macro-images"
+# 		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
+		slideEMask -f *.macro.png -t ${EMASKTHRESHOLD}; 
+# 	done
 
 	# removing temporary files
 	echo "..... Removing temporary directory."
