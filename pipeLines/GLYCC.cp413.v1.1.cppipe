@@ -78,7 +78,7 @@ ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_
     Relative weight of the channel:1
     Image name:Channel1
 
-ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Operation:Invert
     Raise the power of the result by:1.0
     Multiply the result by:1.0
@@ -97,7 +97,7 @@ ImageMath:[module_num:6|svn_version:'Unknown'|variable_revision_number:5|show_wi
     Multiply the second image by:1.0
     Measurement:
 
-Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Smooth:[module_num:7|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:ImageAfterMath
     Name the output image:OriginalGray_smooth
     Select smoothing method:Gaussian Filter
@@ -121,20 +121,20 @@ IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_num
     Automatically calculate size of smoothing filter for declumping?:Yes
     Automatically calculate minimum allowed distance between local maxima?:Yes
     Handling of objects if excessive number of objects identified:Continue
-    Maximum number of objects:500
+    Maximum number of objects:20
     Display accepted local maxima?:No
     Select maxima color:Blue
     Use advanced settings?:Yes
     Threshold setting version:12
     Threshold strategy:Global
-    Thresholding method:Minimum Cross-Entropy
+    Thresholding method:Otsu
     Threshold smoothing scale:1.3488
     Threshold correction factor:1
-    Lower and upper bounds on threshold:0.05,1.0
+    Lower and upper bounds on threshold:0,0.15
     Manual threshold:0.05
     Select the measurement to threshold with:None
     Two-class or three-class thresholding?:Two classes
-    Log transform before thresholding?:No
+    Log transform before thresholding?:Yes
     Assign pixels in the middle intensity class to the foreground or the background?:Foreground
     Size of adaptive window:10
     Lower outlier fraction:0.05
@@ -177,7 +177,7 @@ MaskImage:[module_num:11|svn_version:'Unknown'|variable_revision_number:3|show_w
 IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_number:14|show_window:True|notes:['Identify DAB positive areas (yellow)']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
     Select the input image:Tissue_Masked_DAB_channel
     Name the primary objects to be identified:DAB_object
-    Typical diameter of objects, in pixel units (Min,Max):6,4000000
+    Typical diameter of objects, in pixel units (Min,Max):10,4000000
     Discard objects outside the diameter range?:Yes
     Discard objects touching the border of the image?:No
     Method to distinguish clumped objects:None
@@ -198,7 +198,7 @@ IdentifyPrimaryObjects:[module_num:12|svn_version:'Unknown'|variable_revision_nu
     Thresholding method:Otsu
     Threshold smoothing scale:1.3488
     Threshold correction factor:0
-    Lower and upper bounds on threshold:0.15,1.0
+    Lower and upper bounds on threshold:0,1
     Manual threshold:0.0
     Select the measurement to threshold with:None
     Two-class or three-class thresholding?:Two classes
