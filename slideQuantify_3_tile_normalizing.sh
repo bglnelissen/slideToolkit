@@ -145,14 +145,14 @@ SECONDS=0
 
 echo ""
 ### REQUIRED | GENERALS	
-EMASKTHRESHOLD="$1" # Depends on arg1
+# EMASKTHRESHOLD="$1" # Depends on arg1
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 0 ]]; then 
-	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_normalizing ***!"
-		
-else
+# if [[ $# -lt 0 ]]; then 
+# 	echo "Oh, computer says no! Number of arguments found \"$#\"."
+# 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_normalizing ***!"
+# 		
+# else
 
 	# if the list of files to use in CellProfiler exist, we exit this script
 	if [[ -s files2cp.txt ]]
@@ -201,12 +201,12 @@ else
 	cd ..
 	
 	echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
-	ls -d -1 $(pwd)/*.tiles/*normalized.tile.png> files2cp.txt;
+	ls -d -1 $(pwd)/*.tiles/*normalized.tile.png > files2cp.txt;
 
 	echo "..... Normalizing successfully finished"
 	
-### END of if-else statement for the number of command-line arguments passed ###
-fi
+# ### END of if-else statement for the number of command-line arguments passed ###
+# fi
 
 script_copyright_message
 
