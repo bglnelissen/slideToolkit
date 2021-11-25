@@ -139,11 +139,6 @@ echoitalic "                This is SLURM based."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-# Reference
-# https://stackoverflow.com/questions/8903239/how-to-calculate-time-elapsed-in-bash-script
-SECONDS=0
-# do some work
-
 echo ""
 ### REQUIRED | GENERALS	
 EXPRESSHIST="$1" # Depends on arg1
@@ -158,6 +153,11 @@ if [[ $# -lt 1 ]]; then
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_1_imt ***!"
 		
 else
+	
+	# Reference
+	# https://stackoverflow.com/questions/8903239/how-to-calculate-time-elapsed-in-bash-script
+	SECONDS=0
+	# do some work
 
 	# checking if masks exist - if so, skip this script
 	if [ -f mask_*.png ]; then 
@@ -171,13 +171,6 @@ else
 	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
 	eval "$(conda shell.bash hook)"
 	conda activate cp4
-	
-# 	module load slideToolKit
-# 	module load ndpitools
-
-	mkdir -pv magick-tmp
-	export MAGICK_TMPDIR=$(pwd)/magick-tmp
-	export TMPDIR=$(pwd)/magick-tmp
 
 	echo "Masking and creating a tile-crossed image from original image-file."
 	
@@ -211,17 +204,14 @@ else
 		exit 1 
 	fi
 
-	# removing temporary files
-	echo "..... Removing temporary directory."
-	rm -rfv magick-tmp
-
 	echo "..... Masking successfully finished."
+
+	duration=$SECONDS
+	echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
+
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 
 script_copyright_message
-
-duration=$SECONDS
-echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
 

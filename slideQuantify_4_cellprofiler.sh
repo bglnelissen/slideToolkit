@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Description: Creates masks for images using slideEMask as part of a slideQuantify
-#              job-session.
+# Description: Runs CellProfiler as part of a slideQuantify job-session.
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
@@ -114,9 +113,11 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #1  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #2  -- name of the stain as it appears in the filenames, e.g. FIBRIN. [OPTIONAL]"
+	echoerror "- Argument #3  -- slidenumber being processed (should contain no spaces). [OPTIONAL]"
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_mask [arg1: 210]"
+	echoerror "An example command would be: slideQuantify_cellprofiler [arg1: path_to_cellprofiler_pipeline] [arg2: STAIN] [arg3: slide_number] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -124,86 +125,73 @@ script_arguments_error() {
 }
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                    slideQuantify: ExpressHIST Tiling"
+echobold "                           slideQuantify: CellProfiler"
 echo ""
-echoitalic "* Written by  : Sander W. van der Laan; Yipei Song; "
-echoitalic "                Craig Glastonbury"
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2021-11-25"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Version     : 2.1.0"
 echo ""
-echoitalic "* Description : This script will start the masking and tiling of images for "
-echoitalic "                slideToolKit analyses; masking can be adaptive, otsu, graph"
-echoitalic "                segmentation based; tiling can be any size."
+echoitalic "* Description : This script will start the quantification for a given stain"
+echoitalic "                in a given project directory using CellProfiler *after* "
+echoitalic "                processing with masking, tiling, and normalizing."
 echoitalic "                This is SLURM based."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 echo ""
 ### REQUIRED | GENERALS	
-EXPRESSHIST="$1" # Depends on arg1
-CONTENTTHRESHOLD="$2" # Depends on arg2
-PATCHSIZE="$3" # Depends on arg3
-OUTPUTDOWN="$4" # Depends on arg4
-MASKMETHOD="$5" # Depends on arg5
+PIPELINE="$1" # Depends on arg1
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+STAIN=${2-unknown} # Depends on arg2
+SLIDE_NUM=${3-unknown} # Depends on arg2
 
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 1 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_1_imt ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_4_cellprofiler ***!"
 		
 else
-
+	
 	# Reference
 	# https://stackoverflow.com/questions/8903239/how-to-calculate-time-elapsed-in-bash-script
 	SECONDS=0
 	# do some work
 
-	# loading required modules
+	# we check wether there is output already; if so, we exit
+	if [[ -d cp_output ]]; then 
+		echo "..... CellProfiler was already run, or at least there is a cp_output-directory."
+		exit
+	
+	else
+		# creating necessary output directory
+		echo "..... > making output directory..."
+		mkdir -pv cp_output
+	
+	fi
+
+	echo "..... Starting CellProfiler run."
+
 	### Loading the CellProfiler-Anaconda3.8 environment
 	### You need to also have the conda init lines in your .bash_profile/.bashrc file
 	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
 	eval "$(conda shell.bash hook)"
 	conda activate cp4
 	
-	echo "Masking and creating a tile-crossed image from original image-file."
-	
-	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before masking and tiling."
+	echo "..... > checking CellProfiler version..."
+	cellprofiler --version	
 
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.ndpi
+	# running cellprofiler
+	echo "..... Running CellProfiler using $PIPELINE for [ $SLIDE_NUM ] samples stained with [ $STAIN ]."
+	cellprofiler -c -r -p $PIPELINE --file-list files2cp.txt -o cp_output/;
 
-	elif [ -f *.tif ]; then 
-		echo "The image-file is a (NDPI-converted) .tif and tiling."
-		
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.tif
-
-	elif [ -f *.TIF ]; then 
-		echo "The image-file is a .TIF and tiling."
-
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.TIF
-
-	else
-		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
-		exit 1 
-	fi
-
-	echo "..... Tiling successfully finished."
+	echo "..... CellProfiler successfully finished."
 	
 	duration=$SECONDS
 	echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
-
-
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi

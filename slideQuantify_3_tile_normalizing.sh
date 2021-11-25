@@ -138,78 +138,59 @@ echoitalic "                This is SLURM based."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
+echo ""
+### REQUIRED | GENERALS	
+
 # Reference
 # https://stackoverflow.com/questions/8903239/how-to-calculate-time-elapsed-in-bash-script
 SECONDS=0
 # do some work
 
-echo ""
-### REQUIRED | GENERALS	
-# EMASKTHRESHOLD="$1" # Depends on arg1
+# if the list of files to use in CellProfiler exist, we exit this script
+if [[ -s files2cp.txt ]]
+then
+	echo "..... Normalization was already applied - moving on."
+	exit
+fi
+if [ ! -d *.tiles ]; then
+	(>&2 echo "*** ERROR *** No tiles to process. Create tiles first using slide2Tiles.")
+	exit; 
+fi
 
-### START of if-else statement for the number of command-line arguments passed ###
-# if [[ $# -lt 0 ]]; then 
-# 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-# 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_normalizing ***!"
-# 		
-# else
+echo "..... Tiles present, starting normalization."
+# moving to the required directory
+cd *.tiles/;
 
-	# if the list of files to use in CellProfiler exist, we exit this script
-	if [[ -s files2cp.txt ]]
-	then
-		echo "..... Normalization was already applied - moving on."
-		exit
-	fi
-	if [ ! -d *.tiles ]; then
-		(>&2 echo "*** ERROR *** No tiles to process. Create tiles first using slide2Tiles.")
-		exit; 
-	fi
+# loading required modules 
+### Loading the CellProfiler-Anaconda3.8 environment
+### You need to also have the conda init lines in your .bash_profile/.bashrc file
+echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+eval "$(conda shell.bash hook)"
+conda activate cp4
 
-	echo "..... Tiles present, starting normalization."
-	# moving to the required directory
-	cd *.tiles/;
+module load slideToolKit
+module load slideNormalize
 
-	# loading required modules 
-	### Loading the CellProfiler-Anaconda3.8 environment
-	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
-	eval "$(conda shell.bash hook)"
-	conda activate cp4
+for IMAGE_TILE in *.tile.tissue.png; do
+	echo "...Processing tile [ $IMAGE_TILE ]"
+	echo "... - applying normalization ..."
+	slideNormalize $IMAGE_TILE;
 	
-	module load slideToolKit
-	module load slideNormalize
-	
-	mkdir -pv magick-tmp
-	export MAGICK_TMPDIR=$(pwd)/magick-tmp
-	export TMPDIR=$(pwd)/magick-tmp
-
-	for IMAGE_TILE in *.tile.tissue.png; do
-		echo "...Processing tile [ $IMAGE_TILE ]"
-		echo "... - applying normalization ..."
-		slideNormalize $IMAGE_TILE;
-		
-		echo "... - removing intermediate [ $IMAGE_TILE ] ..."
+	echo "... - removing intermediate [ $IMAGE_TILE ] ..."
 #  		rm -v $IMAGE_TILE;
-		
-	done
-
-	# removing temporary files
-	echo "..... Removing temporary directory."
-	rm -rfv magick-tmp
-
-	# moving back to the root of the $SLIDE_NUM directory
-	cd ..
 	
-	echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
-	ls -d -1 $(pwd)/*.tiles/*normalized.tile.png > files2cp.txt;
+done
 
-	echo "..... Normalizing successfully finished"
-	
-# ### END of if-else statement for the number of command-line arguments passed ###
-# fi
+# moving back to the root of the $SLIDE_NUM directory
+cd ../
 
-script_copyright_message
+echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
+ls -d -1 $(pwd)/*.tiles/*normalized.tile.tissue.png > files2cp.txt;
+
+echo "..... Normalizing successfully finished."
 
 duration=$SECONDS
 echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
+	
+script_copyright_message
 

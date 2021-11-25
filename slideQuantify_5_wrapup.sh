@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Description: Creates masks for images using slideEMask as part of a slideQuantify
-#              job-session.
+# Description: Wraps up a slideToolKit-CellProfiler analysis for a given slide as part 
+#              of a slideQuantify job-session.
 # 
 # The MIT License (MIT)
 # Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
@@ -114,9 +114,11 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #3  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_mask [arg1: 210]"
+	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: Image.csv] [arg3: RANDOM_SAMPLE] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -124,86 +126,96 @@ script_arguments_error() {
 }
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                    slideQuantify: ExpressHIST Tiling"
+echobold "                           slideQuantify: Wrap Up"
 echo ""
-echoitalic "* Written by  : Sander W. van der Laan; Yipei Song; "
-echoitalic "                Craig Glastonbury"
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2021-11-25"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Version     : 2.1.0"
 echo ""
-echoitalic "* Description : This script will start the masking and tiling of images for "
-echoitalic "                slideToolKit analyses; masking can be adaptive, otsu, graph"
-echoitalic "                segmentation based; tiling can be any size."
+echoitalic "* Description : This script will start the wrap up of a slideToolKit analysis."
 echoitalic "                This is SLURM based."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 echo ""
 ### REQUIRED | GENERALS	
-EXPRESSHIST="$1" # Depends on arg1
-CONTENTTHRESHOLD="$2" # Depends on arg2
-PATCHSIZE="$3" # Depends on arg3
-OUTPUTDOWN="$4" # Depends on arg4
-MASKMETHOD="$5" # Depends on arg5
+STAIN="$1" # Depends on arg1
+OUTPUTFILENAME="$2" # Depends on arg2
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+RANDOM_SAMPLE=${3-50} # Depends on arg11
+
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 1 ]]; then 
+if [[ $# -lt 3 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_1_imt ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_wrapup ***!"
 		
 else
-
+	
 	# Reference
 	# https://stackoverflow.com/questions/8903239/how-to-calculate-time-elapsed-in-bash-script
 	SECONDS=0
 	# do some work
-
-	# loading required modules
-	### Loading the CellProfiler-Anaconda3.8 environment
-	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
-	eval "$(conda shell.bash hook)"
-	conda activate cp4
 	
-	echo "Masking and creating a tile-crossed image from original image-file."
+	# Collecting all the data
+	echo "..... Creating [ results.txt ] and collecting data."
+	echo 'SampleID Slide_number Stain STAIN_per_Tissue_area' > results.txt;
 	
-	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before masking and tiling."
+	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
+	cd cp_output;
 
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.ndpi
+	### parsing SLIDE_NUM "$PWD"
+	### cut on . (period), output is 1
+	SLIDE_NUM=$(basename "$PWD")
+	SAMPLE_NUM=$(basename "$PWD") | cut -d'.' -f1
+	### DEBUG
+	echo "Original slide number: $SLIDE_NUM"
+	echo "Sample number: $SAMPLE_NUM"
+	SCRIPT_NAME="Colsums_${STAIN}.R"
+	
+	echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../results.txt;
+	head ../results.txt
+	cat ../results.txt | wc -l
+	
+	# moving up to the $SLIDE_NUM directory again
+	cd ..
 
-	elif [ -f *.tif ]; then 
-		echo "The image-file is a (NDPI-converted) .tif and tiling."
-		
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.tif
+	### OLD - we may want to keep tiles as these are most time consuming to create
+	### echo "..... Removing overlay images:"
+	### echo "Randomly grab x (50) overlay images, and remove the rest."
+	### ### ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
+	### 
+	### echo "..... Removing tiling directory and its contents."
+	### echo "Randomly grab x (50) overlay images, and remove the rest"
+	### ### ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
+	### 
+	### if [ -f *.ndpi ]; then 
+	### 	echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
+	### 	### We used to work at 40x
+	### 	### rm -v *x40*.tif; 
+	### 	### rm -v *x40*.png; 
+	### 	### Remember - we work at 20x
+	### 	### rm -v *x20*.tif; 
+	### 	### rm -v *x20*.png; 
+	### fi;
 
-	elif [ -f *.TIF ]; then 
-		echo "The image-file is a .TIF and tiling."
-
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-patches --save-tilecrossed-image *.TIF
-
-	else
-		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
-		exit 1 
-	fi
-
-	echo "..... Tiling successfully finished."
+	echo "..... Gzipping list of files to process.";
+	gzip -v files2cp.txt;
+	
+	echo "..... Gzipping result files.";
+	gzip -vf cp_output/${STAIN}*.gct;
+	gzip -vf cp_output/${STAIN}*.csv;
+	
+	echo "..... Wrapping up this slideToolKit run successfully finished."
 	
 	duration=$SECONDS
 	echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
-
-
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
