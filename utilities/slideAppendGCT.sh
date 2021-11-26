@@ -105,7 +105,7 @@ echobold "                            slideAppendGCT"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-09"
+echoitalic "* Last update : 2021-11-26"
 echoitalic "* Version     : v1.0.0"
 echo ""
 echoitalic "* Description : This script will collect results and append these in a CSV."
@@ -154,6 +154,7 @@ else
 					### echo "DEBUG: check head first file"
 					### zcat "$filename" | tail -n +3 | head -1
 					zcat "$filename" | tail -n +3 > "$OutFileName" # Copy header if it is the first file
+				
 				else
 					echoitalic " File no. $i: [ ${filename} ] ..."
 					### DEBUG
@@ -163,6 +164,7 @@ else
 					
 					### DEBUG
 					### ls -lh "$OutFileName"
+					
 				fi
 			fi
 		fi
@@ -179,7 +181,16 @@ else
 	
 	echo ""
 	echoitalic "Checking the log -- note: no results is a good thing."
-	cat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".appendgct.log
+	cat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
+	
+	echoitalic "====                       NOTE                           ===="
+	echoitalic "You should lways check the log and review the tile-crossed images. "
+	echoitalic "The logs (summarized in 'readme'-files) might contain information "
+	echoitalic "regarding issues with slides run."
+	echoitalic "The tile-crossed images may involve samples that have too little"
+	echoitalic "or too many crosses due to debris, air bubbles, smudges, or other"
+	echoitalic "artefacts on the slides. Those samples you may want to re-run, re-"
+	echoitalic "scan, or exclude."
 	
 	echo ""
 
