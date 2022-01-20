@@ -37,16 +37,14 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+_gsdata_/*
 
 # UPGRADE STUDY #
 ######################
 # We want to exclude *input* and *output* images (i.e. tiles, NDPI, TIFs); 
 # these are 1) personal data, and 2) too large.
 upgrade_study/_temp/*
-upgrade_study/CD68/AE1468.CD68/*
-upgrade_study/EVG/AE2937.EVG/*
-upgrade_study/EVG/_AE2633.EVG.910/*
-upgrade_study/EVG/_AE1203.EVG/*
-upgrade_study/SMA/AE2937.SMA/*
-upgrade_study/SMA/_AE2633.SMA/*
-upgrade_study/SMA/_AE1203.SMA/*
+upgrade_study/CD68/*
+upgrade_study/EVG/*
+upgrade_study/SMA/*
+upgrade_study/GLYCC/*
