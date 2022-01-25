@@ -43,8 +43,8 @@ _gsdata_/*
 ######################
 # We want to exclude *input* and *output* images (i.e. tiles, NDPI, TIFs); 
 # these are 1) personal data, and 2) too large.
+upgrade_study/*
 upgrade_study/_temp/*
 upgrade_study/CD68/*
 upgrade_study/EVG/*
 upgrade_study/SMA/*
-upgrade_study/GLYCC/*
