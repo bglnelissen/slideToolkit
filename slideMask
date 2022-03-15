@@ -342,13 +342,32 @@ programOutput(){
   # - now everything white is converted to transparent.
   # - this image is now put on-top of the original one.
 
+  # 20220315: There was an update to convert, having to do with the difference 
+  # between IM6 and IM7 causing a (weird) behaviour where the non-masked area is 
+  # completely whitened. 
+  # Obviously we do not want this, this cause the tiling to go all wonky.
+  # Reference: https://imagemagick.org/script/porting.php
+  # IF this script is causing problems, it's probably due to this difference.
+  # THEORETICALLY slideToolKit in combination with CellProfiler 2.2.0, Java 8, Xcode,
+  # and homebrew should work out-of-the-box without `-channel RGB -negate`. No guarantee though.
+  #
+
+#   convert "$MACRO" \( "$MACRO" \
+#     -bordercolor white -border 100x100 \
+#     $MASKARGS -transparent white \
+#     -crop +100+100 -crop -100-100 +repage \
+#     -alpha extract \
+#     -transparent white \) \
+#     -flatten "$MASK"
+
   convert "$MACRO" \( "$MACRO" \
     -bordercolor white -border 100x100 \
     $MASKARGS -transparent white \
     -crop +100+100 -crop -100-100 +repage \
     -alpha extract \
-    -transparent white \) \
+    -transparent white -channel RGB -negate \) \
     -flatten "$MASK"
+
 }
 # all check?
 checkRequirements
