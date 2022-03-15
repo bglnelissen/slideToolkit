@@ -1,4 +1,31 @@
 #!/bin/bash
+#
+# Description: Creates masks for images using slideEMask as part of a slideQuantify
+#              job-session.
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 ### Creating display functions
 ### Setting colouring
@@ -102,8 +129,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Last update : 2021-11-23"
+echoitalic "* Version     : 2.0.7"
 echo ""
 echoitalic "* Description : This script will start the masking of images for slideToolKit"
 echoitalic "                analyses."
@@ -123,14 +150,18 @@ if [[ $# -lt 1 ]]; then
 else
 
 	# checking if masks exist - if so, skip this script
-	if [[ -s *mask.png ]] 
-	then 
+	if [ -f *.emask.png ] || [ -f *.mask.png ]; then 
 		echo "..... Masked images already exists - moving on."
 		exit 
 	fi
 
-	# loading required modules 
-	module load anaconda/3-8.2021.05
+	# loading required modules
+	### Loading the CellProfiler-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	eval "$(conda shell.bash hook)"
+	conda activate cp4
+	
 	module load slideToolKit
 	module load ndpitools
 
@@ -138,21 +169,21 @@ else
 	export MAGICK_TMPDIR=$(pwd)/magick-tmp
 	export TMPDIR=$(pwd)/magick-tmp
 
+	echo "Extracting a macro-image from the image-file prior to masking."
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and will be converted to .tif before masking."
-		if [ -f *.ndpi ]; then  
-			ndpisplit -x20 -z0 *.ndpi; 
-		fi
-		slideMask --layer 0 -f *.tif;
+		ndpisplit -x20 -z0 *.ndpi; 
+		slideMask --layer 0 -f *x20*.tif;
 
 	elif [ -f *.tif ]; then 
 		echo "The image-file is a (NDPI-converted) .tif."
-		slideMask --layer 0 -f *.tif;
+		slideMask --layer 0 -f *x20*.tif;
 
 	elif [ -f *.TIF ]; then 
 		echo "The image-file is a .TIF."
 		# layer 3 is 20x Roche scanner
-		slideMask --layer 3 -f *.TIF;
+		# the macro-image is needed for this: slideMask automatically determines this
+		slideMask -f *.TIF;
 
 	else
 		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
@@ -160,12 +191,15 @@ else
 		exit 1 
 	fi
 
-	# running slideMask on the macro
-	for MACRO in $(ls *.macro.*); do 
-		echo "Running slideEMask on the macro-images."
-		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
-	
-	done
+	echo "Running slideNormalize and slidEMask on the macro-images."
+# 	for MACRO in $(ls *.macro.png); do 
+		echo "... normalizing the macro-images"
+# 		slideNormalize ${MACRO}
+		slideNormalize *.macro.png;
+		echo "... entropy masking the normalized macro-images"
+# 		slideEMask -f ${MACRO} -t ${EMASKTHRESHOLD}; 
+		slideEMask -f *.macro.png -t ${EMASKTHRESHOLD}; 
+# 	done
 
 	# removing temporary files
 	echo "..... Removing temporary directory."

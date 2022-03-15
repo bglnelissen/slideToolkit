@@ -1,4 +1,31 @@
 #!/bin/bash
+#
+# Description: Creates tiles using slide2Tiles after entropy masking as part 
+#              of a slideQuantify job-session.
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 ### Creating display functions
 ### Setting colouring
@@ -102,8 +129,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
-echoitalic "* Version     : 2.0.2"
+echoitalic "* Last update : 2021-11-02"
+echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the tiling of images for slideToolKit"
 echoitalic "                analyses."
@@ -131,7 +158,12 @@ else
 	fi
 
 	# loading required modules 
-	module load anaconda/3-8.2021.05
+	### Loading the CellProfiler-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	eval "$(conda shell.bash hook)"
+	conda activate cp4
+	
 	module load slideToolKit
 	module load ndpitools
 
@@ -141,11 +173,12 @@ else
 
 	if [ -f *.ndpi ]; then
 		echo "The image-file is a NDPI and should first be converted to .tif before tiling."
+		ndpisplit -x20 -z0 *.ndpi
 		slide2Tiles --layer 0 -f *x20*.tif -m *.emask.png;
 
 	elif [ -f *.tif ]; then
 		echo "The image-file is a (NDPI-converted) .tif."
-		slide2Tiles --layer 0 -f *.tif -m *.emask.png;
+		slide2Tiles --layer 0 -f *x20*.tif -m *.emask.png;
 
 	elif [ -f *.TIF ]; then
 		# layer 3 is 20x Roche scanner

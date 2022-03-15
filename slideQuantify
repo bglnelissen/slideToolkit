@@ -86,19 +86,22 @@ script_copyright_message() {
 }
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
-	echoerror "- Argument #3  -- path_to working directory, i.e. where all the image-subdirectories are."
-	echoerror "- Argument #4  -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
-	echoerror "- Argument #5  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
-	echoerror "- Argument #6  -- email address to send aborted/error jobs too, e.g. y.name@umcutrecht.nl."
-	echoerror "- Argument #7  -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: BEGIN=begin of job; END=end of job; FAIL=abort of job; ALL=all message job; NONE=no mail is send."
-	echoerror "- Argument #8  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
-	echoerror "- Argument #9  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
-	echoerror "- Argument #10  -- Batch size. A number to indicate the batch size, e.g. '5000'. [OPTIONAL]"
-	echoerror "- Argument #11  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'. [OPTIONAL]"
+	echoerror "- Argument #1   -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2   -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #3   -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror "- Argument #4   -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
+	echoerror "- Argument #5   -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #6   -- email address to send aborted/error jobs too, e.g. y.name@umcutrecht.nl."
+	echoerror "- Argument #7   -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: BEGIN=begin of job; END=end of job; FAIL=abort of job; ALL=all message job; NONE=no mail is send."
+	echoerror "- Argument #8   -- Content threshold. The percentage of tissue that should be present at the minimum in a given tile, e.g. 0.5 (5%)."
+	echoerror "- Argument #9  -- Patch size. Size of the tiles in pixels, e.g. 512 indicates a tile of 512x512; slideToolKit was tested using patches of 2000x2000."
+	echoerror "- Argument #10  -- Down-sampling. Down-sampling number, to indicate the magnification to use, e.g. with a maximum magnification of 40x, a 2 indcates a downsample to 20x."
+	echoerror "- Argument #11  -- Masking method to apply. Options are otsu, adaptive, or graph (segmentation based)."
+	echoerror "- Argument #12  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
+	echoerror "- Argument #13  -- Batch size. A number to indicate the batch size, e.g. '5000'. This enables running only few samples for testing or debugging purposes. [OPTIONAL]"
+	echoerror "- Argument #14  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20', by default set at '50'. [OPTIONAL]"
 	echoerror ""
-	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.csv] [arg6: y.name@umcutrecht.nl] [arg7: a] [arg8: 210]"
+	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.csv] [arg6: y.name@umcutrecht.nl] [arg7: FAIL] [arg8: 5] [arg9: 2000] [arg10: 2] [arg11: adaptive] "
 	echoerror ""
 	echoerror "Please note that this command should be run within the working directory (Argument #3)."
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -112,8 +115,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-09"
-echoitalic "* Version     : 2.0.5"
+echoitalic "* Last update : 2021-11-25"
+echoitalic "* Version     : 2.1.0"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
 echoitalic "                in a given project directory. "
@@ -123,38 +126,59 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo ""
 ### REQUIRED | GENERALS	
-STAIN="$1" # Depends on arg1
-PIPELINE="$2" # Depends on arg2
-PROJECTDIR="$3" # Depends on arg3
-FILESTART="$4" # Depends on arg4
-OUTPUTFILENAME="$5" # Depends on arg5
-EMAIL="$6" # Depends on arg6
-MAILSETTING="$7" # Depends on arg7
-EMASKTHRESHOLD="$8" # Depends on arg8
+STAIN="${1}" # Depends on arg1
+PIPELINE="${2}" # Depends on arg2
+PROJECTDIR="${3}" # Depends on arg3
+FILESTART="${4}" # Depends on arg4
+OUTPUTFILENAME="${5}" # Depends on arg5
+EMAIL="${6}" # Depends on arg6
+MAILSETTING="${7}" # Depends on arg7
+
+# EMASKTHRESHOLD="$8" # Depends on arg8
+
+CONTENTTHRESHOLD="${8}" # Depends on arg8
+PATCHSIZE="${9}" # Depends on arg9
+OUTPUTDOWN="${10}" # Depends on arg10
+MASKMETHOD="${11}" # Depends on arg11
 
 ### OPTIONAL | GENERALS	 
 ### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
-UNIQUE_LABEL=${9-V1} # Depends on arg9
-BATCH_SIZE=${10-5000} # Depends on arg10
-RANDOM_SAMPLE=${11-50} # Depends on arg11
+UNIQUE_LABEL=${12-V1} # Depends on arg12
+BATCH_SIZE=${13-5000} # Depends on arg13
+RANDOM_SAMPLE=${14-50} # Depends on arg14
 
-QJOB_MEM_SLIDEMASK="100G"
-QJOB_TIME_SLIDEMASK="02:30:00"
+# QJOB_MEM_SLIDEMASK="100G"
+# QJOB_TIME_SLIDEMASK="02:30:00"
+# 
+# QJOB_MEM_SLIDE2TILES="180G"
+# QJOB_TIME_SLIDE2TILES="04:30:00"
+# 
+# QJOB_MEM_SLIDENORM="12G"
+# QJOB_TIME_SLIDENORM="02:00:00"
+# 
+# QJOB_MEM_CP="12G"
+# QJOB_TIME_CP="12:00:00"
 
-QJOB_MEM_SLIDE2TILES="180G"
-QJOB_TIME_SLIDE2TILES="04:30:00"
+QJOB_MEM_SLIDEMASK="8G"
+QJOB_TIME_SLIDEMASK="00:15:00"
 
-QJOB_MEM_SLIDENORM="12G"
-QJOB_TIME_SLIDENORM="02:00:00"
+QJOB_MEM_SLIDE2TILES="8G"
+QJOB_TIME_SLIDE2TILES="00:30:00"
+
+QJOB_MEM_SLIDENORM="8G"
+QJOB_TIME_SLIDENORM="00:15:00"
 
 QJOB_MEM_CP="12G"
-QJOB_TIME_CP="12:00:00"
+QJOB_TIME_CP="13:00:00"
 
 # Set slideToolKit DIRECTORY
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
+# Set ExpressHIST DIRECTORY
+EXPRESSHIST="/hpc/local/CentOS7/dhl_ec/software/ExpressHIST"
+
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 8 ]]; then 
+if [[ $# -lt 12 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
 		
@@ -169,7 +193,7 @@ else
 	INDEX=0
 	
 	cd $PROJECTDIR
-	
+	pwd
 	### FOR DEBUG
 	### echocyan "Debug mode - processing debug-images."
 	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT"
@@ -197,10 +221,11 @@ else
 		fi
 		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
 
-		echobold "Processing images of file [ ${SLIDE_NUM} ] in directory [ ${PROJECTDIR} ] for staining [ ${STAIN} ] -- at index [ ${INDEX} ] with total batch size [ ${BATCH_SIZE} ]."	
+		echobold "Processing images of file [ ${SLIDE_NUM} ] in directory [ ${PROJECTDIR} ] for staining [ ${STAIN} ] -- at index [ ${INDEX} ] with total batch size [ ${BATCH_SIZE} ]."
 		cd "$SLIDE_NUM" || exit
 		echo ""
-	
+		pwd
+		
 		# Checking if an analysis was done before
 		if [[ -s cp_output/"$STAIN"_Image.csv.gz ]]; then 
 			echoitalic "Checking if this file was processed before; cp_output/${STAIN}_Image.csv.gz should be present ....."
@@ -217,31 +242,32 @@ else
 		rm -rfv "$PROJECTDIR"/errors/"$SLIDE_NUM"*
 
 		
-		### slideEMask for macro, and NDPISplit when necessary
+		### slideMasking and slideTiling
 		echo ""
-		echoitalic "* slideEMask, which will mask, create a macro, and do NDPISplit when necessary. [ $THIS_SLIDEMASK ]"
+		echoitalic "* slideMask to mask images using adaptive, otsu or graph segmentation based thresholding. [ $THIS_SLIDEMASK ]"
 	
-		JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.${THIS_SLIDEMASK}.errors -o ${PROJECTDIR}/logs/slidemask.${THIS_SLIDEMASK}.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_mask.sh ${EMASKTHRESHOLD} )
+		JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slidemask.${THIS_SLIDEMASK}.errors -o ${PROJECTDIR}/logs/slidemask.${THIS_SLIDEMASK}.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_1_expresshist_mask.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
 	
 		### FOR DEBUG
-		### echocyan "Debug mode - listing slide number and job-id."
-		### echo $THIS_SLIDEMASK
-		### echo $HOLD_JID_STRING
-
+		echocyan "Debug mode - listing slide number and job-id."
+		echo $THIS_SLIDEMASK
+		echo $HOLD_JID_STRING
 
 		### slide2Tiles
 		echo ""
 		echoitalic "* slide2Tiles to create tiles from images. [ $THIS_SLIDE2TILES ]"
 	
-		JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_tiling.sh)
-	
+		JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+		### FOR DEBUG
+		### JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
 
 		### slideNormalize
 		echo ""
 		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
 	
-		JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_normalizing.sh ${EMASKTHRESHOLD} )
-	
+		JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
+		### FOR DEBUG
+		### JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
 
 		### CellProfiler
 		echo ""
@@ -249,7 +275,7 @@ else
 	
 		JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 		### FOR DEBUG
-		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.errors -o ${PROJECTDIR}/logs/slidecellprofiler.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
+		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 		
 	
 		### Wrap Up
@@ -257,7 +283,8 @@ else
 		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ]"
 	
 		JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
-	
+		### FOR DEBUG
+		### JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
 
 		echo ""
 		echo "* Moving back to the project directory [$PROJECTDIR]"

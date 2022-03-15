@@ -14,15 +14,15 @@ A typical [workflow](images/slideToolkit.workflow.png) consists of four consecut
 - In the fourth step (analysis), tissue is analyzed and results are stored in a data set. Using this method, two consecutive measurements of 303 slides showed an intraclass correlation of 0.99 ([Vrijenhoek J.E.P. _et al._](https://www.ncbi.nlm.nih.gov/pubmed/25541691)).
 
 
-<img align="center" width="640" height="503" src=images/slideToolkit.workflow.small.png>
+<img align="center" width="400" height="314" src=images/slideToolkit.workflow.small.png>
 
 _The slideToolKit workflow._
 
 In conclusion, **slideToolKit** provides a free, powerful and versatile collection of tools for automated feature analysis of whole slide images to create reproducible and meaningful phenotypic datasets.
 
 
-#### Installation
-Installation instructions for CentOS 6+, Ubuntu and Mac OS X Mountain Lion+ can be found in [guides](https://github.com/swvanderlaan/slideToolKit/tree/master/guides). A proper wiki is forthcoming.
+#### Instructions and usage
+Detailed instructions on using **slideToolKit** can be found in the [wiki](https://github.com/swvanderlaan/slideToolKit/wiki).
 
 
 #### Citations

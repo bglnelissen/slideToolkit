@@ -39,6 +39,7 @@ DEFAULT_OVERLAP=0    # 0
 DEFAULT_OUTPUTDIRSUFFIX=".tiles"
 DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
+# MINBYTESIZE=1000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -66,7 +67,7 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolKit 1.2
+slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
@@ -88,6 +89,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 Edits by Sander W. van der Laan | http://github.com/swvanderlaan.
+
 EOF
 }
 
@@ -141,19 +143,22 @@ supported formats: ${SUPPORTED_FORMATS[@]}
 Cut slides into tiles for further processing. Reasonable tile size is
 '$DEFAULT_WIDTH' by '$DEFAULT_HEIGHT' pixels (default). Tiles are stored
 in a folder with suffix '$DEFAULT_OUTPUTDIRSUFFIX' at the same location
-as the input file. By default all empty tiles are deleted. A
-memory-mapped disk file (image-magick .mpc file) is used when a mask is
+as the input file. By default all empty tiles are deleted. 
+A memory-mapped disk file (image-magick .mpc file) is used when a mask is
 used. The fast and efficient 'openslide-write-png' is used when no mask
-is used. Pipe the 'job list' output in 'parallel' for parallel
-processing. For some slides, the virtual slide format is not known. For
-these instances you need to run slideInfo to find the correct layer
-manually. Use the --layer flag to set the correct layer. The amount
---overlap is only affective on one side, the left tile overlaps the tile
-on the right, and the top tile overlaps the tile below.
+is used. 
+Pipe the 'job list' output in 'parallel' for parallel processing. 
+For some slides, the virtual slide format is not known. For these instances 
+you need to run slideInfo to find the correct layer manually. Use the --layer 
+flag to set the correct layer. 
+The amount --overlap is only effective on one side, the left tile overlaps 
+the tile on the right, and the top tile overlaps the tile below.
 
-The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
-UMC Utrecht, Utrecht, the Netherlands.
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
+
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
 
 EOF
@@ -417,9 +422,21 @@ verbose_debug "createTilesConvert()"
   verbose_debug "Virtual slide: $S"
   dimensionsslide="$(identify -format %w "${S}"["${LAYER}"])"x"$(identify -format %h "${S}"["${LAYER}"])"
   verbose_debug "Create buffer [$dimensionsslide]; $buffer"
+  
   date1="$(date +'%s')"
   # convert -limit area "${MEMORYLIMIT}" "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
-  convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+  # convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
+  
+  # 20211108: There was an update to convert, having to do with the difference 
+  # between IM6 and IM7 causing a (weird) behaviour where the non-masked area is 
+  # completely whitened. 
+  # Obviously we do not want this, this cause the tiling to go all wonky.
+  # Reference: https://imagemagick.org/script/porting.php
+  # IF this script is causing problems, it's probably due to this difference.
+  # THEORETICALLY slideToolKit in combination with CellProfiler 2.2.0, Java 8, Xcode,
+  # and homebrew should work out-of-the-box without `-channel RGB -negate`. No guarantee though.
+  #
+  convert "${S}[${LAYER}]" \( "${M}" -fuzz 99% -transparent white -scale ${dimensionsslide} -channel RGB -negate \) -composite -fuzz 3% -trim +repage -bordercolor white -border 30x30 +repage "${buffer}"
 
   date2="$(date +'%s')"
   diff="$(($date2-$date1))"
@@ -453,6 +470,8 @@ verbose_debug "createTilesConvert()"
       h="$(( y * $TILESHEIGHT ))"
       FILE="${OUTPUTDIRNAME}/${tile}"
       filename="${FILE%.*}" # full path without extension
+      
+      verbose_debug "Tiling image [$tile]: tile size [${TILESWIDTH_OVERLAP}x${TILESHEIGHT_OVERLAP}+$w+$h]"
       convert "$buffer" -crop "${TILESWIDTH_OVERLAP}x${TILESHEIGHT_OVERLAP}+$w+$h" +repage "$FILE"
       # find tissue, needs improvement
       if [[ "$(wc -c < "$FILE" )" -ge "$MINBYTESIZE" ]]; then
@@ -464,6 +483,7 @@ verbose_debug "createTilesConvert()"
         # no tissue found
         TISSUE="empty";
         if [ "$KEEPEMPTYTILES" == "true" ]; then
+           echo "keeping empty tiles"
            mv "$FILE" "${filename}.${TISSUE}.png"
         else
           rm -rf "$FILE"
@@ -531,6 +551,7 @@ verbose_debug "createTilesOpenslide()"
         # no tissue found
         TISSUE="empty";
         if [ "$KEEPEMPTYTILES" == "true" ]; then
+           echo "keeping empty tiles"
            mv "$FILE" "${filename}"".""${TISSUE}.png"
         else
           rm -rf "$FILE"

@@ -50,7 +50,7 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolkit 1.2
+slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
@@ -72,6 +72,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
 Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
 EOF
 }
 
@@ -102,13 +103,15 @@ print a job list:
 dependencies: ${DEPENDENCIES[@]}
 
 Convert slides of multiple formats into OME-TIFF format which can be
-used by the slideToolkit. By default 'bfconvert' runs without selective
+used by the slideToolKit. By default 'bfconvert' runs without selective
 arguments, you can set arguments using the --bfconvert-args flag. See
 'bfconvert' for more information.
 
-The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
-UMC Utrecht, Utrecht, the Netherlands.
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
+
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
 
 EOF

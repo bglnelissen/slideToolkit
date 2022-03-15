@@ -1,0 +1,41 @@
+[   1] [Images]
+  To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.
+
+[   2] [Metadata]
+  The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.
+
+[   3] [NamesAndTypes]
+  The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.
+
+[   4] [Groups]
+  The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.
+
+[   5] [ColorToGray]
+  Create gray channel, this is used to find tissue (green).
+  Red is ussually a good channel for tissue.
+  RGB should also be fine.
+
+[   6] [Smooth]
+  Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green).
+
+[   7] [ImageMath]
+  Invert the gray image, black becomes white, white becomes black.
+
+[   8] [IdentifyPrimaryObjects]
+  Identify total tissue area (green).
+
+[   9] [UnmixColors]
+  Unmix the colors. Hematoxylin (blueish for nuclei) and Eosin (pinkish for tissue).
+
+[  10] [IdentifyPrimaryObjects]
+  Identify total HE area (blue).
+
+[  11] [OverlayOutlines]
+  Measure total tissue area (green) and total HE positive stain (blue)
+
+[  12] [SaveImages]
+
+[  13] [MeasureImageAreaOccupied]
+  Measure total tissue area (green) and total HE positive stain (red)
+
+[  14] [ExportToSpreadsheet]
