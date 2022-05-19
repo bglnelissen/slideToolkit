@@ -1,0 +1,51 @@
+# run: conda env create -f conda3_8_cp413.v1.yml
+# run: conda env update -f conda3_8_cp413.v1.yml
+# run: conda env remove -n cp4
+name: cp4
+
+channels:
+- conda-forge
+- miniconda
+- bioconda
+- defaults
+
+dependencies:
+- python=3.8
+- pip
+- numpy
+- matplotlib
+- pandas
+- mysqlclient
+- openjdk
+- scikit-learn
+- mahotas
+- gtk2
+- Jinja2=3.0.1
+- inflect=5.3.0
+- wxpython=4.1.0
+- mysqlclient=1.4.4
+- sentry-sdk=0.18.0
+- bftools
+- cairo
+- freetype
+- gettext
+- giflib
+- gtk2
+- gtk3
+- imagemagick
+- java-jdk
+- jpeg
+- wmctrl
+- zbar
+- tclap
+- pip:
+    - cellprofiler==4.1.3
+    - arrow
+    - pathlib
+    - opencv-contrib-python
+    - openslide-python>=1.1.2
+    
+# you could automatically provide the prefix, or just do it via the prompt
+# prefix: ~/miniconda3/envs/cp4
+
+# prefix: /Users/[username]/miniconda3/envs/cp4
