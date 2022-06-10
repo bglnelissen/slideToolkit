@@ -7,9 +7,9 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideThumb: extract thumbnails images ")
 print("")
-print("* Version          : v1.0.1")
+print("* Version          : v1.0.2")
 print("")
-print("* Last update      : 2021-08-31")
+print("* Last update      : 2022-06-09")
 print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
@@ -80,7 +80,7 @@ for fname in files:
     
     img = fimage.associated_images["macro"] # macro will get the color thumbnail from an image
     img = np.asarray(img)[:,:, 0:3]
-    img_r = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
+    img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     
     if args.display:
         print("Displaying [",fname,"].")
