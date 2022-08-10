@@ -7,15 +7,18 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideRename: display and manually rename images ")
 print("")
-print("* Version          : v1.0.0")
+print("* Version          : v1.0.1")
 print("")
-print("* Last update      : 2022-06-13")
+print("* Last update      : 2022-08-10")
 print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
 print("* Description      : This script will get thumbnails from (a list of given) images. The user can hit a key and")
 print("                     manually type in the correct file name. If the new filename already exists in that ")
 print("                     directory the renaming will be cancelled.")
+print("                     Note: if the renamed file already exists, an error will occur. Also refer to the  ")
+print("                     StackOverflow post:")
+print("                     https://stackoverflow.com/questions/30175369/python-program-to-rename-file-names-while-overwriting-if-there-already-is-that-f")
 print("")
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
@@ -42,7 +45,7 @@ parser = argparse.ArgumentParser(
 	formatter_class=argparse.RawDescriptionHelpFormatter,
 	epilog=textwrap.dedent("Copyright (c) 1979-2022 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
 
-# parser.add_argument('-o', '--outdir', help="Output dir, default is the input image(s) directory.", default="./", type=str)
+parser.add_argument('-o', '--outdir', help="Output dir, default is the input image(s) directory.", default="./", type=str)
 parser.add_argument('-s', '--suffix', help="Suffix to append to end of file, no suffix will be added by default.", default="", type=str)
 parser.add_argument('-f', '--force', help="Force output even if it exists.", default=False, action="store_true")
 
@@ -64,8 +67,8 @@ else:  # user sent us a wildcard, need to use glob to find files
     files = glob.glob(args.input[0])
 
 # make the output directory if it does not exist
-# if not os.path.exists(args.outdir):
-#     os.makedirs(args.outdir)
+if not os.path.exists(args.outdir):
+    os.makedirs(args.outdir)
 
 for fname in files:
     
@@ -75,13 +78,13 @@ for fname in files:
     fname_base = os.path.splitext(os.path.basename(fname))[0]
     fname_base_ext = os.path.splitext(os.path.basename(fname))[1]
     
-#     if not args.outdir:
-# 	print("Output directory was not given, set to [",os.path.dirname(fname),"].")
-    fname_base_dir = os.path.dirname(fname)
-#     else:
-# 	print("Output directory was given, set to [",args.outdir,"].")
-#     fname_base_dir = args.outdir
-    
+    if not args.outdir:
+    	print("Output directory was not given, set to [",os.path.dirname(fname),"].")
+    	fname_base_dir = os.path.dirname(fname)
+    else:
+    	print("Output directory was given, set to [",args.outdir,"].")
+    	fname_base_dir = args.outdir
+
     fimage=openslide.OpenSlide(fname)
     
     img = fimage.associated_images["macro"] # macro will get the color thumbnail from an image
