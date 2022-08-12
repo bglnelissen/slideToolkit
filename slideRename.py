@@ -41,11 +41,12 @@ from openslide import *
 parser = argparse.ArgumentParser(
 	prog='slideRename',
 	description='This script will display thumbnails from given images and a terminal window for manual renaming images.',
-	usage='slideRename -i/--input; optional: -d/--display -o/--outdir -s/--suffix -f/--force; for help: -h/--help',
+# 	usage='slideRename -i/--input; optional: -d/--display -o/--outdir -s/--suffix -f/--force; for help: -h/--help',
+	usage='slideRename -i/--input; optional: -o/--outdir -s/--suffix -f/--force; for help: -h/--help',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
 	epilog=textwrap.dedent("Copyright (c) 1979-2022 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
 
-parser.add_argument('-d', '--display', help="Only shows a Thumb on display, no renaming takes place.", action="store_true")
+# parser.add_argument('-d', '--display', help="Only shows a Thumb on display, no renaming takes place.", action="store_true")
 parser.add_argument('-o', '--outdir', help="Output dir, default is the input image(s) directory.", default="./", type=str)
 parser.add_argument('-s', '--suffix', help="Suffix to append to end of file, no suffix will be added by default.", default="", type=str)
 parser.add_argument('-f', '--force', help="Force output even if it exists.", default=False, action="store_true")
@@ -71,13 +72,62 @@ else:  # user sent us a wildcard, need to use glob to find files
 if not os.path.exists(args.outdir):
     os.makedirs(args.outdir)
 
-if args.display:
-    print("Displaying [",fname,"] at level [",level,"].")
+# if args.display:
+#     print("Displaying [",fname,"] at level [",level,"].")
+#     # Let's print each dimension of the image
+#     print('* image dimensions (height x width in pixels):', img.shape)
+#     ### FOR DEBUG
+# #    print('Image data type:', img.dtype)
+# #    print('Image type:', type(img))
+#     img_size = img.size/1024 # to get kilobytes
+#     print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
+#     
+#     # To display our image variable, we use 'imshow'
+#     # The first parameter will be title shown on image window
+#     # The second parameter is the image variable
+#     # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
+#     img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+#     cv2.imshow(print('Display image [',fname,'] at level [',level,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
+#     print('(hit any key on the image to close)') # how waitKey works
+#     
+#     # waitKey - ref: https://stackoverflow.com/questions/22274789/cv2-imshow-function-is-opening-a-window-that-always-says-not-responding-pyth
+#     # 'waitKey' allows us to wait for a key stroke 
+#     # when a image window is open
+#     # By leaving it blank it just waits for any key to be 
+#     # pressed before continuing. 
+#     # By placing numbers (except 0), we can specify a delay for
+#     # how long you keep the window open (time is in millisecs here)
+#     cv2.waitKey()
+#     # This closes all open windows 
+#     # Failure to place this will cause your program to hang
+#     cv2.destroyAllWindows()
+#     cv2.waitKey(1)
+# else:
+for fname in files:
+    
+    # this will get the file with the path: os.path.splitext
+    # this will get the file name: os.path.basename
+    # the [0] will get the first part of the multiple parts
+    fname_base = os.path.splitext(os.path.basename(fname))[0]
+    fname_base_ext = os.path.splitext(os.path.basename(fname))[1]
+    
+    if not args.outdir:
+    	print("Output directory was not given, set to [",os.path.dirname(fname),"].")
+    	fname_base_dir = os.path.dirname(fname)
+    else:
+    	print("Output directory was given, set to [",args.outdir,"].")
+    	fname_base_dir = args.outdir
+
+    fimage=openslide.OpenSlide(fname)
+    
+    img = fimage.associated_images["macro"] # macro will get the color thumbnail from an image
+    img = np.asarray(img)[:,:, 0:3]
+    img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    
+    print("Displaying [",fname_base,"] at path [",fname_base_dir,"] with extension [",fname_base_ext,"].")
+    
     # Let's print each dimension of the image
     print('* image dimensions (height x width in pixels):', img.shape)
-    ### FOR DEBUG
-#    print('Image data type:', img.dtype)
-#    print('Image type:', type(img))
     img_size = img.size/1024 # to get kilobytes
     print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
     
@@ -85,10 +135,9 @@ if args.display:
     # The first parameter will be title shown on image window
     # The second parameter is the image variable
     # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
-    img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    cv2.imshow(print('Display image [',fname,'] at level [',level,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
+    cv2.imshow(print('Display image [',fname_base,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
     print('(hit any key on the image to close)') # how waitKey works
-    
+
     # waitKey - ref: https://stackoverflow.com/questions/22274789/cv2-imshow-function-is-opening-a-window-that-always-says-not-responding-pyth
     # 'waitKey' allows us to wait for a key stroke 
     # when a image window is open
@@ -96,82 +145,34 @@ if args.display:
     # pressed before continuing. 
     # By placing numbers (except 0), we can specify a delay for
     # how long you keep the window open (time is in millisecs here)
-    cv2.waitKey()
+    cv2.waitKey(0)
+    
+    # Rename file
+    # here the user can manually rename the file
+    # ask for filename if non is existing (by typing or by barcode)
+    # This is bash-code and needs to be edited to python
+    old_fname = fname_base
+    
+    new_fname = input("Enter slide name: ")
+    print("You entered: " + new_fname)
+
+    old_fnameout=f"{fname_base_dir}/{old_fname}{fname_base_ext}"
+    new_fnameout=f"{fname_base_dir}/{new_fname}{fname_base_ext}"
+
     # This closes all open windows 
     # Failure to place this will cause your program to hang
     cv2.destroyAllWindows()
     cv2.waitKey(1)
-else:
-    for fname in files:
-        
-        # this will get the file with the path: os.path.splitext
-        # this will get the file name: os.path.basename
-        # the [0] will get the first part of the multiple parts
-        fname_base = os.path.splitext(os.path.basename(fname))[0]
-        fname_base_ext = os.path.splitext(os.path.basename(fname))[1]
-        
-        if not args.outdir:
-        	print("Output directory was not given, set to [",os.path.dirname(fname),"].")
-        	fname_base_dir = os.path.dirname(fname)
-        else:
-        	print("Output directory was given, set to [",args.outdir,"].")
-        	fname_base_dir = args.outdir
     
-        fimage=openslide.OpenSlide(fname)
-        
-        img = fimage.associated_images["macro"] # macro will get the color thumbnail from an image
-        img = np.asarray(img)[:,:, 0:3]
-        img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        
-        print("Displaying [",fname_base,"] at path [",fname_base_dir,"] with extension [",fname_base_ext,"].")
-        
-        # Let's print each dimension of the image
-        print('* image dimensions (height x width in pixels):', img.shape)
-        img_size = img.size/1024 # to get kilobytes
-        print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
-        
-        # To display our image variable, we use 'imshow'
-        # The first parameter will be title shown on image window
-        # The second parameter is the image variable
-        # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
-        cv2.imshow(print('Display image [',fname_base,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
-        print('(hit any key on the image to close)') # how waitKey works
-    
-        # waitKey - ref: https://stackoverflow.com/questions/22274789/cv2-imshow-function-is-opening-a-window-that-always-says-not-responding-pyth
-        # 'waitKey' allows us to wait for a key stroke 
-        # when a image window is open
-        # By leaving it blank it just waits for any key to be 
-        # pressed before continuing. 
-        # By placing numbers (except 0), we can specify a delay for
-        # how long you keep the window open (time is in millisecs here)
-        cv2.waitKey(0)
-        
-        # Rename file
-        # here the user can manually rename the file
-        # ask for filename if non is existing (by typing or by barcode)
-        # This is bash-code and needs to be edited to python
-        old_fname = fname_base
-        
-        new_fname = input("Enter slide name: ")
-        print("You entered: " + new_fname)
-    
-        old_fnameout=f"{fname_base_dir}/{old_fname}{fname_base_ext}"
-        new_fnameout=f"{fname_base_dir}/{new_fname}{fname_base_ext}"
-    
-        # This closes all open windows 
-        # Failure to place this will cause your program to hang
-        cv2.destroyAllWindows()
-        cv2.waitKey(1)
-        
-        if not args.force and os.path.exists(new_fnameout):
-        	print(f"Skipping {new_fnameout} as output file exists and --force is not set")
-        	continue
-    
-        print("Processing [",fname,"].")
-        print('* image dimensions (height x width in pixels):', img.shape)
-        img_size = img.size/1024 # to get kilobytes
-        print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
-        os.rename(old_fnameout, new_fnameout)
+    if not args.force and os.path.exists(new_fnameout):
+    	print(f"Skipping {new_fnameout} as output file exists and --force is not set")
+    	continue
+
+    print("Processing [",fname,"].")
+    print('* image dimensions (height x width in pixels):', img.shape)
+    img_size = img.size/1024 # to get kilobytes
+    print('* image size:', '{:,.2f}'.format(img_size), 'KB') # to get Kb
+    os.rename(old_fnameout, new_fnameout)
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
