@@ -163,7 +163,7 @@ else
 	# checking if masks exist - if so, skip this script
 	if [ -f ${IMG_FILE}.diff.png ]; then 
 		echo "..... This image was already compared as the [ ${IMG_FILE}.diff.png] already exists - moving on."
-		exit 
+		exit 1
 	fi
 
 	### Loading required modules
