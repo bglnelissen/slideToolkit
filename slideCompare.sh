@@ -121,7 +121,10 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- slidenumber with stain; only 1 slidenumber is permitted. For example, AE4653.CD3."
+	echoerror "- Argument #1  -- slidenumber with stain; only 1 slidenumber is permitted, for example, AE4653.CD3." 
+	echoerror "                  Two images are expected, for example AE4653.CD3.ndpi and AE4653.CD3.v2.npi - the "
+	echoerror "                  script expects 'v2' as the indication for the duplicate. At the moment only "
+	echoerror "                  duplicates can be checked, not multiplicates."
 	echoerror ""
 	echoerror "An example command would be: slideCompare [arg1: AE4653.CD3]"
 	echoerror ""
@@ -136,11 +139,19 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2022-08-16"
-echoitalic "* Version     : 1.0.0"
+echoitalic "* Version     : 1.0.0-beta"
 echo ""
 echoitalic "* Description : This script will compare two images with ImageMagick's compare "
 echoitalic "                function."
 echoitalic "                This is SLURM based."
+echoitalic "                "
+echoitalic "                Note this is a beta-version. There are still some fixes to make."
+echoitalic "                These are the MoSCoW wishes (M[ust]/S[hould]/C[ould]/W[ould])"
+echoitalic "                - logging needs improvement (now there are many duplicate lines in the code) (S)"
+echoitalic "                - it does not work for .tif and .TIF (M)"
+echoitalic "                - it expects duplicates, should work for multiplicates too (C)"
+echoitalic "                - it expects slidenumbers with stain (AE4653.CD3) it should work with two arguments (1 for slidenumber, 1 for stain) (M)"
+echoitalic "                - it expects a certain file format (e.g. AE4653.CD3.ndpi and AE4653.CD3.v2.npi), it should be more automatic and just search on the slidenumber-stain combination (M)"
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -148,11 +159,24 @@ echo ""
 ### REQUIRED | GENERALS	
 IMG_FILE="$1" # Depends on arg1
 
+### Creating a log file for quick review.
+### We use touch: if it already exist, it will not be re-created. 
+touch slideCompare.logfile.txt
+# echo "### slideCompare LogFile" >> slideCompare.logfile.txt
+# echo "" >> slideCompare.logfile.txt
+# echo "This LogFile contains the relevant information regarding converting and comparing images." >> slideCompare.logfile.txt
+# echo "" >> slideCompare.logfile.txt
+
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 1 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideCompare ***!"
-		
+	
+	### adding to log
+	script_arguments_error >> slideCompare.logfile.txt
+	echo "You must supply correct (number of) arguments when running *** slideCompare ***!" >> slideCompare.logfile.txt
+	echo "" >> slideCompare.logfile.txt
+
 else
 	
 	# Reference
@@ -162,51 +186,122 @@ else
 
 	# checking if masks exist - if so, skip this script
 	if [ -f ${IMG_FILE}.diff.png ]; then 
-		echo "..... This image was already compared as the [ ${IMG_FILE}.diff.png] already exists - moving on."
+		echo "..... > This image was already compared as the [ ${IMG_FILE}.diff.png] already exists - moving on."
+		
+		### adding to log
+		echo "Comparing images for slidenumber: ${IMG_FILE}." >> slideCompare.logfile.txt
+		echo "..... > This image was already compared as the [ ${IMG_FILE}.diff.png] already exists - moving on." >> slideCompare.logfile.txt
+		echo "" >> slideCompare.logfile.txt
+	
+		script_copyright_message
+		
 		exit 1
 	fi
 
 	### Loading required modules
 	### Loading the CellProfiler-Anaconda3.8 environment
 	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the slideToolKit-CellProfiler4.1.3 installation..."
+	echo "..... > Loading required anaconda environment containing the slideToolKit-CellProfiler4.1.3 installation..."
 	eval "$(conda shell.bash hook)"
 	conda activate cp4
 	SLIDEMACRO="/hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideMacro.py"
 	
-	echo "Masking and creating a tile-crossed image from original image-file."
+	echo "..... > Creating macro-images from original image-file and comparing macro-images."
 	
-	if [ -f ${IMG_FILE}.*ndpi ]; then
+	### DEBUG
+	### ls -lh $IMG_FILE.*ndpi
+	
+	if [[ ${IMG_FILE}.*ndpi ]]; then
 		echo "The image-file is a NDPI and small macro images will be created for comparing."
+		echo ""
 		
-		echo "\n* creating macro-files\n"
-		python $SLIDEMACRO --input ${IMG_FILE}.*ndpi -l 7 -v
-
-		echo "\n* comparing macro-images.\n"
+		### adding to log
+		echo "Comparing images for slidenumber: ${IMG_FILE}." >> slideCompare.logfile.txt
+		echo "" >> slideCompare.logfile.txt
+		
+		echo "* creating macro-files."
+		
+		python $SLIDEMACRO --input ${IMG_FILE}.*ndpi --level 7 --verbose
+		
+		# How to get this (example below) information from the python script in the log?
+		# Is it even relevant?
+# 		Processing [ AE4725.CD3.ndpi ] at level [ 7 ].
+# 		* image dimensions (height x width in pixels): (270, 330, 3)
+# 		* image size: 261.04 KB
+# 		Processing [ AE4725.CD3.v2.ndpi ] at level [ 7 ].
+# 		* image dimensions (height x width in pixels): (270, 330, 3)
+# 		* image size: 261.04 KB
+		
+		
+		echo ""
+		echo "* comparing macro-images."
+		
 		compare_result=$(magick compare -metric AE ${IMG_FILE}.macro.png ${IMG_FILE}.v2.macro.png ${IMG_FILE}.diff.png 2>&1);
 	
 		if [ "${compare_result}" != '0' ]; then
-				echo "ERROR. ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are not the same. Please manually inspect the original images (.ndpi/.TIF)";
+			echo "ERROR: ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are not the same. Please manually inspect the original images (e.g. in .ndpi-format).";
+
+			### adding to log
+			echo "ERROR: ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are not the same. Please manually inspect the original images (e.g. in .ndpi-format)." >> slideCompare.logfile.txt
+			echo "" >> slideCompare.logfile.txt
+		else
+			echo "NO DIFFERENCE: ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are the same; as are the original uncoverted images. ";
+			### adding to log
+			echo "NO DIFFERENCE: ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are the same; as are the original uncoverted images. " >> slideCompare.logfile.txt
+			echo "" >> slideCompare.logfile.txt
+		
 		fi
-	elif [ -f *.tif ]; then 
+		
+	elif [[ ${IMG_FILE}.*tif ]]; then 
 		echo "The image-file is a .tif. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING"
-		exit 1 
-	elif [ -f *.TIF ]; then 
+		
+		### adding to log
+		echo "The image-file is a .tif. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING" >> slideCompare.logfile.txt
+		echo "" >> slideCompare.logfile.txt
+		
+		script_copyright_message
+		
+		exit 1
+		
+	elif [[ ${IMG_FILE}.*TIF ]]; then 
 		echo "The image-file is a .TIF. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING"
-		exit 1 
+		
+		### adding to log
+		echo "The image-file is a .TIF. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING" >> slideCompare.logfile.txt
+		echo "" >> slideCompare.logfile.txt
+		
+		script_copyright_message
+		
+		exit 1
+		
 	else
 		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
 		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']
 		AT THE MOMENT ONLY WORKS FOR NDPI"
-		exit 1 
+		
+		### adding to log
+		echo "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']
+		AT THE MOMENT ONLY WORKS FOR NDPI" >> slideCompare.logfile.txt
+		echo "" >> slideCompare.logfile.txt
+		
+		script_copyright_message
+		
+		exit 1
+		
 	fi
-
-	echo "..... Masking successfully finished."
+	
+	echo ""
+	echo "..... Comparing successfully finished."
 
 	duration=$SECONDS
 	echo "[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
-
-
+	compare_time="[ $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed ]"
+	
+	### adding to log
+	echo "Comparison took: $compare_time" >> slideCompare.logfile.txt
+	echo "" >> slideCompare.logfile.txt
+		
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 
