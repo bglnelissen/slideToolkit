@@ -1,11 +1,18 @@
 #!/bin/bash
+
 #
-# Description: Creates masks for images using slideEMask as part of a slideQuantify
-#              job-session.
+# Description: Compare two images with ImageMagick's compare function.
+#
+# https://softwarerecs.stackexchange.com/questions/9774/command-line-tool-to-check-whether-two-images-are-exactly-the-same-graphically
+
+# Description:
+# This script starts up the slideToolKit-CP4 Anaconda3 environment. Next it will extract
+# slide-macro images from each .ndpi-file present in a given directory. Lastly it will 
+# take a list of studynumbers/slidenumbers to 
+
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
-# UMC Utrecht, Utrecht, the Netherlands.
+# Copyright (c) 2022, Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -91,7 +98,7 @@ script_copyright_message() {
 	THISYEAR=$(date +'%Y')
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "+ The MIT License (MIT)                                                                                 +"
-	echo "+ Copyright (c) 2016-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+ Copyright (c) 2022-${THISYEAR} Sander W. van der Laan                                                        +"
 	echo "+                                                                                                       +"
 	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
 	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
@@ -114,9 +121,9 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #1  -- slidenumber with stain; only 1 slidenumber is permitted. For example, AE4653.CD3."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_1_expresshist_mask [arg1: 210]"
+	echoerror "An example command would be: slideCompare [arg1: AE4653.CD3]"
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -124,33 +131,27 @@ script_arguments_error() {
 }
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                    slideQuantify: ExpressHIST Masking"
+echobold "                    slideCompare: compare images"
 echo ""
-echoitalic "* Written by  : Sander W. van der Laan; Yipei Song; "
-echoitalic "                Craig Glastonbury"
+echoitalic "* Written by  : Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-25"
-echoitalic "* Version     : 1.0.1"
+echoitalic "* Last update : 2022-08-16"
+echoitalic "* Version     : 1.0.0"
 echo ""
-echoitalic "* Description : This script will start the masking of images for "
-echoitalic "                slideToolKit analyses; masking can be adaptive, otsu, graph"
-echoitalic "                segmentation based."
+echoitalic "* Description : This script will compare two images with ImageMagick's compare "
+echoitalic "                function."
 echoitalic "                This is SLURM based."
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 echo ""
 ### REQUIRED | GENERALS	
-EXPRESSHIST="$1" # Depends on arg1
-CONTENTTHRESHOLD="$2" # Depends on arg2
-PATCHSIZE="$3" # Depends on arg3
-OUTPUTDOWN="$4" # Depends on arg4
-MASKMETHOD="$5" # Depends on arg5
+IMG_FILE="$1" # Depends on arg1
 
 ### START of if-else statement for the number of command-line arguments passed ###
 if [[ $# -lt 1 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
-	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_1_expresshist_mask ***!"
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideCompare ***!"
 		
 else
 	
@@ -160,47 +161,43 @@ else
 	# do some work
 
 	# checking if masks exist - if so, skip this script
-	if [ -f mask_*.png ]; then 
-		echo "..... Masked images already exists - moving on."
+	if [ -f ${IMG_FILE}.diff.png ]; then 
+		echo "..... This image was already compared as the [ ${IMG_FILE}.diff.png] already exists - moving on."
 		exit 
 	fi
 
-	# loading required modules
+	### Loading required modules
 	### Loading the CellProfiler-Anaconda3.8 environment
 	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	echo "..... > loading required anaconda environment containing the slideToolKit-CellProfiler4.1.3 installation..."
 	eval "$(conda shell.bash hook)"
 	conda activate cp4
-
+	SLIDEMACRO="/hpc/local/CentOS7/dhl_ec/software/slideToolKit/slideMacro.py"
+	
 	echo "Masking and creating a tile-crossed image from original image-file."
 	
-	if [ -f *.ndpi ]; then
-		echo "The image-file is a NDPI and will be converted to .tif before masking."
-
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-tilecrossed-image *.ndpi
-
-	elif [ -f *.tif ]; then 
-		echo "The image-file is a (NDPI-converted) .tif."
+	if [ -f ${IMG_FILE}.*ndpi ]; then
+		echo "The image-file is a NDPI and small macro images will be created for comparing."
 		
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-tilecrossed-image *.tif
+		echo "\n* creating macro-files\n"
+		python $SLIDEMACRO --input ${IMG_FILE}.*ndpi -l 7 -v
 
+		echo "\n* comparing macro-images.\n"
+		compare_result=$(magick compare -metric AE ${IMG_FILE}.macro.png ${IMG_FILE}.v2.macro.png ${IMG_FILE}.diff.png 2>&1);
+	
+		if [ "${compare_result}" != '0' ]; then
+				echo "ERROR. ImageMagick determined [ ${compare_result} ] incorrect pixels in slide ${IMG_FILE}. These images are not the same. Please manually inspect the original images (.ndpi/.TIF)";
+		fi
+	elif [ -f *.tif ]; then 
+		echo "The image-file is a .tif. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING"
+		exit 1 
 	elif [ -f *.TIF ]; then 
-		echo "The image-file is a .TIF."
-
-		python3 $EXPRESSHIST/pyhist.py --content-threshold $CONTENTTHRESHOLD \
-		--patch-size $PATCHSIZE --output-downsample $OUTPUTDOWN --info "verbose" \
-		--method "$MASKMETHOD" \
-		--save-mask --save-tilecrossed-image *.TIF
-
+		echo "The image-file is a .TIF. AT THE MOMENT ONLY WORKS FOR NDPI - EXITING"
+		exit 1 
 	else
 		echoerrorflash "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please. 
-		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']"
+		[image-extension not recognized, should be 'ndpi', 'tif' or 'TIF']
+		AT THE MOMENT ONLY WORKS FOR NDPI"
 		exit 1 
 	fi
 
