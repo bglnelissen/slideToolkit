@@ -7,9 +7,9 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideRename: display and manually rename images ")
 print("")
-print("* Version          : v1.0.1")
+print("* Version          : v1.0.2")
 print("")
-print("* Last update      : 2022-08-10")
+print("* Last update      : 2022-09-07")
 print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
@@ -135,8 +135,10 @@ for fname in files:
     # The first parameter will be title shown on image window
     # The second parameter is the image variable
     # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
-    cv2.imshow(print('Display image [',fname_base,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
-    print('(hit any key on the image to close)') # how waitKey works
+    print('Display image [',fname_base,']')
+    # don't use 'fname_base' as first variable as this will create a new window for each 
+    # new slide (so you'll get multiiple open windows)
+    cv2.imshow('slidePreview', cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR)) 
 
     # waitKey - ref: https://stackoverflow.com/questions/22274789/cv2-imshow-function-is-opening-a-window-that-always-says-not-responding-pyth
     # 'waitKey' allows us to wait for a key stroke 
@@ -145,7 +147,9 @@ for fname in files:
     # pressed before continuing. 
     # By placing numbers (except 0), we can specify a delay for
     # how long you keep the window open (time is in millisecs here)
-    cv2.waitKey(0)
+    # By placing 1 this will cause the window to open, but immediately move to the next
+    # command/instruction in this script
+    cv2.waitKey(1)
     
     # Rename file
     # here the user can manually rename the file
