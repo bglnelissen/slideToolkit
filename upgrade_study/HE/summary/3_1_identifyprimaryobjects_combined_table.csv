@@ -1,0 +1,9 @@
+# of accepted objects,1
+10th pctile diameter,1703.5 pixels
+Median diameter,1703.5 pixels
+90th pctile diameter,1703.5 pixels
+Area covered by objects,57.0 %
+Thresholding filter size,1.0
+Threshold,0.065
+Declumping smoothing filter size,33.6
+Maxima suppression size,7.0

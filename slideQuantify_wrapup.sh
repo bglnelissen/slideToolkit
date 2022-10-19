@@ -1,4 +1,31 @@
 #!/bin/bash
+#
+# Description: Wraps up a slideToolKit-CellProfiler analysis for a given slide as part 
+#              of a slideQuantify job-session.
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 ### Creating display functions
 ### Setting colouring
@@ -88,9 +115,10 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
+	echoerror "- Argument #2  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #3  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: RANDOM_SAMPLE] "
+	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: Image.csv] [arg3: RANDOM_SAMPLE] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -103,8 +131,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
-echoitalic "* Version     : 2.0.3"
+echoitalic "* Last update : 2021-11-12"
+echoitalic "* Version     : 2.0.4"
 echo ""
 echoitalic "* Description : This script will start the wrap up of a slideToolKit analysis."
 echoitalic "                This is SLURM based."
@@ -114,16 +142,17 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo ""
 ### REQUIRED | GENERALS	
 STAIN="$1" # Depends on arg1
-OUTPUTFILENAME=${STAIN}_slides.txt
-RANDOM_SAMPLE="$2" # Depends on arg2
-# STAIN = "CD34"
-# OUTPUTFILENAME = "CD34slides.txt"
+OUTPUTFILENAME="$2" # Depends on arg2
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+RANDOM_SAMPLE=${3-50} # Depends on arg11
 
 # Set slideToolKit DIRECTORY
 SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 2 ]]; then 
+if [[ $# -lt 3 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_wrapup ***!"
 		
@@ -132,12 +161,9 @@ else
 	### DEBUG
 	### SBATCH --output=slidemask_out_%j.log     # Standard output and error log
 	
-	# Randomly grab x (10) overlay images, and remove the rest
-# 	ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-
 	# Collecting all the data
 	echo "..... Creating [ results.txt ] and collecting data."
-	echo 'SampleID Slide_number Stain Counts_per_Tissue_area' > results.txt;
+	echo 'SampleID Slide_number Stain STAIN_per_Tissue_area' > results.txt;
 	
 	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
 	cd cp_output;
@@ -159,27 +185,35 @@ else
 	
 	# moving up to the $SLIDE_NUM directory again
 	cd ..
-	
-	echo "..... Removing tiling directory and its contents.";
-	# Randomly grab x (50) overlay images, and remove the rest
-# 	ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm;
-# 	rm -rfv *tiles/;
+
+	echo "..... Removing overlay images:"
+	echo "Randomly grab x (50) overlay images, and remove the rest."
+	### ls cp_output/*.png | shuf -n $(expr $(ls cp_output/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
+
+	echo "..... Removing tiling directory and its contents."
+	echo "Randomly grab x (50) overlay images, and remove the rest"
+	### ls *tiles/*.png | shuf -n $(expr $(ls *tiles/*.png | wc -l) - $RANDOM_SAMPLE) | xargs rm -v;
 
 	if [ -f *.ndpi ]; then 
 		echo "..... Removing intermediate tif- & png-files converted from NDPI-files.";
-# 		rm -v *x40*.tif; 
-# 		rm -v *x40*.png; 
+		### We used to work at 40x
+		### rm -v *x40*.tif; 
+		### rm -v *x40*.png; 
+		### Remember - we work at 20x
+		### rm -v *x20*.tif; 
+		### rm -v *x20*.png; 
 
 	fi;
 
-	echo "..... Removing list of files to process.";
-# 	rm -v files2cp.txt;
+	echo "..... Gzipping list of files to process.";
+	gzip -v files2cp.txt;
 	
 	echo "..... Gzipping result files.";
 	gzip -vf cp_output/${STAIN}*.gct;
 	gzip -vf cp_output/${STAIN}*.csv;
 	
-
+	echo "..... Wrapping up this slideToolKit run successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 

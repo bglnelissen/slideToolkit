@@ -105,8 +105,8 @@ echobold "                              slideAppend"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2020-02-19"
-echoitalic "* Version     : v1.0.3"
+echoitalic "* Last update : 2021-11-26"
+echoitalic "* Version     : v1.0.4"
 echo ""
 echoitalic "* Description : This script will collect results and append these in a CSV."
 echoitalic "                Input CSV-files are expected to be gzipped."
@@ -135,18 +135,30 @@ else
 	# make a new append.log
 	echo "STUDYNUMBER FILENAME" > "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
 	
+	echo ""
+	echoitalic "Creating folders to collect all masks and tile-crossed images."
+	mkdir -v "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".MasksTileCrossedImages
+	MASKDIR="${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".MasksTileCrossedImages
+	mkdir -v $MASKDIR/_issues
+	MASKISSUEDIR="$MASKDIR/_issues"
+	
 	i=0 # Reset a counter
 	echo ""
 	echoitalic "Collecting data for:"
-	for filename in "${STUDYTYPE}"*/cp_output/"${STAIN}"_"${RESULTSFILENAME}"; do 
+	for filename in "$STUDYTYPE"*/cp_output/"${STAIN}"_"${RESULTSFILENAME}"; do 
 		if [ "$filename"  != "$OutFileName" ] ; then # Avoid recursion
-		
+			# get the sample number from the filename
+			STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
+			
 			cols=$(zcat "$filename" | awk -F, '{ print NF }' | uniq | wc -l)
 			if [[ "$cols" -gt 1 ]]; then
 				STUDYNUMBER=${filename%%\/*} # Remove everything from the first slash >> https://unix.stackexchange.com/questions/268134/extract-a-specific-part-of-the-path-of-a-file
 				echo "**ERROR** no new line for end-of-file for [ $STUDYNUMBER ]."
 				echo "$STUDYNUMBER $filename" >> "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
-		
+				cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKISSUEDIR/mask_${STUDYNUMBER}.png
+				cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKISSUEDIR/tilecrossed_${STUDYNUMBER}.png
+				cp -v $STUDYNUMBER/tile_selection.tsv $MASKISSUEDIR/tile_selection_${STUDYNUMBER}.tsv
+			
 			else	
 				if [[ $i -eq 0 ]] ;  then
 					echoitalic " First file no. $i: [ ${filename} ] ..."
@@ -154,6 +166,10 @@ else
 					### echo "DEBUG: check head first file"
 					### zcat "$filename" | head -1
 					zcat "$filename" > "$OutFileName" # Copy header if it is the first file
+					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKDIR/mask_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKDIR/tilecrossed_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/tile_selection.tsv $MASKDIR/tile_selection_${STUDYNUMBER}.tsv
+				
 				else
 					echoitalic " File no. $i: [ ${filename} ] ..."
 					### DEBUG
@@ -163,19 +179,42 @@ else
 					
 					### DEBUG
 					### ls -lh "$OutFileName"
+					
+					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKDIR/mask_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKDIR/tilecrossed_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/tile_selection.tsv $MASKDIR/tile_selection_${STUDYNUMBER}.tsv
+					
 				fi
 			fi
 		fi
 		i=$(( i + 1 )) # Increase the counter
+		
+
 	done
 
 	echo ""
 	echoitalic "Gzipping the shizzle."
 	gzip -vf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.csv
+	
+	tar -zcvf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".tar.gz "${MASKDIR}"/ 
+	mv -v readme.slidemask.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidemask.txt
+	mv -v readme.slide2tiles.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slide2tiles.txt
+	mv -v readme.slidenormalize.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidenormalize.txt
+	mv -v readme.slidecelprofiler.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidecelprofiler.txt
+	mv -v readme.slidewrapup.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidewrapup.txt
 
 	echo ""
 	echoitalic "Checking the log -- note: no results is a good thing."
 	cat "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
+	
+	echoitalic "====                       NOTE                           ===="
+	echoitalic "You should lways check the log and review the tile-crossed images. "
+	echoitalic "The logs (summarized in 'readme'-files) might contain information "
+	echoitalic "regarding issues with slides run."
+	echoitalic "The tile-crossed images may involve samples that have too little"
+	echoitalic "or too many crosses due to debris, air bubbles, smudges, or other"
+	echoitalic "artefacts on the slides. Those samples you may want to re-run, re-"
+	echoitalic "scan, or exclude."
 	
 	echo ""
 

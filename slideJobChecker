@@ -1,0 +1,228 @@
+#!/bin/bash
+
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+OPAQUE='\033[2m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
+
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+### Regarding changing the 'type' of the things printed with 'echo'
+### Refer to: 
+### - http://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
+### - http://misc.flogisoft.com/bash/tip_colors_and_formatting
+### - http://unix.stackexchange.com/questions/37260/change-font-in-echo-command
+
+### echo -e "\033[1mbold\033[0m"
+### echo -e "\033[3mitalic\033[0m" ### THIS DOESN'T WORK ON MAC!
+### echo -e "\033[4munderline\033[0m"
+### echo -e "\033[9mstrikethrough\033[0m"
+### echo -e "\033[31mHello World\033[0m"
+### echo -e "\x1B[31mHello World\033[0m"
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echocyan { 
+    echo -e "${CYAN}${1}${NONE}" 
+}
+
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
+
+# errors
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+
+# errors no option
+function echoerrornooption { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
+}
+
+function echosucces { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
+
+### MESSAGE FUNCTIONS
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2016-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
+script_arguments_error() {
+	echoerror "$1" # ERROR MESSAGE
+	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2  -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror "- Argument #3  -- analysis step to be checked, i.e. should contain the start of the error file: [slidemask, slide2tiles, slidenormalize, slidecellprofiler, slidewrapup]."
+	echoerror "- Argument #4  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
+	echoerror ""
+	echoerror "An example command would be: slideJobChecker [arg1: STAIN] [arg2: path_to_working_directory] [arg3: analysis step]"
+	echoerror ""
+	echoerror "Please note that this command should be run within the working directory (Argument #2)."
+	echoerror ""
+	echoerror "NOTE: Currently only works for slide2tiles-error-files. Should be expanded to other error-files too."
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+  	exit 1
+}
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                               slideJobChecker"
+echo ""
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "                Yipei Song"
+echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
+echoitalic "* Last update : 2021-11-18"
+echoitalic "* Version     : 1.0.1"
+echo ""
+echoitalic "* Description : This script will check the contents of error files for a "
+echoitalic "                given project directory. "
+# echoitalic "                This is SLURM based."
+echo ""
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+echo ""
+### REQUIRED | GENERALS	
+STAIN="$1" # Depends on arg1
+PROJECTDIR="$2" # Depends on arg2
+STEP="$3"
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+UNIQUE_LABEL=${4-V1} # Depends on arg9
+# BATCH_SIZE=${10-5000} # Depends on arg10
+# RANDOM_SAMPLE=${11-50} # Depends on arg11
+
+QJOB_MEM_SLIDEMASK="100G"
+QJOB_TIME_SLIDEMASK="02:30:00"
+
+QJOB_MEM_SLIDE2TILES="150G"
+QJOB_TIME_SLIDE2TILES="04:30:00"
+
+QJOB_MEM_SLIDENORM="5G"
+QJOB_TIME_SLIDENORM="02:00:00"
+
+QJOB_MEM_CP="12G"
+QJOB_TIME_CP="12:00:00"
+
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
+
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 3 ]]; then 
+	echo "Oh, computer says no! Number of arguments found \"$#\"."
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideJobChecker ***!"
+		
+else
+	
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Checking consistency of slideToolKit run."
+	
+	### Creating necessary readme
+	echo "* Making necessary 'readme' files..."
+	echo "Slide_num Filename N_Images_Analyzed Message" > ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
+
+	### Setting the patterns to look for -- never change this
+	ERROR_PATTERN="slurmstepd: error:"
+	IMAGESANALYZED_PATTERN="module Images" # only in cellprofiler error file
+	
+	echo "Checking errors-files and zapping them if empty..."
+	for ERRORFILE in $(ls $PROJECTDIR/errors/${STEP}.*.errors); do 
+	
+		if [[ ! -z $(grep "${ERROR_PATTERN}" "${ERRORFILE}") ]] ; then 
+
+			ERRORFILENAME=$(basename $ERRORFILE )
+			SLIDE_NUM=$(basename "$ERRORFILE") | cut -d'.' -f2
+			ERROR_MESSAGE=$(grep "${ERROR_PATTERN}" "${ERRORFILE}")
+			
+			N_IMAGES_ANALYZED=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+						
+			echoerrorflash "*** ERROR ***  The error-file [ $ERRORFILENAME ] contains an error. We'll keep it there for review and check the contents."
+			echoerror "> number of images analyzed................: ${N_IMAGES_ANALYZED}"
+# 			echoerror "> error message............................: ${ERROR_MESSAGE}"
+			echoerror ""
+			echo "${SLIDE_NUM} ${ERRORFILENAME} ${ERROR_MESSAGE} " >> ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
+			
+		else
+			
+			ERRORFILENAME=$(basename $ERRORFILE )
+			SLIDE_NUM=$(basename "$ERRORFILE") | cut -d'.' -f2
+
+			N_IMAGES_ANALYZED=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+			
+			SUCCESSMESSAGE=$(echosucces "successfully analyzed")
+			SUCCESSMESSAGEREADME=$(echo "success")
+			
+			echosucces "*** SUCCESS *** Step ${STEP} was succefull for slide ${SLIDE_NUM}..."
+			echosucces "Reported in the [ ${ERRORFILENAME} ]:      "
+			echosucces "####################################################################################"
+			head ${ERRORFILE}
+			tail ${ERRORFILE}
+			echosucces "####################################################################################"
+			
+			echosucces "> number of images analyzed..................: ${N_IMAGES_ANALYZED}"
+# 			echosucces "> success message............................: ${SUCCESSMESSAGE}"
+			echosucces ""
+			echo "${SLIDE_NUM} ${ERRORFILENAME} ${SUCCESSMESSAGEREADME} " >> ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
+
+			BASENAME_ERRORFILE=$(basename ERRORFILENAME .errors)
+
+# 			echo "Removing files [ ${PROJECTDIR}/[errors/logs]/[.errors/.log] ]..."
+# 			rm -v ${PROJECTDIR}/errors/${ERRORFILENAME}
+# 			rm -v ${PROJECTDIR}/logs/${BASENAME_ERRORFILE}.log
+		
+		### END of if-else statement
+		fi
+	
+	### END of for-loop
+	done
+	
+	
+### END of if-else statement for the number of command-line arguments passed ###
+fi
+
+script_copyright_message
+

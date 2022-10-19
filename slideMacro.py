@@ -7,9 +7,9 @@
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideMacro: extract macro images ")
 print("")
-print("* Version          : v1.0.1")
+print("* Version          : v1.0.2")
 print("")
-print("* Last update      : 2021-08-31")
+print("* Last update      : 2022-08-05")
 print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
 print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
@@ -98,7 +98,7 @@ for fname in files:
         # The first parameter will be title shown on image window
         # The second parameter is the image variable
         # rotate the image for easy reading (https://www.geeksforgeeks.org/python-opencv-cv2-rotate-method/)
-        img_r = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
+        img_r = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         cv2.imshow(print('Display image [',fname,'] at level [',level,']'), cv2.cvtColor(img_r, cv2.COLOR_RGB2BGR))
         print('(hit any key on the image to close)') # how waitKey works
         

@@ -1,0 +1,574 @@
+#!/usr/bin/env python
+# script to display a whole-slide image file and manually rename the file (*.TIF, *.NDPI, etc.)
+#
+# Ref: https://github.com/syuanca/bash2python
+#
+
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+print("                                   slideRename: display and manually rename images ")
+print("")
+print("* Version          : v1.0.0")
+print("")
+print("* Last update      : 2022-06-13")
+print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("")
+print("* Description      : This script will get thumbnails from (a list of given) images for quick inspection.")
+print("                     Converted using https://github.com/syuanca/bash2python")
+print("")
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+
+import os
+import sys
+import subprocess
+import string
+import random
+
+bashfile=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+bashfile='/tmp/'+bashfile+'.sh'
+
+f = open(bashfile, 'w')
+s = """#!/bin/bash
+#
+# Description: Batch rename slides
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+
+# Variables
+SCRIPTNAME=$(basename $0)
+DESCRIPTIONSHORT="Batch rename slides"
+DEPENDENCIES=("awk" "convert" "dmtxread" "grep" "identify" "display" "perl" "tiffinfo" "wmctrl" "zbarimg")
+SUPPORTED_FORMATS=("Generic-TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
+DEFAULT_RESIZE="512x1024"
+DEFAULT_OUTPUT_PREFIX="" # empty by default
+DEFAULT_OUTPUT_SUFFIX="" # empty by default
+DEFAULT_IM_ARGS="" # imagemagick arguments # +dither -colors 2 -colorspace gray
+DEFAULT_WMCTRL_TIMEOUT="0.1" # timeout for window switching when using im-display
+DEFAULT_DMTXREAD_ARGS="--stop-after 1 --milliseconds 1000 --shrink 2 --square-deviation 10" # options for dmtxread. See man dmtxread for details
+DEFAULT_ZBARIMG_ARGS="--quiet " # options for zbarimg. --quiet for barcode only. See man dmtxread for details
+
+
+# sort arrays
+DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
+SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
+
+# Cleanup stage
+set -e
+function cleanup {
+  # kill display like a real man if alive
+  if [[ $IM_DISPLAY_PID > 0 ]]; then
+    kill $IM_DISPLAY_PID
+  fi
+  # quit Preview like a polite man if it is still alive.
+  if [[ "$PREVIEW" == "osx" ]];then # did we use preview at all?
+    if [[ $(ps ux | grep -i [P]review | wc -l) != 0 ]]; then
+      osascript -e "ignoring application responses" -e "tell application \\"Preview\\"" -e "if it is running then" -e "quit with saving" -e "end if" -e "end tell" -e "end ignoring"
+    fi
+  fi
+  
+  # remove temp files
+  rm -rf "$PREVIEW_TMPFILE"
+}
+trap cleanup EXIT
+
+# Errors go to stderr
+err() {
+  echo "${SCRIPTNAME} ERROR: $@" >&2
+}
+
+# usage message
+usage() {
+cat <<- EOF
+$SCRIPTNAME --help for more information.
+EOF
+}
+
+# version info
+version() {
+cat << EOF
+slideToolKit v1.2
+($SCRIPTNAME is part of the slideToolKit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
+EOF
+}
+
+
+# help message
+helpMessage() {
+cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
+usage:
+  $SCRIPTNAME [options] -f <filename>
+
+options:
+  -f, --file <filename>           virtual slide to rename
+
+  [-l, --layer] <integer>         force specific layer by layer id
+  [--prefix] <text>               filename prefix
+  [--suffix] <text>               filename suffix
+  [--to-lower]                    filename output is transformed to lower cases
+  [--to-upper]                    filename output is transformed to upper cases
+  [--barcode dmtx|zbar]           find barcode (by library) and rename accordingly. 
+  [--resize] <widthxheight>       preview dimentions ["$DEFAULT_RESIZE"]
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
+  [--preview im|osx|none]         display preview miniature (imageMagick, OS X Preview.app, none)
+  [--wmctrl-timeout] <seconds>    window switching timeout ["$DEFAULT_WMCTRL_TIMEOUT"](see description)
+  [--ignore-dependencies]         ignores all dependencies, but gives warning
+
+  --help                          display this help
+  --version                       display version and license information
+
+
+examples:
+  $SCRIPTNAME "file.tif"
+  $SCRIPTNAME --prefix="AE" --suffix=".CD68.\\${RANDOM}" --file="file.tif"
+  $SCRIPTNAME  --layer=5 --convert-args="-rotate 90" -f "file.tif"
+
+print a job list -- for automatic renaming:
+  find "\\$(pwd)" -iname "*.tif" \\\\
+      -exec "$(command -v "${SCRIPTNAME}")" \\\\
+      --barcode="dmtx" --to-upper --preview="none" -f="{}" \\;
+
+print a job list -- for manual renaming:
+  find "\\$(pwd)" -iname "*.tif" \\\\
+      -exec "$(command -v "${SCRIPTNAME}")" \\\\
+      --to-upper --preview="osx" -f="{}" \\;
+
+
+dependencies: ${DEPENDENCIES[@]}
+supported formats: ${SUPPORTED_FORMATS[@]}
+
+This script displays a miniture of the whole slide and asks for a  new
+name. The --convert-args overrides all other convert arguments that are
+already set (like --resize). For some slides, the virtual slide format
+is not known. For these instances you need to run slideInfo to find the
+correct layer manually. When the layer containing the label is
+identified, use the --layer flag. Using a slow system can cause the
+focus switching to fail, if so, set the '--wmctrl-timeout' to a higher
+number (e.g. 1.0). On OS X, by default, Preview.app is used for thumb
+previews. The '--preview' option only works properly from an X11
+terminal (on a Mac use '/Applications/Utilities/XQuartz.app'). Using the
+--barcode flag, different libraries can be used to rename slides using
+barcodes, dmtx (for Data Matrix 2D barcodes), and zlib (for
+EAN-13/UPC-A, UPC-E, EAN-8, Code 128, Code 39, Interleaved 2 of 5 and QR
+Code). Image manipulation can be done befor previewing the slide using
+the --convert-args flag, the equal sign ('=') and surrounding quotes "'"
+are required.
+
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
+
+Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
+EOF
+}
+
+# Menu
+# Empty variables
+FILE=""
+LAYER=""
+OUTPUT_PREFIX=""
+OUTPUT_SUFFIX=""
+RESIZE=""
+IM_DISPLAY=""
+WMCTRL_TIMEOUT=""
+BARCODE=""
+PREVIEW=""
+# illegal option
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+$(usage)
+EOF
+exit 1
+}
+# loop through options
+while :
+do
+  case $1 in
+    -h)
+    usage
+    exit 0 ;;
+    --help | -\\?)
+      helpMessage
+      exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
+    -f | --file)
+      FILE=$2
+      shift 2 ;;
+    -f=* | --file=*)
+      FILE=${1#*=}
+      shift ;;
+    -l | --layer)
+      LAYER=$2
+      shift 2 ;;
+    --layer=*)
+      LAYER=${1#*=}
+      shift ;;
+    --file=*)
+      FILE=${1#*=}
+      shift ;;
+    --prefix=*)
+      OUTPUT_PREFIX=${1#*=}
+      shift ;;
+    --prefix)
+      OUTPUT_PREFIX=$2
+      shift 2 ;;
+    --suffix=*)
+      OUTPUT_SUFFIX=${1#*=}
+      shift ;;
+    --suffix)
+      OUTPUT_SUFFIX=$2
+      shift 2 ;;
+    --resize=*)
+      RESIZE=${1#*=}
+      shift ;;
+    --resize)
+      RESIZE=$2
+      shift 2 ;;
+    --to-upper)
+      CASE="CASE_UPPER"
+      shift ;;
+    --to-lower)
+      CASE="CASE_LOWER"
+      shift ;;
+    --preview=*)
+      PREVIEW=${1#*=}
+      shift ;;
+    --preview)
+      PREVIEW=$2
+      shift 2 ;;
+    --convert-args=*) # Equal sign and quotes are required for this option. If not, the convert arguments are seen as slideRename options.
+      IM_ARGS=${1#*=}
+      shift ;;
+    --wmctrl-timeout)
+      WMCTRL_TIMEOUT=$2
+      shift 2 ;;
+    --wmctrl-timeout=*)
+      WMCTRL_TIMEOUT=${1#*=}
+      shift ;;
+    --extension=*)
+      OUTPUT_EXTENSION=${1#*=}
+      shift ;;
+    --barcode=*)
+      BARCODE=${1#*=}
+      shift ;;
+    --barcode)
+      BARCODE=$2
+      shift 2 ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+# DEFAULTS
+# set FILE default
+if [ "$FILE" != "" ]; then
+  FILE="$FILE"
+else
+  FILE="$1"
+fi
+# set OUTPUT_PREFIX default
+if [ "$OUTPUT_PREFIX" != "" ]; then
+  OUTPUT_PREFIX="$OUTPUT_PREFIX"
+else
+  OUTPUT_PREFIX="$DEFAULT_OUTPUT_PREFIX"
+fi
+# set OUTPUT_SUFFIX default
+if [ "$OUTPUT_SUFFIX" != "" ]; then
+  OUTPUT_SUFFIX="$OUTPUT_SUFFIX"
+else
+  OUTPUT_SUFFIX="$DEFAULT_OUTPUT_SUFFIX"
+fi
+# set RESIZE default
+if [ "$RESIZE" != "" ]; then
+  RESIZE="$RESIZE"
+else
+  RESIZE="$DEFAULT_RESIZE"
+fi
+# set IM_ARGS default
+if [ "$IM_ARGS" != "" ]; then
+  IM_ARGS="$IM_ARGS"
+else
+  IM_ARGS="$DEFAULT_IM_ARGS"
+fi
+# set WMCTRL_TIMEOUT default
+if [ "$WMCTRL_TIMEOUT" != "" ]; then
+  WMCTRL_TIMEOUT="$WMCTRL_TIMEOUT"
+else
+  WMCTRL_TIMEOUT="$DEFAULT_WMCTRL_TIMEOUT"
+fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
+fi
+
+# requirements
+checkRequirements() {
+  if ! [[ -f "$FILE" ]] ; then
+    err "No such file: $FILE"
+    usage
+    exit 1
+  fi
+  regexresize='^[0-9]*x[0-9]*$' # 1234x4321, but x4132 or 234x must also be possible
+  if ! [[ "$RESIZE" =~ $regexresize ]] ; then
+    err "This is not a valid --resize value: $RESIZE"
+    usage
+    exit 1
+  fi
+  timeoutnr='^[0-9]+[.]*[0-9]*$' # 0.1
+  if ! [[ "$WMCTRL_TIMEOUT" =~ $timeoutnr ]] ; then
+    err "This is not a valid --wmctrl-timeout value: $WMCTRL_TIMEOUT"
+    usage
+    exit 1
+  fi
+  if [[ -n "$PREVIEW" ]]; then
+    if ! [[ "$PREVIEW" =~ (im|osx|none) ]]; then
+      err "This is not a valid --preview value: $PREVIEW"
+      usage
+      exit 1
+    fi
+  fi
+  if [[ -n "$BARCODE" ]]; then
+    if ! [[ "$BARCODE" =~ (dmtx|zbar) ]]; then
+      err "This is not a valid --barcode value: $BARCODE"
+      usage
+      exit 1
+    fi
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
+  fi
+}
+# show thumbs per scanner type (-filter box is best for resizing and text)
+# layer information can be determined using example files (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+getThumb(){
+  # get thumb by layer id
+  LAYER="$LAYER"
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+getThumbiScanHT(){
+  LAYER=0
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+getThumbAperio(){
+  NR_LAYERS=`identify "$FILE" | wc -l`
+  LAYER="$(($NR_LAYERS - 2))"   # the last 2 layers contain thumb and the tissue (couning starts at 0)
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+getThumbLeica(){
+  LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -rotate 180 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+getThumbHamamatsu(){
+  LAYER=7 # determined from example file from our in-house (UMC Utrecht) Hamamatsu scanner 
+  convert "$FILEFULL[$LAYER]" -rotate 90 -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+getThumbiScan(){
+  LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert "$FILEFULL[$LAYER]" -filter box -resize "$RESIZE" -filter box -resize "$RESIZE" $IM_ARGS  "$PREVIEW_TMPFILE"
+}
+
+programOutput(){
+  # set variables
+  FILE="$FILE"
+  # path variables
+  FILEFULL="$(echo "$(cd "$(dirname "$FILE")"; pwd)"/"$(basename "$FILE")")" # full path $FULL
+  BASENAME="$(basename "$FILEFULL")"    # basename
+  DIRNAME="$(dirname "$FILEFULL")"      # dirname
+  EXTENSION="${BASENAME##*.}"           # extension
+  FILEPATH="${FILEFULL%.*}"             # full path, no extension
+  FILENAME="${BASENAME%.*}"             # filename, no extension"
+  # create tmp working file
+  PREVIEW_TMPFILE="$(mktemp -q /tmp/${SCRIPTNAME}.XXXXXX)".png
+  if [ $? -ne 0 ]; then
+       err "$SCRIPTNAME: Can't create temp file, exiting..."
+       exit 1
+  fi  
+  
+  # check metadata for scanner data
+  if [ "$LAYER" != "" ]; then
+    getThumb # layer is set, do it the easy way
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScanHT" | wc -l | awk '{print $1}' )" ]]; then
+    getThumbiScanHT # iScanHT found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Aperio" | wc -l | awk '{print $1}')" ]]; then
+    getThumbAperio  # Aperio found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Leica" | wc -l | awk '{print $1}')" ]]; then
+    getThumbLeica  # Leica found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "Hamamatsu" | wc -l | awk '{print $1}')" ]]; then
+    getThumbHamamatsu  # Hamamatsu found
+  elif [[ "0" < "$(tiffinfo  "$FILEFULL" 2>&1 | strings | grep -i "iScan" | wc -l | awk '{print $1}')" ]]; then
+    getThumbiScan  # iScan found
+  else
+    err "Unknown virtual slide format: $FILE"
+    err "You probably want to set --layer manually."
+    err "Run slideInfo for layer information."
+    usage
+    exit 1
+  fi
+
+  # display preview, im by default or Preview.app if it exists
+  if [[ -z "$PREVIEW" ]]; then
+    PREVIEW="im"
+    if [[ -f "/Applications/Preview.app/Contents/MacOS/Preview" ]]; then
+      PREVIEW="osx" # OS X Preview.app is available, use it.
+    fi
+  fi
+
+  # now the PREVIEW is set with im|osx|none
+  if [[ "$PREVIEW" == "im" ]];then
+    # wmctrl makes sure the terminal stays active, and 'display' will open in the background.
+    wmctrl -T master$$ -r :ACTIVE: ; display "$PREVIEW_TMPFILE" & sleep "$WMCTRL_TIMEOUT" ; wmctrl -a master$$
+    IM_DISPLAY_PID=$(ps ax | grep [d]isplay | grep "$(basename "$PREVIEW_TMPFILE")" | awk '{print $1}')
+  elif [[ "$PREVIEW" == "osx" ]];then
+    # close preview gently using applescript
+    open -g -a Preview "$PREVIEW_TMPFILE"
+  elif [[ "$PREVIEW" == "none" ]];then
+    PREVIEW="none" # do nothing really.
+    # echo "Preview is set to none." # tell user/log files what is going on.
+  fi
+
+  # check barcodes
+  if [[ "$BARCODE" == "dmtx" ]] ; then
+    # automatically rename file using datamatrix barcode?
+    SLIDENAME_BARCODE="$(dmtxread $DEFAULT_DMTXREAD_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL""
+    if [[ -z "$SLIDENAME_BARCODE" ]]; then
+      exit 1 # No barcode found. Exit (Message is already printed)
+    else
+      SLIDENAME_UNSAVE="$SLIDENAME_BARCODE" # barcode found, rename
+    fi
+  fi
+  if [[ "$BARCODE" == "zbar" ]] ; then
+    # automatically rename file using zbar's barcodes?
+    SLIDENAME_BARCODE="$(zbarimg $DEFAULT_ZBARIMG_ARGS $PREVIEW_TMPFILE)" >/dev/null 2>&1 || err "Cancel slide, no barcode found :"$FILEFULL""
+    if [[ -z "$SLIDENAME_BARCODE" ]]; then
+      exit 1 # No barcode found. Exit (Message is already printed)
+    else
+      SLIDENAME_UNSAVE="$SLIDENAME_BARCODE" # barcode found, rename
+    fi
+  fi
+  # ask for filename if non is existing (by typing or by barcode)
+  while [ "$SLIDENAME_UNSAVE" == "" ]; do
+    read -p "Enter slide name:" SLIDENAME_UNSAVE
+    if [[ -z "$SLIDENAME_UNSAVE" ]] ; then
+      err "Cancel slide..."
+      exit 1
+    fi
+  done
+
+#  fix this line.
+#  SLIDENAME_UNSAVE="$(printf "$SLIDENAME_UNSAVE" | strings | perl -p -e 's/^\\[B//g')"  # fix strange hand-scanner output 
+  SLIDENAME=$(printf "${OUTPUT_PREFIX}${SLIDENAME_UNSAVE}${OUTPUT_SUFFIX}" | perl -p -e 's/[^A-Za-z0-9._-]/_/g') # Only OS save characters. printf keeps it all on one line
+  SLIDEFILE="${SLIDENAME}.${EXTENSION}"
+  # change case if needed
+  if [[ "CASE_LOWER" = "$CASE" ]]; then
+    # change case to lower case
+    SLIDEFILE=$(echo "$SLIDEFILE" | tr [:upper:] [:lower:])
+  elif  [[ "CASE_UPPER" = "$CASE" ]]; then
+    # change case to upper case
+    SLIDEFILE=$(echo "$SLIDEFILE" | tr [:lower:] [:upper:])
+  fi
+  OUTPUTFILE="${DIRNAME}/${SLIDEFILE}"
+  #   rename the file
+  if [[ -n "$OUTPUTFILE" ]]; then
+    if [[ ! -a "$OUTPUTFILE" ]]; then
+      # verbose rename file
+      mv -v "$FILEFULL" "$OUTPUTFILE"
+    else
+      err "Filename exists: $OUTPUTFILE"
+      exit 1
+    fi
+  else
+    err "No new filename given."
+    usage
+    exit 1
+  fi
+}
+
+# all check?
+checkRequirements
+checkDependencies
+
+# lets go!
+"""
+f.write(s)
+f.close()
+os.chmod(bashfile, 0o755)
+bashcmd=bashfile
+for arg in sys.argv[1:]:
+  bashcmd += ' '+arg
+subprocess.call(bashcmd, shell=True)

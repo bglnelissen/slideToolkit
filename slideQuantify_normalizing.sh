@@ -1,4 +1,30 @@
-#!/bin/bash 
+#!/bin/bash
+#
+# Description: Runs slideNormalize to normalize images as part of a slideQuantify job-session.
+# 
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
 
 ### Creating display functions
 ### Setting colouring
@@ -139,7 +165,12 @@ else
 	cd *.tiles/;
 
 	# loading required modules 
-	module load anaconda/3-8.2021.05
+	### Loading the CellProfiler-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+	eval "$(conda shell.bash hook)"
+	conda activate cp4
+	
 	module load slideToolKit
 	module load slideNormalize
 	
@@ -156,7 +187,7 @@ else
 		slideEMask -c -f $IMAGE_TILE -t "${EMASKTHRESHOLD}"
 		
 		echo "... - removing intermediate $IMAGE_TILE ..."
-		rm -v $IMAGE_TILE;
+# 		rm -v $IMAGE_TILE;
 		
 	done
 
@@ -171,6 +202,8 @@ else
 	ls -d -1 $(pwd)/*tiles/*normalized* > files2cp.txt;
 	ls -d -1 $(pwd)/*tiles/ENTROPY* >> files2cp.txt;
 
+	echo "..... Normalizing successfully finished"
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi
 
