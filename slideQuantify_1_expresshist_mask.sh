@@ -114,9 +114,13 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- eMask threshold. A smaller number is less stringent, best results are obtained using, e.g. '210'."
+	echoerror "- Argument #1   -- path_to ExpressHist directory, e.g. /hpc/local/CentOS7/dhl_ec/software/ExpressHIST/."
+	echoerror "- Argument #2   -- Content threshold. The percentage of tissue that should be present at the minimum in a given tile, e.g. 0.5 (5%). [default: 0.5]"
+	echoerror "- Argument #3   -- Patch size. Size of the tiles in pixels, e.g. 512 indicates a tile of 512x512; slideToolKit was tested using patches of 2000x2000. [default: 2000]"
+	echoerror "- Argument #4   -- Down-sampling. Down-sampling number, to indicate the magnification to use, e.g. with a maximum magnification of 40x, a 2 indcates a downsample to 20x. [default: 2]"
+	echoerror "- Argument #5   -- Masking method to apply. Options are otsu, adaptive, or graph (segmentation based). [default: adaptive]"
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_1_expresshist_mask [arg1: 210]"
+	echoerror "An example command would be: slideQuantify_1_expresshist_mask [arg1: /hpc/local/CentOS7/dhl_ec/software/ExpressHIST/] [arg2: 0.5] [arg3: 2000] [arg4: 2] [arg5: adaptive]"
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -129,8 +133,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Yipei Song; "
 echoitalic "                Craig Glastonbury"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-25"
-echoitalic "* Version     : 1.0.1"
+echoitalic "* Last update : 2023-02-06"
+echoitalic "* Version     : 1.0.2"
 echo ""
 echoitalic "* Description : This script will start the masking of images for "
 echoitalic "                slideToolKit analyses; masking can be adaptive, otsu, graph"
