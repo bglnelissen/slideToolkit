@@ -4,33 +4,37 @@
 name: cp4
 
 channels:
-- conda-forge
-- miniconda
-- bioconda
 - defaults
+- bioconda
+- miniconda
+- conda-forge
 
 dependencies:
-- python=3.8
+- python==3.8
 - pip
-- numpy
+- numpy==1.*
 - matplotlib
 - pandas
-- mysqlclient
 - openjdk
 - scikit-learn
 - mahotas
-- Jinja2=3.0.1
-- inflect=5.3.0
-- wxpython=4.1.0
-- mysqlclient=1.4.4
-- sentry-sdk=0.18.0
+- gtk2
+- gtk3
+- Jinja2==3.*
+- inflect==5.*
+- wxpython==4.*
+- mysqlclient==1.*
+- sentry-sdk==0.18.*
+- centrosome
+- gensim
+- FuzzyTM
+- xarray
+- python-javabridge
 - bftools
 - cairo
 - freetype
 - gettext
 - giflib
-- gtk2
-- gtk3
 - imagemagick
 - java-jdk
 - jpeg
