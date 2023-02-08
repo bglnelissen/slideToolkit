@@ -19,7 +19,6 @@ dependencies:
 - openjdk
 - scikit-learn
 - mahotas
-- gtk2
 - Jinja2=3.0.1
 - inflect=5.3.0
 - wxpython=4.1.0

@@ -159,7 +159,7 @@ else
 	SECONDS=0
 	# do some work
 
-	# loading required modules
+	### loading required modules
 	### Loading the CellProfiler-Anaconda3.8 environment
 	### You need to also have the conda init lines in your .bash_profile/.bashrc file
 	echo "..... > loading required anaconda environment containing the CellProfiler installation..."
