@@ -131,8 +131,8 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-25"
-echoitalic "* Version     : 2.1.0"
+echoitalic "* Last update : 2023-02-09"
+echoitalic "* Version     : 2.2.0"
 echo ""
 echoitalic "* Description : This script will start the wrap up of a slideToolKit analysis."
 echoitalic "                This is SLURM based."
@@ -165,7 +165,7 @@ else
 	
 	# Collecting all the data
 	echo "..... Creating [ results.txt ] and collecting data."
-	echo 'SampleID Slide_number Stain STAIN_per_Tissue_area' > results.txt;
+	echo 'SampleID Slide_number Stain STAIN_count_or_area_per_Total_Tissue_area STAIN_count_or_area Tota_Tissue_area' > results.txt;
 	
 	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
 	cd cp_output;

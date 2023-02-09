@@ -32,8 +32,11 @@ df = fread(input = paste0(args[1], "_", args[2]),
 # VAL = sum(df$AreaOccupied_AreaOccupied_NKT_OBJ) / sum(df$AreaOccupied_TotalArea_NKT_OBJ)
 # original code
 VAL = sum(df$AreaOccupied_AreaOccupied_DAB_object_yellow) / sum(df$AreaOccupied_AreaOccupied_Tissue_object_green)
+VAL2 = sum(df$AreaOccupied_AreaOccupied_DAB_object_yellow)
+VAL3 = sum(df$AreaOccupied_AreaOccupied_Tissue_object_green)
 if (is.na(VAL)) {VAL=0}
 cat( VAL )
+cat( VAL, VAL2, VAL3 )
 
 # cat("\nSession information\n")
 # print(version)
