@@ -61,3 +61,5 @@ upgrade_study/SR/*/*.ndpi
 upgrade_study/SR/*/*.TIF
 upgrade_study/_temp/*
 .DS_Store
+upgrade_study/GLYCC/AE1468.GLYCC/*
+upgrade_study/HE/AE3910.UMC.HE/*
