@@ -1,0 +1,65 @@
+[   1] [Images]
+  To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.
+  
+  Settings converted from legacy pipeline.
+
+[   2] [Metadata]
+  The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.
+  
+  Settings converted from legacy pipeline.
+
+[   3] [NamesAndTypes]
+  The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.
+  
+  Please change any color images from Load as Grayscale image to Load as Color image.
+
+[   4] [Groups]
+  The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, timelapse movies, etc.
+  
+  Settings converted from legacy pipeline.
+
+[   5] [ColorToGray]
+  Create gray channel, this is used to find tissue (green)
+  Red is ussually a good channel for tissue.
+  RGB should also be fine.
+
+[   6] [ImageMath]
+
+[   7] [UnmixColors]
+  Split HE and DAB into separate channels
+
+[   8] [IdentifyPrimaryObjects]
+  Find tissue using the grayscale image.
+  White is background, nonwhite is foreground.
+  Diameter is choosen after some testing.
+  Using theshold method is based on trial and error, MoG Global does a good job of removing dark shaded areas in contrast to Threshold.
+  From now on, outlined foreground is called Tissue areas (black).
+
+[   9] [IdentifyPrimaryObjects]
+  Identify Hematoxylin (nuclei) positive areas (green)
+
+[  10] [IdentifyPrimaryObjects]
+  Identify DAB positive areas (yellow)
+
+[  11] [MaskImage]
+  Only analyse Nuclei (red) in the previously defined DAB tissue (yellow)
+
+[  12] [MaskImage]
+
+[  13] [IdentifyPrimaryObjects]
+  Find DAB positive nuclei (red) within masked image (green)
+
+[  14] [IdentifyPrimaryObjects]
+  Find HE positive nuclei (blue) within masked image (green)
+
+[  15] [OverlayOutlines]
+  The next outline is ontop of the previous one.
+
+[  16] [SaveImages]
+  Save outlined images
+  These image are usually not used for further analysis and can be stored in lossy JPEG if wanted.
+
+[  17] [MeasureImageAreaOccupied]
+  Measure tissue (black), HE nuclei (blue) and DAB area (yellow) and nuclei (red) area
+
+[  18] [ExportToSpreadsheet]

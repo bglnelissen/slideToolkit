@@ -1,0 +1,32 @@
+[   1] [Images]
+  To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.
+
+[   2] [Metadata]
+  The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.
+
+[   3] [NamesAndTypes]
+  The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.
+
+[   4] [Groups]
+  The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.
+
+[   5] [ColorToGray]
+
+[   6] [Smooth]
+
+[   7] [ImageMath]
+
+[   8] [IdentifyPrimaryObjects]
+
+[   9] [UnmixColors]
+
+[  10] [IdentifyPrimaryObjects]
+
+[  11] [OverlayOutlines]
+
+[  12] [SaveImages]
+
+[  13] [MeasureImageAreaOccupied]
+  Measure total tissue area (green) and total Fibrin positive stain (red)
+
+[  14] [ExportToSpreadsheet]

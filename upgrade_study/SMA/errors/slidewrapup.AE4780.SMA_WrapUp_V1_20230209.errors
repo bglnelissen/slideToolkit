@@ -1,0 +1,6 @@
+Error in fread(input = paste0(args[1], "_", args[2]), verbose = FALSE,  : 
+  File 'HE_Image.csv' does not exist or is non-readable. getwd()=='/hpc/dhl_ec/VirtualSlides/SMA/_ndpi/AE4780.SMA/cp_output'
+Execution halted
+files2cp.txt:	 96.6% -- replaced with files2cp.txt.gz
+gzip: cp_output/HE*.gct: No such file or directory
+gzip: cp_output/HE*.csv: No such file or directory

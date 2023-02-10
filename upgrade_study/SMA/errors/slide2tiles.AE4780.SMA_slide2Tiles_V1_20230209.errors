@@ -1,0 +1,24 @@
+09-02-2023 23:03:43 [CRITICAL]: Experimental support only for .ndpi slides!
+09-02-2023 23:03:52 [DEBUG]: Adaptive thresholding will be performed with mask downsampling of 16x.
+09-02-2023 23:03:52 [DEBUG]: WSI level 0 dimensions: (98304, 60928)
+09-02-2023 23:03:52 [DEBUG]: Using level 4 to downsample.
+09-02-2023 23:03:52 [DEBUG]: Downsampled size: (6144, 3808)
+09-02-2023 23:03:58 [DEBUG]: ** Original image information **
+09-02-2023 23:03:58 [DEBUG]: -Dimensions: (98304, 60928)
+09-02-2023 23:03:58 [DEBUG]: ** Mask information **
+09-02-2023 23:03:58 [DEBUG]: -Mask downscaling factor: 16
+09-02-2023 23:03:58 [DEBUG]: -Pixel dimensions: (6144, 3808)
+09-02-2023 23:03:58 [DEBUG]: -Calculated patch size: 250
+09-02-2023 23:03:58 [DEBUG]: -Max tile coordinates: (25, 16)
+09-02-2023 23:03:58 [DEBUG]: -Number of tiles: 400
+09-02-2023 23:03:58 [DEBUG]: ** Output image information **
+09-02-2023 23:03:58 [DEBUG]: Requested 2x downsampling for output.
+09-02-2023 23:03:58 [DEBUG]: ** Properties of selected deep zoom level **
+09-02-2023 23:03:58 [DEBUG]: -Real downscaling factor: 2.0
+09-02-2023 23:03:58 [DEBUG]: -Pixel dimensions: (49152, 30464)
+09-02-2023 23:03:58 [DEBUG]: -Selected patch size: 2000
+09-02-2023 23:03:58 [DEBUG]: -Max tile coordinates: (25, 16)
+09-02-2023 23:03:58 [DEBUG]: -Number of tiles: 400
+09-02-2023 23:03:58 [INFO]: == Selecting tiles ==
+09-02-2023 23:08:49 [DEBUG]: Elapsed time: 295.997s
+09-02-2023 23:08:49 [DEBUG]: Selected 157 tiles
