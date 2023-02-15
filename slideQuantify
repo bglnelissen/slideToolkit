@@ -115,7 +115,7 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2023-02-08"
+echoitalic "* Last update : 2023-02-15"
 echoitalic "* Version     : 2.1.2"
 echo ""
 echoitalic "* Description : This script will start the quantification for a given stain"
@@ -235,7 +235,7 @@ else
 		rm -rfv "$PROJECTDIR"/logs/"$SLIDE_NUM"*
 		rm -rfv "$PROJECTDIR"/errors/"$SLIDE_NUM"*
 
-		
+		### OBSOLETE -- slideMasking & Tiling is done in go with ExpressHist
 		### slideMasking and slideTiling
 		### echo ""
 		### echoitalic "* slideMask to mask images using adaptive, otsu or graph segmentation based thresholding. [ $THIS_SLIDEMASK ]"
@@ -250,8 +250,10 @@ else
 		### slide2Tiles
 		echo ""
 		echoitalic "* slide2Tiles to create tiles from images and make mask images using adaptive, otsu or graph segmentation based thresholding. [ $THIS_SLIDE2TILES ]"
-	
-# 		JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+		
+		### OBSOLETE -- slideMasking & Tiling is done in go with ExpressHist
+		### JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+
 		JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
 		### FOR DEBUG
 		### JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
