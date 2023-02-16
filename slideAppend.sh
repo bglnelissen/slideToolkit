@@ -92,7 +92,7 @@ script_arguments_error() {
 	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
 	echoerror "- Argument #2  -- study type of the analysis, e.g. AE or AAA."
 	echoerror "- Argument #3  -- image file type, e.g. TIF, NDPI."
-	echoerror "- Argument #4  -- (the path to) the filename, e.g. Image.csv.gz, the script will automatically append STAIN, e.g. STAIN_Image.csv.gz"
+	echoerror "- Argument #4  -- the filename containin, e.g. Image.csv.gz, the script will automatically append STAIN, e.g. STAIN_Image.csv.gz"
 	echoerror ""
 	echoerror "An example command would be: slideAppend [arg1: STAIN] [arg2: STUDYTYPE ] [arg3: IMAGETYPE ] [arg4: Output_Image.csv.gz] "
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -105,8 +105,8 @@ echobold "                              slideAppend"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-11-26"
-echoitalic "* Version     : v1.0.4"
+echoitalic "* Last update : 2023-02-16"
+echoitalic "* Version     : v1.0.5"
 echo ""
 echoitalic "* Description : This script will collect results and append these in a CSV."
 echoitalic "                Input CSV-files are expected to be gzipped."
@@ -134,14 +134,24 @@ else
 	echoitalic "Creating a new log."
 	# make a new append.log
 	echo "STUDYNUMBER FILENAME" > "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
-	
+
 	echo ""
 	echoitalic "Creating folders to collect all masks and tile-crossed images."
 	mkdir -v "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".MasksTileCrossedImages
 	MASKDIR="${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".MasksTileCrossedImages
 	mkdir -v $MASKDIR/_issues
-	MASKISSUEDIR="$MASKDIR/_issues"
+	mkdir -v $MASKDIR/_masks
+	mkdir -v $MASKDIR/_okay
+	mkdir -v $MASKDIR/_fix
+	mkdir -v $MASKDIR/_multiplaque
+	mkdir -v $MASKDIR/_remove
 	
+	MASKISSUEDIR="$MASKDIR/_issues"
+	MASKMASKDIR="$MASKDIR/_masks"
+	
+	# make tileselection file
+	echo "Tile Width Height Keep Row Column" > $MASKDIR/tile_selection.txt
+		
 	i=0 # Reset a counter
 	echo ""
 	echoitalic "Collecting data for:"
@@ -157,7 +167,7 @@ else
 				echo "$STUDYNUMBER $filename" >> "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".append.log
 				cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKISSUEDIR/mask_${STUDYNUMBER}.png
 				cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKISSUEDIR/tilecrossed_${STUDYNUMBER}.png
-				cp -v $STUDYNUMBER/tile_selection.tsv $MASKISSUEDIR/tile_selection_${STUDYNUMBER}.tsv
+				cp -v $STUDYNUMBER/tile_selection.tsv.gz $MASKISSUEDIR/tile_selection_${STUDYNUMBER}.tsv.gz
 			
 			else	
 				if [[ $i -eq 0 ]] ;  then
@@ -166,9 +176,11 @@ else
 					### echo "DEBUG: check head first file"
 					### zcat "$filename" | head -1
 					zcat "$filename" > "$OutFileName" # Copy header if it is the first file
-					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKDIR/mask_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKMASKDIR/mask_${STUDYNUMBER}.png
 					cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKDIR/tilecrossed_${STUDYNUMBER}.png
-					cp -v $STUDYNUMBER/tile_selection.tsv $MASKDIR/tile_selection_${STUDYNUMBER}.tsv
+					
+					zcat $STUDYNUMBER/tile_selection.tsv.gz | grep -v 'Tile' >> $MASKDIR/tile_selection.txt
+					cp -v $STUDYNUMBER/tile_selection.tsv.gz $MASKMASKDIR/tile_selection_${STUDYNUMBER}.tsv.gz
 				
 				else
 					echoitalic " File no. $i: [ ${filename} ] ..."
@@ -180,9 +192,11 @@ else
 					### DEBUG
 					### ls -lh "$OutFileName"
 					
-					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKDIR/mask_${STUDYNUMBER}.png
+					cp -v $STUDYNUMBER/mask_${STUDYNUMBER}.png $MASKMASKDIR/mask_${STUDYNUMBER}.png
 					cp -v $STUDYNUMBER/tilecrossed_${STUDYNUMBER}.png $MASKDIR/tilecrossed_${STUDYNUMBER}.png
-					cp -v $STUDYNUMBER/tile_selection.tsv $MASKDIR/tile_selection_${STUDYNUMBER}.tsv
+					
+					zcat $STUDYNUMBER/tile_selection.tsv.gz | grep -v 'Tile' >> $MASKDIR/tile_selection.txt
+					cp -v $STUDYNUMBER/tile_selection.tsv.gz $MASKMASKDIR/tile_selection_${STUDYNUMBER}.tsv.gz
 					
 				fi
 			fi
@@ -195,9 +209,11 @@ else
 	echo ""
 	echoitalic "Gzipping the shizzle."
 	gzip -vf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.csv
+	gzip -vf $MASKDIR/tile_selection.txt
 	
 	tar -zcvf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".tar.gz "${MASKDIR}"/ 
-	mv -v readme.slidemask.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidemask.txt
+	### OBSOLETE - we use ExpressHist now
+	### mv -v readme.slidemask.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidemask.txt
 	mv -v readme.slide2tiles.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slide2tiles.txt
 	mv -v readme.slidenormalize.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidenormalize.txt
 	mv -v readme.slidecelprofiler.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidecelprofiler.txt
