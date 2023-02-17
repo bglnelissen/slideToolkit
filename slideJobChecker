@@ -189,11 +189,10 @@ else
 		IMAGESANALYZED_PATTERN="module Images" # only in cellprofiler error file
 		### Creating necessary readme
 		echo "* Making necessary 'readme' files..."
-		echo "Slide_num Filename N_Images_Tiled Message" > ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
+		echo "Slide_num Filename N_Images_Masked Message" > ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
 	
 	elif [[ ${STEP} = "slide2tiles" ]]; then 
 		echo "Checking tiling results..."
-		
 		IMAGESTILED_PATTERN=": Selected" # only in slide2tiles error file
 		### Creating necessary readme
 		echo "* Making necessary 'readme' files..."
@@ -201,10 +200,10 @@ else
 			
 	elif [[ ${STEP} = "slidenormalize" ]]; then
 		echo "Checking image normalization..."
-		IMAGESANALYZED_PATTERN="module Images" # only in cellprofiler error file	
+		IMAGESNORMALIZED_PATTERN="Processing tile" # only in cellprofiler error file	
 		### Creating necessary readme
 		echo "* Making necessary 'readme' files..."
-		echo "Slide_num Filename N_Images_Analyzed Message" > ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
+		echo "Slide_num Filename N_Images_Normalized Message" > ${PROJECTDIR}/readme.${STEP}.${STAIN}.${UNIQUE_LABEL}
 		
 	elif [[ ${STEP} = "slidecellprofiler" ]]; then
 		echo "Checking image analyses..."
@@ -233,12 +232,31 @@ else
 		if [[ ! -z $(grep "${ERROR_PATTERN}" "${ERRORFILE}") ]] ; then 
 
 			ERRORFILENAME=$(basename $ERRORFILE )
+			LOGFILENAME=$(basename /${ERRORFILENAME} .errors)
 			SLIDE_NUM=$(basename "${ERRORFILENAME}" | cut -d'.' -f2)
 			
 			ERROR_MESSAGE=$(grep "${ERROR_PATTERN}" "${ERRORFILE}")
 			
-			N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
-						
+			if [[ ${STEP} = "slidemask" ]]; then
+				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+
+			elif [[ ${STEP} = "slide2tiles" ]]; then
+				N_IMAGES=$(grep "${IMAGESTILED_PATTERN}" "${ERRORFILE}" | awk '{ print $5 }')
+			
+			elif [[ ${STEP} = "slidenormalize" ]]; then
+				N_IMAGES=$(grep "${IMAGESNORMALIZED_PATTERN}" logs/$LOGFILENAME.log | wc -l)
+			
+			elif [[ ${STEP} = "slidecellprofiler" ]]; then
+				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+				
+			elif [[ ${STEP} = "slidewrapup" ]]; then
+				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+			else 
+				script_arguments_error_step_type "You must supply correct step-type when running *** slideJobChecker ***!"
+	
+			### END of if-else statement
+			fi
+			
 			echoerrorflash "*** ERROR ***  The error-file [ $ERRORFILENAME ] contains an error. We'll keep it there for review and check the contents."
 			echoerror "> number of images analyzed/tiled..........: ${N_IMAGES}"
 # 			echoerror "> error message............................: ${ERROR_MESSAGE}"
@@ -248,6 +266,7 @@ else
 		else
 			
 			ERRORFILENAME=$(basename $ERRORFILE )
+			LOGFILENAME=$(basename /${ERRORFILENAME} .errors)
 			SLIDE_NUM=$(basename "${ERRORFILENAME}" | cut -d'.' -f2)
 
 			if [[ ${STEP} = "slidemask" ]]; then
@@ -257,13 +276,13 @@ else
 				N_IMAGES=$(grep "${IMAGESTILED_PATTERN}" "${ERRORFILE}" | awk '{ print $5 }')
 			
 			elif [[ ${STEP} = "slidenormalize" ]]; then
-				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+				N_IMAGES=$(grep "${IMAGESNORMALIZED_PATTERN}" logs/$LOGFILENAME.log | wc -l)
 			
 			elif [[ ${STEP} = "slidecellprofiler" ]]; then
 				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
 				
 			elif [[ ${STEP} = "slidewrapup" ]]; then
-				N_IMAGES=$(grep "${IMAGESANALYZED_PATTERN}" "${ERRORFILE}" | wc -l)
+				N_IMAGES="not_relevant"
 			else 
 				script_arguments_error_step_type "You must supply correct step-type when running *** slideJobChecker ***!"
 	
@@ -278,6 +297,10 @@ else
 			echosucces "####################################################################################"
 			head ${ERRORFILE}
 			tail ${ERRORFILE}
+			echosucces "Reported in the [ logs/${LOGFILENAME}.log ]:      "
+			echosucces "####################################################################################"
+			head logs/${LOGFILENAME}.log
+			tail logs/${LOGFILENAME}.log
 			echosucces "####################################################################################"
 			
 			echosucces "> number of images analyzed/tiled............: ${N_IMAGES}"
