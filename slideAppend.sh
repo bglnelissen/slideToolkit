@@ -105,8 +105,8 @@ echobold "                              slideAppend"
 echo ""
 echoitalic "* Written by  : Tim G.M. van de Kerkhof; Sander W. van der Laan"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2023-02-16"
-echoitalic "* Version     : v1.0.5"
+echoitalic "* Last update : 2023-02-18"
+echoitalic "* Version     : v1.0.7"
 echo ""
 echoitalic "* Description : This script will collect results and append these in a CSV."
 echoitalic "                Input CSV-files are expected to be gzipped."
@@ -211,12 +211,12 @@ else
 	gzip -vf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".ImageExp.csv
 	gzip -vf $MASKDIR/tile_selection.txt
 	
-	tar -zcvf "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".tar.gz "${MASKDIR}"/ 
+	tar -zcvf "${MASKDIR}".tar.gz "${MASKDIR}"/ 
 	### OBSOLETE - we use ExpressHist now
 	### mv -v readme.slidemask.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidemask.txt
 	mv -v readme.slide2tiles.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slide2tiles.txt
 	mv -v readme.slidenormalize.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidenormalize.txt
-	mv -v readme.slidecelprofiler.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidecelprofiler.txt
+	mv -v readme.slidecellprofiler.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidecelprofiler.txt
 	mv -v readme.slidewrapup.* "${TODAY}"."${STAIN}"."${STUDYTYPE}"."${IMAGETYPE}".readme.slidewrapup.txt
 
 	echo ""
