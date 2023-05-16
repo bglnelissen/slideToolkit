@@ -262,7 +262,7 @@ else
 		echo ""
 		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
 	
-		JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
+# 		JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
 		### FOR DEBUG
 		### JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
 
@@ -270,7 +270,7 @@ else
 		echo ""
 		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
 	
-		JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
+# 		JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 		### FOR DEBUG
 		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
 	
@@ -278,7 +278,7 @@ else
 		echo ""
 		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ]"
 	
-		JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mem=${QJOB_MEM_WRAP} --time=${QJOB_TIME_WRAP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
+# 		JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mem=${QJOB_MEM_WRAP} --time=${QJOB_TIME_WRAP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
 		### FOR DEBUG
 		### JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
 
