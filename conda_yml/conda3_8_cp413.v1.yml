@@ -6,13 +6,11 @@ name: cp4
 channels:
 - defaults
 - bioconda
-- miniconda
-- conda-forge
 
 dependencies:
 - python==3.8
 - pip
-- numpy==1.*
+- "numpy==1.*"
 - matplotlib
 - pandas
 - openjdk
@@ -20,11 +18,11 @@ dependencies:
 - mahotas
 - gtk2
 - gtk3
-- Jinja2==3.*
-- inflect==5.*
-- wxpython==4.*
-- mysqlclient==1.*
-- sentry-sdk==0.18.*
+- "Jinja2==3.*"
+- "inflect==5.*"
+- "wxpython==4.*"
+- "mysqlclient==1.*"
+- "sentry-sdk==0.18.*"
 - centrosome
 - gensim
 - FuzzyTM
@@ -46,7 +44,7 @@ dependencies:
     - arrow
     - pathlib
     - opencv-contrib-python
-    - openslide-python>=1.1.2
+    - openslide-python
     
 # you could automatically provide the prefix, or just do it via the prompt
 # prefix: ~/miniconda3/envs/cp4
