@@ -1,6 +1,6 @@
-# run: conda env create -f mamba3_8_cp413.v1.yml
-# run: conda env update -f mamba3_8_cp413.v1.yml
-# run: conda env remove -n cp4
+# run: mamba env create -f mamba3_8_cp413.v1.yml
+# run: mamba env update -f mamba3_8_cp413.v1.yml
+# run: mamba env remove -n cp4
 name: cp4
 
 channels:
