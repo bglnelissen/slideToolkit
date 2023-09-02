@@ -129,7 +129,7 @@ echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
 echoitalic "                Yipei Song"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2021-09-02"
+echoitalic "* Last update : 2023-09-01"
 echoitalic "* Version     : 2.0.3"
 echo ""
 echoitalic "* Description : This script will start the normalization of images for "
@@ -167,9 +167,6 @@ cd *.tiles/;
 echo "..... > loading required anaconda environment containing the CellProfiler installation..."
 eval "$(conda shell.bash hook)"
 conda activate cp4
-
-module load slideToolKit
-module load slideNormalize
 
 for IMAGE_TILE in *.tile.tissue.png; do
 	echo "...Processing tile [ $IMAGE_TILE ]"

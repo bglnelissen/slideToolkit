@@ -6,6 +6,7 @@ name: cp4
 channels:
 - defaults
 - bioconda
+- conda-forge
 
 dependencies:
 - python==3.8
