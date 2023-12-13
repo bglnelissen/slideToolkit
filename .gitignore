@@ -40,7 +40,7 @@ Thumbs.db
 _gsdata_/*
 
 # UPGRADE STUDY #
-######################
+#################
 # We want to exclude *input* and *output* images (i.e. tiles, NDPI, TIFs); 
 # these are 1) personal data, and 2) too large.
 upgrade_study/CD34/*/*.ndpi
@@ -60,7 +60,11 @@ upgrade_study/SMA/*/*.TIF
 upgrade_study/SR/*/*.ndpi
 upgrade_study/SR/*/*.TIF
 upgrade_study/_temp/*
-.DS_Store
 upgrade_study/GLYCC/AE1468.GLYCC/*
 upgrade_study/HE/AE3910.UMC.HE/*
 upgrade_study/SMA/AE4780.SMA/*
+
+# SLIDES FOLDER #
+#################
+# We want to exclude some AE-SLIDES images
+AE-SLIDES/**

@@ -1,0 +1,2 @@
+SampleID Slide_number Stain STAIN_per_Tissue_area
+cp_output SMA Fatal error: cannot open file '/hpc/local/CentOS7/dhl_ec/software/slideToolKit/utilities/Colsums_SMA.R': No such file or directory
