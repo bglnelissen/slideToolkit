@@ -4,9 +4,8 @@
 slideDupIdentify
 
 This script identifies and organizes duplicate files based on specified criteria,
-such as study type and stain name. It prioritizes duplicates according to certain 
-rules. It provides options to output information about the duplicates
-and log statistics.
+such as study type and stain name. It prioritizes multiplicates according to certain 
+rules and provides options to output information about the multiplicates and log statistics.
 
 Usage:
 python slideDupIdentify.py --studytype AE --stain CD34 --output duplicate_files
@@ -18,6 +17,7 @@ Options:
     --out_file, -o     Specify the output file name (without extension) to write duplicate information. Required.
     --force, -f        Force overwrite if the output file already exists. Optional.
     --dry_run, -d      Perform a dry run (report in the terminal, no actual file operations. Optional.
+    --debug, -D        Print debug information. Optional.
     --verbose, -V      Print the number of duplicate samples identified. Optional.
     --help, -h         Print this help message and exit. Optional.
     --version, -v      Print the version number and exit. Optional.
@@ -145,10 +145,9 @@ def main():
     parser = argparse.ArgumentParser(description=f'''
 + {VERSION_NAME} v{VERSION} +
 
-Identify and move duplicate image files based on specified criteria.
-This script identifies and organizes duplicate files based on specified criteria, such as `--output` for the
-output file name, study type (`--study_type`), stain name (`--stain`). It prioritizes duplicates according to 
-certain rules. It provides options (`--verbose`) to output information about the duplicates and log statistics 
+This script identifies and organizes multiplicate files based on specified criteria, such as `--output` for the
+output file name, study type (`--study_type`), stain name (`--stain`). It prioritizes multiplicates according to 
+certain rules. It provides options (`--verbose`) to output information about the multiplicates and log statistics 
 using `--log`.
 
 Images are expected to be of the form `study_typestudy_number.[additional_info.]stain.[random_info.]file_extension`, 
