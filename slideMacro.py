@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+#
 # script to extract a macro images (and display) whole-slide image files (*.TIF, *.NDPI, etc.)
 #
 # Ref: https://github.com/choosehappy/Snippets/blob/master/extract_macro_level_from_wsi_image_openslide_cli.py
@@ -9,8 +10,8 @@ print("                                   slideMacro: extract macro images ")
 print("")
 print("* Version          : v1.0.3")
 print("")
-print("* Last update      : 2022-09-07")
-print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("* Last update      : 2023-12-15")
+print("* Written by       : Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com")
 print("* Inspired by      : choosehappy | https://github.com/choosehappy")
 print("")
 print("* Description      : This script will get macro-images at a given level of magnification from ")
@@ -37,9 +38,9 @@ from openslide import *
 parser = argparse.ArgumentParser(
 	prog='slideMacro',
 	description='This script will get macro-images at a given level of magnification from (a list of given) images for quick inspection.',
-	usage='slideMacro -i/--input -l/--level; optional: -d/--display -o/--outdir -s/--suffix -t/--type -f/--force -v/--verbose; for help: -h/--help',
+	usage='python3 slideMacro.py -i/--input -l/--level; optional: -d/--display -o/--outdir -s/--suffix -t/--type -f/--force -v/--verbose; for help: -h/--help',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
-	epilog=textwrap.dedent("Copyright (c) 1979-2022 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
+	epilog=textwrap.dedent("Copyright (c) 1979-2023 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com"))
 
 parser.add_argument('-d', '--display', help="Also show macro on display, default simply writes macro.", action="store_true")
 parser.add_argument('-o', '--outdir', help="Output dir, default is present working directory.", default="<<SAME>>", type=str)
@@ -136,7 +137,7 @@ for fname in files:
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
-print("+ Copyright (c) 1979-2022 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
+print("+ Copyright (c) 1979-2023 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
 print("+                                                                                                                 +")
 print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and               +")
 print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including       +")

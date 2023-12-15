@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # Ref: https://lists.andrew.cmu.edu/pipermail/openslide-users/2015-May/001060.html
 #
@@ -13,8 +13,8 @@ print("                                      slideInfo: whole-slide image inform
 print("")
 print("* Version          : v1.0.2")
 print("")
-print("* Last update      : 2021-08-31")
-print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("* Last update      : 2023-12-15")
+print("* Written by       : Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com")
 print("* Suggested for by : Toby Cornish")
 print("")
 print("* Description      : This script will get whole-slide image information from (a list of given) images ")
@@ -39,11 +39,11 @@ import openslide
 from openslide import *
 
 parser = argparse.ArgumentParser(
-	prog='slideNDPInfo',
+	prog='slideInfo',
 	description='This script will get whole-slide image information from (a list of given) images for quick inspection.',
-	usage='slideNDPInfo [-h/--help] -i/--input.',
+	usage='python3 slideInfo.py -i/--input [-h/--help]',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
-	epilog=textwrap.dedent("Copyright (c) 1979-2020 Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"))
+	epilog=textwrap.dedent("Copyright (c) 1979-2023 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com"))
 parser.add_argument('-v', '--verbose', help="Will get all available image properties.", default=False, action="store_true")
 
 requiredNamed = parser.add_argument_group('required named arguments')
@@ -102,7 +102,7 @@ for fname in files:
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
-print("+ Copyright (c) 1979-2021 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
+print("+ Copyright (c) 1979-2023 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
 print("+                                                                                                                 +")
 print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and               +")
 print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including       +")

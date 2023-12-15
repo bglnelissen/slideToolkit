@@ -1,11 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("                                   slideToolKitTest: test the environment ")
 print("")
 print("* Version          : v1.0.0")
 print("")
-print("* Last update      : 2021-11-06")
-print("* Written by       : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("* Last update      : 2023-12-15")
+print("* Written by       : Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com")
 print("")
 print("* Description      : This script will test the slideToolKit virtual environment.")
 print("")
@@ -36,9 +37,9 @@ utc = arrow.utcnow()
 parser = argparse.ArgumentParser(
 	prog='slideToolKitTest',
 	description='This script will test the slideToolKit virtual environment.',
-	usage='slideToolKitTest [-h/--help] -b/--bdate.',
+	usage='python3 slideToolKitTest.py [-h/--help] -b/--bdate.',
 	formatter_class=argparse.RawDescriptionHelpFormatter,
-	epilog=textwrap.dedent("Copyright (c) 1979-2021 Sander W. van der Laan | s.w.vanderlaan@gmail.com"))
+	epilog=textwrap.dedent("Copyright (c) 1979-2023 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com"))
 parser.add_argument('-v', '--verbose', help="Will get all available image properties.", default=False, action="store_true")
 parser.add_argument('-b','--bdate',help="Your birthdate - format YYYY-MM-DD. Try: 1979-01-13.", 
 #                     required=True, 
@@ -70,7 +71,7 @@ print(f"You were born {birth_date.humanize()}.")
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("+ The MIT License (MIT)                                                                                           +")
-print("+ Copyright (c) 1979-2021 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
+print("+ Copyright (c) 1979-2023 Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands                          +")
 print("+                                                                                                                 +")
 print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and               +")
 print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including         +")
