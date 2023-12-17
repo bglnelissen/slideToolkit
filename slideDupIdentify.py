@@ -25,7 +25,7 @@ Options:
 
 # Version information
 VERSION_NAME = 'slideDupIdentify'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 COPYRIGHT = 'Copyright 1979-2023. Tim S. Peters & Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
 COPYRIGHT_TEXT = f'\nThe MIT License (MIT). \n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and \nassociated documentation files (the "Software"), to deal in the Software without restriction, \nincluding without limitation the rights to use, copy, modify, merge, publish, distribute, \nsublicense, and/or sell copies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions: \n\nThe above copyright notice and this permission notice shall be included in all copies \nor substantial portions of the Software. \n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, \nINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR \nPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS \nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, \nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE \nOR OTHER DEALINGS IN THE SOFTWARE. \n\nReference: http://opensource.org.'
 
@@ -338,13 +338,6 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
                 if debug:
                     print(f"\n>>> DEBUG: checking multiplicity meta-data <<<")
                     print(f"{multiplicity_df}")
-        
-    if args.verbose:
-        # show contents of duplicate folder
-        print(f"Contents of the [{duplicate_folder}] folder:")
-        for dup_file in os.listdir(duplicate_folder):
-            if dup_file.startswith(args.study_type) and args.stain in dup_file:
-                print(f"  - {dup_file}")
     
     print(f'\nSaving multiplicate metadata to [{output_file_path}.metadata.csv].')
     multiplicity_df.to_csv(output_file_path, index=False)
@@ -360,7 +353,7 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
     if args.verbose:
         print(f"Written prioritization information to [{output_file_path}.metadata.csv]")
 
-     # Move files associated with duplicate study numbers to the duplicate folder
+    # Move files associated with duplicate study numbers to the duplicate folder
     print(f"\nMoving files with multiplicate studynumbers to the [{duplicate_folder}] folder; redundant duplicates are moved to [{backup_duplicate_folder}].")
     for file_name in os.listdir('.'):
         if file_name in set(multiplicity_df['filename']):
@@ -371,6 +364,13 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
             duplicate_file = move_to_duplicates(file_path, duplicate_folder, file_df['priority'] != "", args.dry_run, args.verbose)
             if args.verbose and not args.dry_run:
                 print(f"  {file_path} > {duplicate_file} ({file_df['study_number']} - {file_df['file_name_info']}))")
+
+    if args.verbose:
+        # show contents of duplicate folder
+        print(f"Contents of the [{duplicate_folder}] folder:")
+        for dup_file in os.listdir(duplicate_folder):
+            if dup_file.startswith(args.study_type) and args.stain in dup_file:
+                print(f"  - {dup_file}")
 
     # Calculate the elapsed time in seconds
     elapsed_time = time.time() - start_time
