@@ -152,14 +152,14 @@ then
 	echo "..... Normalization was already applied - moving on."
 	exit
 fi
-if [ ! -d *.tiles ]; then
+if [ ! -d *tiles ]; then
 	(>&2 echo "*** ERROR *** No tiles to process. Create tiles first using slide2Tiles.")
 	exit; 
 fi
 
 echo "..... Tiles present, starting normalization."
 # moving to the required directory
-cd *.tiles/;
+cd *tiles/;
 
 # loading required modules 
 ### Loading the CellProfiler-Anaconda3.8 environment
@@ -182,7 +182,7 @@ done
 cd ../
 
 echo "..... Collecting all normalized and masked tiles in a file for CellProfiler."
-ls -d -1 $(pwd)/*.tiles/*normalized.tile.tissue.png > files2cp.txt;
+ls -d -1 $(pwd)/*tiles/*normalized.tile.tissue.png > files2cp.txt;
 
 echo "..... Normalizing successfully finished."
 
