@@ -45,7 +45,7 @@ parser.add_argument('-d', '--display', help="Also show Thumbnail on display, def
 parser.add_argument('-o', '--outdir', help="Output dir, default is present working directory.", default="<<SAME>>", type=str)
 parser.add_argument('-s', '--suffix', help="Suffix to append to end of file, default is 'thumb' for thumbnail.", default="", type=str)
 parser.add_argument('-t', '--type', help="Output file type, default is png (which is slower), other options are tif.", default="png", type=str)
-parser.add_argument('-f', '--force', help="Force utput even if it exists.", default=False, action="store_true")
+parser.add_argument('-f', '--force', help="Force output even if it exists.", default=False, action="store_true")
 parser.add_argument('-v', '--verbose', help="While writing images also display image properties.", default=False, action="store_true")
 
 requiredNamed = parser.add_argument_group('required named arguments')
