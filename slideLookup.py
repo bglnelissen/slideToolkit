@@ -163,7 +163,7 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
     parser.add_argument('--samples', '-s', nargs='+', required=True, help='List of whole-slide image (WSI) samples, e.g. AE4211, AE3422. Required.')
     parser.add_argument('--dir', '-d', nargs='+', help='List of directories, e.g. CD14 CD3. Required.', default=DEFAULT_DIRECTORIES)
     parser.add_argument('--study_type', '-t', required=True, help='Specify the study type prefix, e.g., AE. Required.')
-    parser.add_argument('--log', '-l', help='Specify the log-filename which will be of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. Optional.', default="AWESOMEPROJECT")
+    parser.add_argument('--log', '-l', help='Specify the log-filename which will be of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. Optional.', default="histo_lookup")
     parser.add_argument('--copy', '-c', action='store_true', help='Copy files to copy-dir. Optional.')
     parser.add_argument('--copy_dir', '-cd', help='Directory to copy files. Optional.')
     ### WANT TO ADD THIS LATER ###
@@ -193,18 +193,16 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
     # Set how we handle the copy directory
     if args.copy:
         if args.copy_dir:
-            COPY_DIRECTORY = args.copy_dir
+            COPY_DIRECTORY = os.path.join(DEFAULT_COPY_DIRECTORY, args.study_type + '_' + formatted_today + '_' + args.copy_dir)
             log_folder = os.path.join(COPY_DIRECTORY)
             print(f"\nNotice: You set to copy WSI files and specified a directory to copy the files to; setting it to ({COPY_DIRECTORY}).")
         else:
-            COPY_DIRECTORY = DEFAULT_COPY_DIRECTORY
-            ### LOCAL TESTING ###
-            ### COPY_DIRECTORY = "/Users/USERNAME/SOMEDIRECTORY"
+            COPY_DIRECTORY = os.path.join(DEFAULT_COPY_DIRECTORY, args.study_type + '_' + formatted_today + '_slideLookup')
             log_folder = os.path.join(COPY_DIRECTORY)
             print(f"\nNotice: You set to copy WSI files, but did not specify a directory to copy the files to; setting it to default ({COPY_DIRECTORY}).")
     else:
         COPY_DIRECTORY = None
-        log_folder = os.getcwd()
+        log_folder = os.getcwd() # os.path.join(os.getcwd(), args.study_type + '_' + formatted_today + '_slideLookup')
         print(f"\nNotice: You did not specify the copy argument. So we are only performing the lookup without copying.")
         if args.verbose:
             print(f">>> Directory was not set ({COPY_DIRECTORY}) <<<\n")
