@@ -68,9 +68,15 @@ def get_lookup_directory(study_type, verbose):
 
 # Define function to find samples in directories
 def find_samples_in_directories(samples, study_type, directories, verbose, copy_dir):
+    
+    # Get the lookup directory
     lookup_directory = get_lookup_directory(study_type, verbose)
     if verbose:
         print(f"Looking for {study_type} slides in: [ {lookup_directory} ]")
+
+    # Create the copy directory if it does not exist
+    if copy_dir:
+        create_copy_directory(copy_dir, verbose)
 
     # Loop over the directories    
     for directory in directories:
@@ -86,7 +92,7 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
 
                 # Filter files by extension
                 if file.lower().endswith(('.TIF', '.ndpi')):
-                    
+
                     # Loop over the samples
                     for sample in samples:
 
@@ -97,7 +103,6 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                             
                             # Copy the file to the copy directory
                             if copy_dir:
-                                create_copy_directory(copy_dir, verbose)
                                 copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
                                 if verbose:
                                     print(f"...copying...")
@@ -112,12 +117,14 @@ def create_copy_directory(copy_dir, verbose):
         if verbose:
             print(f"> Copy directory already exists: {copy_dir}.")
             list_folder_content(copy_dir)
+
 # Define function to copy files to directory
 def copy_file_to_directory(file_path, copy_dir, verbose):
     shutil.copy(file_path, copy_dir)
     if verbose:
         print(f"> Copied {file_path} to {copy_dir}.")
 
+# Define function to list the content of a folder
 def list_folder_content(folder_path):
     try:
         # List the content of the folder
