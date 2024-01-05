@@ -25,7 +25,8 @@ Options:
 
 # Version information
 VERSION_NAME = 'slideDupIdentify'
-VERSION = '1.0.1'
+VERSION = '1.0.2'
+VERSION_DATE = '2023-01-05'
 COPYRIGHT = 'Copyright 1979-2023. Tim S. Peters & Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
 COPYRIGHT_TEXT = f'\nThe MIT License (MIT). \n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and \nassociated documentation files (the "Software"), to deal in the Software without restriction, \nincluding without limitation the rights to use, copy, modify, merge, publish, distribute, \nsublicense, and/or sell copies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions: \n\nThe above copyright notice and this permission notice shall be included in all copies \nor substantial portions of the Software. \n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, \nINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR \nPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS \nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, \nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE \nOR OTHER DEALINGS IN THE SOFTWARE. \n\nReference: http://opensource.org.'
 
@@ -166,7 +167,7 @@ prioritize the files based on the following criteria:
 - When none of the above apply > `cannot_assign_priority`
 
 Example usage:
-python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files [options --force --dry_run --verbose]
+python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files [options: --force --dry_run --verbose]
         ''',
         epilog=f'''
 + {VERSION_NAME} v{VERSION}. {COPYRIGHT} \n{COPYRIGHT_TEXT}+''', 
@@ -179,7 +180,7 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
     parser.add_argument('--dry_run', '-d', action='store_true', help='Perform a dry run (report in the terminal, no actual file operations. Optional.')
     parser.add_argument('--debug', '-D', action='store_true', help='Print debug information. Optional.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Print the number of duplicate samples identified. Optional.')
-    parser.add_argument('--version', '-V', action='version', version=f'%(prog)s {VERSION}.')
+    parser.add_argument('--version', '-V', action='version', version=f'%(prog)s {VERSION} ({VERSION_DATE}).')
     args = parser.parse_args()
 
     # Set the debug variable
@@ -188,7 +189,7 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
     # Start the timer
     start_time = time.time()
 
-    print(f"+ {VERSION_NAME} v{VERSION} +")
+    print(f"+ {VERSION_NAME} v{VERSION} ({VERSION_DATE}) +")
     print(f"\nIdentify and move multiplicate image files based on specified criteria for:\n> study_type: {args.study_type}\n> stain: {args.stain}")
     
     if debug:
@@ -386,7 +387,7 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
     # Write the statistics to a log file
     try:
         with open(log_file_path, 'w') as log_file:
-            log_file.write(f"+ {VERSION_NAME} v{VERSION} +")
+            log_file.write(f"+ {VERSION_NAME} v{VERSION} ({VERSION_DATE}) +")
             log_file.write(f"\nIdentied and moved multiplicate image files based on specified criteria for:\n> study_type: {args.study_type}\n> stain: {args.stain}\n")
             log_file.write(f"\nTotal unique samples for stain {args.stain}: {remaining_unique_samples} | {unique_samples}\n")
             log_file.write(f"Total multiplicity files found: {sum(study_numbers_count.values())}\n")
@@ -414,6 +415,6 @@ if __name__ == '__main__':
     main()
 
 # Print the version number
-print(f"\n+ {VERSION_NAME} v{VERSION}. {COPYRIGHT} +")
-print(f"\n{COPYRIGHT_TEXT}")
+print(f"\n+ {VERSION_NAME} v{VERSION} ({VERSION_DATE}). {COPYRIGHT} +")
+print(f"{COPYRIGHT_TEXT}")
 # End of file
