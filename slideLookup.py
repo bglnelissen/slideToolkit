@@ -71,6 +71,10 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
     # Create a set to store the copied files
     copied_files = set()
 
+    # Populate the set with existing files in the copy directory
+    if copy_dir:
+        copied_files.update(file for file in os.listdir(copy_dir))
+        
     # Get the lookup directory
     lookup_directory = get_lookup_directory(study_type, verbose)
     if verbose:
