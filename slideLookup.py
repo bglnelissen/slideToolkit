@@ -97,7 +97,7 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                             create_copy_directory(copy_dir, verbose)
                             copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
                             if verbose:
-                                print(f"Found {sample} in {directory} as {file}; copying...")
+                                print(f"...copying...")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):
@@ -105,13 +105,32 @@ def create_copy_directory(copy_dir, verbose):
         os.makedirs(copy_dir, exist_ok=True)
         if verbose:
             print(f"> Created copy directory: {copy_dir}.")
-
+    else:
+        if verbose:
+            print(f"> Copy directory already exists: {copy_dir}.")
+            list_folder_content(copy_dir)
 # Define function to copy files to directory
 def copy_file_to_directory(file_path, copy_dir, verbose):
     shutil.copy(file_path, copy_dir)
     if verbose:
         print(f"> Copied {file_path} to {copy_dir}.")
 
+def list_folder_content(folder_path):
+    try:
+        # List the content of the folder
+        content = os.listdir(folder_path)
+
+        # Print the content
+        print(f"Content of '{folder_path}':")
+        for item in content:
+            print(item)
+
+    except FileNotFoundError:
+        print(f"Error: Folder '{folder_path}' not found.")
+    except PermissionError:
+        print(f"Error: Permission denied to access folder '{folder_path}'.")
+
+# Define main function
 def main():
     parser = argparse.ArgumentParser(description=f'''
 + {VERSION_NAME} v{VERSION} +
