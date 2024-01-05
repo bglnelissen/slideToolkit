@@ -68,7 +68,9 @@ def get_lookup_directory(study_type, verbose):
 
 # Define function to find samples in directories
 def find_samples_in_directories(samples, study_type, directories, verbose, copy_dir):
-    
+    # Create a set to store the copied files
+    copied_files = set()
+
     # Get the lookup directory
     lookup_directory = get_lookup_directory(study_type, verbose)
     if verbose:
@@ -103,9 +105,13 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                             
                             # Copy the file to the copy directory
                             if copy_dir:
-                                copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
-                                if verbose:
-                                    print(f"...copying...")
+                                source_path = os.path.join(root, file)
+                                # Check if the file has already been copied
+                                if source_path not in copied_files:
+                                    copy_file_to_directory(source_path, copy_dir, verbose)
+                                    copied_files.add(source_path)
+                                    if verbose:
+                                        print(f"...copying...")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):
