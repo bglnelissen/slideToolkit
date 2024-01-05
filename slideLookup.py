@@ -117,6 +117,9 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                                     copied_files.add(file)
                                     if verbose:
                                         print(f"...copying...")
+                                else:
+                                    if verbose:
+                                        print(f"...already copied...")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):
