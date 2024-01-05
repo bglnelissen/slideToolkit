@@ -80,17 +80,12 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
         
         # Loop over the subdirectories
         for root, dirs, files in os.walk(lookup_directory_walk):
-            ### LOCAL TESTING ###
-            ### print(f"> checking among {files}...")
+
             # Loop over the files
             for file in files:
-                ### LOCAL TESTING ###
-                ### print(f"> inspecting {file}...")
 
                 # Loop over the samples
                 for sample in samples:
-                    if verbose:
-                        print(f"> checking for {sample}...")
 
                     # Check if the sample is in the file
                     if sample in file:
@@ -103,9 +98,6 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                             copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
                             if verbose:
                                 print(f"Found {sample} in {directory} as {file}; copying...")
-                    # If not, continue
-                    ### LOCAL TESTING ###
-                    ### print(f"{file} did not match {sample} in {directory}.")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):
