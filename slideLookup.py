@@ -84,20 +84,23 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
             # Loop over the files
             for file in files:
 
-                # Loop over the samples
-                for sample in samples:
+                # Filter files by extension
+                if file.lower().endswith(('.TIF', '.ndpi')):
+                    
+                    # Loop over the samples
+                    for sample in samples:
 
-                    # Check if the sample is in the file
-                    if sample in file:
-                        if verbose:
-                            print(f"Found {sample} in {directory} as {file}.")
-                        
-                        # Copy the file to the copy directory
-                        if copy_dir:
-                            create_copy_directory(copy_dir, verbose)
-                            copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
+                        # Check if the sample is in the file
+                        if sample in file:
                             if verbose:
-                                print(f"...copying...")
+                                print(f"Found {sample} in {directory} as {file}.")
+                            
+                            # Copy the file to the copy directory
+                            if copy_dir:
+                                create_copy_directory(copy_dir, verbose)
+                                copy_file_to_directory(os.path.join(root, file), copy_dir, verbose)
+                                if verbose:
+                                    print(f"...copying...")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):
