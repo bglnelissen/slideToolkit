@@ -3,7 +3,7 @@
 # Description: Create slide thumbnail, including label
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
 # UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,6 +36,7 @@ DEFAULT_OUTPUT_EXTENSION="png"
 DEFAULT_OUTPUT_DIRECTORY="." # Relative to input file
 DEFAULT_RESIZE="1024x1024"
 DEFAULT_IM_ARGS="" # convert arguments # -verbose
+DEFAULT_SLURMARGS="--time 00:15:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -59,7 +60,7 @@ slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2018, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
+Copyright (c) 2014-2024, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -114,7 +115,7 @@ print a job list:
 print a job list for 'qsub':
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "qsub" -pe threaded 1 -q veryshort \\
+    echo "sbatch $DEFAULT_SLURMARGS" \\
     "$(command -v "$SCRIPTNAME")" --file="\${j}"
   done
 
@@ -131,8 +132,8 @@ absolute path, if the location does not exist it will be created). Pipe
 the 'job list' output in 'parallel' for parallel processing.
 
 The slideToolKit and all its tools are released under the terms of the MIT license.
-The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
-Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+The slideToolKit (C) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com, UMC Utrecht, 
 the Netherlands.
 
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.

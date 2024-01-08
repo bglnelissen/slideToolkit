@@ -3,7 +3,7 @@
 # Description: Fetch slide metadata (resolution, dates, etc)
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
 # UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -52,7 +52,7 @@ slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Copyright (c) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -101,8 +101,8 @@ Show virtual slide metadata/information: color depth, layers, etc.
 CAVE: $SCRIPTNAME does suppress lots of warnings!
 
 The slideToolKit and all its tools are released under the terms of the MIT license.
-The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
-Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+The slideToolKit (C) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com, UMC Utrecht, 
 the Netherlands.
 
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.

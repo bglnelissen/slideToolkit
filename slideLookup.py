@@ -2,32 +2,35 @@
 
 """
     slideLookup
-    This script is designed to perform a whole-slide image (WSI) sample lookup (--samples) in a directory or 
-    a set of directories (--dir) containing WSI. By default, the script will look for the following 
-    directories: {DEFAULT_DIRECTORIES}. These can be changed with the `--dir` flag.
+    This script is designed to perform a whole-slide image (WSI) sample lookup (`--samples`) in a directory or 
+    a set of directories (`--dir`) containing WSI. By default, the script will look for the following 
+    directories: [ "CD3", "CD34", "CD66b", "CD68", "EVG", "FIBRIN", "GLYCC", "HE", "SMA", "SR", "SR_POLARIZED" ]. 
+    These can be changed with the `--dir` flag. By default a log file is written to the current working directory 
+    and is of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. 
 
-    Optionally, the found files can be copied (--copy) to another directory (--copy-dir). It provides extra 
-    information (--verbose) if requested.
-
-    The script is executed using `python slideLookup.py` from the command line. Users can provide sample codes
-    and directories as arguments. Optionally, they can specify whether to copy the found files and provide a
-    directory for copying. Extra information can be printed with the `--verbose` flag.
+    Optionally, the found files can be copied (`--copy`) to another directory (`--copy-dir`). By default, the
+    files will be copied to the following directory: [ ../VirtualSlides/Projects/histo_lookups ].  The `--log` flag will change the 
+    default output name of the log file, and `--copy-dir` will change the log-output directory too. It provides 
+    extra information (--verbose) if requested.
 
     Example usage:
     python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy --copy-dir /home/user/Desktop/ --verbose]
 
     Options:
-    --samples, -s       List of sample codes to look for in filenames. Required.
-    --dir, -d           List of directories to search for the samples. Required.
-    --study_type, -t    Specify the study type prefix, e.g., AE. Required.
-    --log, -l           Specify the log-filename which will be of the form [`study_type`.slideLookup.`log`]. Required.
-    --copy, -c          Copy the found files. Optional.
-    --copy_dir, -cd     Set directory to copy the found files. Optional.
+    --samples, -s       List of whole-slide image (WSI) samples, e.g. AE4211, AE3422. Required.
+    --dir, -d           List of directories, e.g. CD14 CD3. Required. Default: "CD3", "CD34", "CD66b", "CD68", "EVG", "FIBRIN", 
+                        "GLYCC", "HE", "SMA", "SR", "SR_POLARIZED".
+    --study_type, -t    Specify the study type prefix, e.g., AE or AAA (no other option is possible). Required.
+    --log, -l           Specify the log-filename which will be of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. Optional.
+                        By default the log file will be written to the current working directory.
+    --copy, -c          Copy files to copy-dir. Optional.
+    --copy_dir, -cd     Specify the directory to copy files to. Optional. By default the files will be copied to the following directory:
+                        [ ../VirtualSlides/Projects/histo_lookups ].
     --verbose, -v       Print extra information. Optional.
     --version, -V       Print version. Optional.
     --help, -h          Print help message. Optional.
 
-    """
+"""
 
 # Version information
 VERSION_NAME = 'slideLookup'
@@ -46,9 +49,10 @@ from datetime import datetime
 from datetime import timedelta
 
 # Define default directories
-DEFAULT_DIRECTORIES = ["CD14", "CD3", "CD31", "CD34", "CD3_CD56_NKT", "CD42B", "CD66b", "CD68", "CD8",
-                       "CD86", "EVG", "FIBRIN", "GLYCC", "HE", "HE-FIBRIN", "HHIPL1", "MPO", "MT", "SMA",
-                       "SR", "SR_POLARIZED", "VONWILLEBRANDFACTOR"]
+DEFAULT_DIRECTORIES_EXTENDED = ["CD14", "CD3", "CD31", "CD34", "CD3_CD56_NKT", "CD42B", "CD66b", "CD68", "CD8",
+                                "CD86", "EVG", "FIBRIN", "GLYCC", "HE", "HE-FIBRIN", "HHIPL1", "MPO", "MT", "SMA",
+                                "SR", "SR_POLARIZED", "VONWILLEBRANDFACTOR"]
+DEFAULT_DIRECTORIES = ["CD3", "CD34", "CD66b", "CD68", "EVG", "FIBRIN", "GLYCC", "HE", "SMA", "SR", "SR_POLARIZED"]
 
 ### WANT TO ADD THIS LATER ###
 ### a more secure way to do this is to use the os.path.join() function
@@ -161,14 +165,15 @@ def main():
     parser = argparse.ArgumentParser(description=f'''
 + {VERSION_NAME} v{VERSION} +
 
-This script is designed to perform a whole-slide image (WSI) sample lookup (--samples) in a directory or 
-a set of directories (--dir) containing WSI. By default, the script will look for the following 
-directories: [ {DEFAULT_DIRECTORIES} ]. These can be changed with the `--dir` flag. By default a log file
-is written to the current working directory; this is changed by providing --copy_dir . The `--log` flag 
+This script is designed to perform a whole-slide image (WSI) sample lookup (`--samples`) in a directory or 
+a set of directories (`--dir`) containing WSI. By default, the script will look for the following 
+directories: [ {DEFAULT_DIRECTORIES} ]. These can be changed with the `--dir` flag. By default a log file 
+is written to the current working directory and is of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. 
 
-Optionally, the found files can be copied (--copy) to another directory (--copy-dir). By default, the
-files will be copied to the following directory: [ {DEFAULT_COPY_DIRECTORY} ]. It provides extra information 
-(--verbose) if requested.
+Optionally, the found files can be copied (`--copy`) to another directory (`--copy-dir`). By default, the
+files will be copied to the following directory: [ {DEFAULT_COPY_DIRECTORY} ].  The `--log` flag will change the 
+default output name of the log file, and `--copy-dir` will change the log-output directory too. It provides 
+extra information (--verbose) if requested.
 
 Example usage:
 python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy --copy-dir /home/user/Desktop/ --verbose]
@@ -178,7 +183,7 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--samples', '-s', nargs='+', required=True, help='List of whole-slide image (WSI) samples, e.g. AE4211, AE3422. Required.')
     parser.add_argument('--dir', '-d', nargs='+', help='List of directories, e.g. CD14 CD3. Required.', default=DEFAULT_DIRECTORIES)
-    parser.add_argument('--study_type', '-t', required=True, help='Specify the study type prefix, e.g., AE. Required.')
+    parser.add_argument('--study_type', '-t', required=True, help='Specify the study type prefix, e.g., AE or AAA (no other option is possible). Required.')
     parser.add_argument('--log', '-l', help='Specify the log-filename which will be of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. Optional.', default="histo_lookup")
     parser.add_argument('--copy', '-c', action='store_true', help='Copy files to copy-dir. Optional.')
     parser.add_argument('--copy_dir', '-cd', help='Directory to copy files. Optional.')

@@ -3,7 +3,7 @@
 # Description: Cut whole virtual slide into tiles
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
 # UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@ DEFAULT_HEIGHT=2000  # 2000
 DEFAULT_WIDTH=2000   # 2000
 DEFAULT_OVERLAP=0    # 0
 DEFAULT_OUTPUTDIRSUFFIX=".tiles"
-DEFAULT_QSUBARGS="-pe threaded 4 -q veryshort"
+DEFAULT_SLURMARGS="--time 00:30:00 --mem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 MINBYTESIZE=100000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 # MINBYTESIZE=1000  # tissue detection is simple, this is the min size in bytes of the output .png for tissue to be present
 # sort arrays
@@ -71,7 +71,7 @@ slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
 UMC Utrecht, Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -130,7 +130,7 @@ print a job list:
 
 print a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
-        -exec printf " qsub $DEFAULT_QSUBARGS" \; \\
+        -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
         -exec printf " \$(command -v "$SCRIPTNAME")" \; \\
         -exec printf " --mask=\"" \; \\
         -exec bash -c "printf \"{}\" | perl -pe 's/\.TIF$/$DEFAULT_MASKSUFFIX/i' " \; \\
@@ -155,8 +155,8 @@ The amount --overlap is only effective on one side, the left tile overlaps
 the tile on the right, and the top tile overlaps the tile below.
 
 The slideToolKit and all its tools are released under the terms of the MIT license.
-The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
-Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+The slideToolKit (C) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com, UMC Utrecht, 
 the Netherlands.
 
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.

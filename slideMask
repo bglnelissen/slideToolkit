@@ -3,7 +3,7 @@
 # Description: Create scaled mask and macro from a virtual slide
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
 # UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,7 +34,7 @@ SUPPORTED_FORMATS=("TIFF" "Aperio" "Hamamatsu" "iScan" "iScanHT" "Leica")
 DEFAULT_MASKSUFFIX=".mask"
 DEFAULT_MACROSUFFIX=".macro"
 DEFAULT_MACRO_THUMBSIZE="2000x2000" # Maximum size of macro image
-DEFAULT_QSUBARGS="-l h_rt=00:15:00 -l h_vmem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB 
+DEFAULT_SLURMARGS="--time 00:15:00 --mem=16G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 DEFAULT_MASKARGS="-blur 40x40 -fuzz 4%"
 
 # Errors go to stderr
@@ -56,7 +56,7 @@ slideToolKit v1.2
 ($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Copyright (c) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -108,7 +108,7 @@ print a job list:
 
 print a job list for 'qsub':
   find "\$(pwd)" -iname "*tif" -type f \\
-        -exec printf "qsub $DEFAULT_QSUBARGS " \; \\
+        -exec printf "sbatch $DEFAULT_SLURMARGS --chdir="\$(pwd)/" " \; \\
         -exec printf "\$(command -v "$SCRIPTNAME") " \; \\
         -exec echo "--file=\""{}"\" " \;
 
@@ -123,7 +123,7 @@ Two new files will be created, one file.macro.png, and one masked macro
 file (file.mask.png). Definitions of masking can be set with the
 --mask-args flag. A blur creates space between the mask and the tissue.
 A fuzz selects the background. A fuzz of 3% works well, but fails on
-very light slides, a fuzz of 2% is mightby to easy on the selection, 5%
+very light slides, a fuzz of 2% might be to easy on the selection, 5%
 works on slides with a darkish background. Pipe the 'multiple folders at
 once' output in 'parallel' for parallel processing. For some slides, the
 virtual slide format is not known. For these instances you need to run
@@ -131,8 +131,8 @@ slideInfo to find the correct layer manually. When the mask layer is
 identified (approximately 2000x2000 pixels), use the --layer flag.
 
 The slideToolKit and all its tools are released under the terms of the MIT license.
-The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
-Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+The slideToolKit (C) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com, UMC Utrecht, 
 the Netherlands.
 
 Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
@@ -357,7 +357,7 @@ programOutput(){
   # THEORETICALLY slideToolKit in combination with CellProfiler 2.2.0, Java 8, Xcode,
   # and homebrew should work out-of-the-box without `-channel RGB -negate`. No guarantee though.
   #
-
+# Edit to convert command because of change in color-channel usage between IM6 and IM7
 #   convert "$MACRO" \( "$MACRO" \
 #     -bordercolor white -border 100x100 \
 #     $MASKARGS -transparent white \
