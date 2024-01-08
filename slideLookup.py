@@ -91,35 +91,37 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
             print(f"> checking contents of directory {directory} ({lookup_directory_walk})...")
         
         # Loop over the subdirectories
-        for root, dirs, files in os.walk(lookup_directory_walk):
+        # Skip subdirectories by using listdir instead of os.walk
+        # for root, dirs, files in os.walk(lookup_directory_walk):
+        for file in os.listdir(lookup_directory_walk):
 
-            # Loop over the files
-            for file in files:
+            ### # Loop over the files - this is not needed as we skip subdirectories
+            # for file in files:
 
-                # Filter files by extension
-                if file.lower().endswith(('.TIF', '.ndpi')):
+            # Filter files by extension
+            if file.lower().endswith(('.TIF', '.ndpi')):
 
-                    # Loop over the samples
-                    for sample in samples:
+                # Loop over the samples
+                for sample in samples:
 
-                        # Check if the sample is in the file
-                        if sample in file:
-                            if verbose:
-                                print(f"Found {sample} in {directory} as {file}.")
-                            
-                            # Copy the file to the copy directory
-                            if copy_dir:
-                                # set the source to the file path
-                                source_path = os.path.join(root, file)
-                                # Check if the file has already been copied
-                                if file not in copied_files:
-                                    copy_file_to_directory(source_path, copy_dir, verbose)
-                                    copied_files.add(file)
-                                    if verbose:
-                                        print(f"...copying...")
-                                else:
-                                    if verbose:
-                                        print(f"...already copied...")
+                    # Check if the sample is in the file
+                    if sample in file:
+                        if verbose:
+                            print(f"Found {sample} in {directory} as {file}.")
+                        
+                        # Copy the file to the copy directory
+                        if copy_dir:
+                            # set the source to the file path
+                            source_path = os.path.join(root, file)
+                            # Check if the file has already been copied
+                            if file not in copied_files:
+                                copy_file_to_directory(source_path, copy_dir, verbose)
+                                copied_files.add(file)
+                                if verbose:
+                                    print(f"...copying...")
+                            else:
+                                if verbose:
+                                    print(f"...already copied...")
 
 # Define function to create directory to copy files to
 def create_copy_directory(copy_dir, verbose):

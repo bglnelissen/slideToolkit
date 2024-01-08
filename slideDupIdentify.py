@@ -172,7 +172,7 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
         epilog=f'''
 + {VERSION_NAME} v{VERSION}. {COPYRIGHT} \n{COPYRIGHT_TEXT}+''', 
         formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--image_folder', '-i', required=True, help='Specify the folder where images are located (default: current directory). Required.')
+    parser.add_argument('--image_folder', '-i', help='Specify the folder where images are located (default: current directory). Optional.')
     parser.add_argument('--study_type', '-t', required=True, help='Specify the study type prefix, e.g., AE. Required.')
     parser.add_argument('--stain', '-s', required=True, help='Specify the stain name, e.g., CD34. Required.')
     parser.add_argument('--out_file', '-o', required=True, help='Specify the output file name (without extension) to write duplicate information. Required.')
@@ -194,8 +194,16 @@ python slideDupIdentify.py --study_type AE --stain CD34 --output duplicate_files
     
     if debug:
         print(f"\n>>> Debugging Mode: ON <<<\n")
+    
     # Check if the image folder exists
-    image_folder = args.image_folder
+    if not args.image_folder:
+        if args.verbose:
+            print(f"Notice: you did not provide the --image_folder, assuming the current directory ('{os.getcwd()}') holds the images.")
+        image_folder = os.getcwd()
+    else:
+        if args.verbose:
+            print(f"Notice: you provided the --image_folder '{image_folder}'.")
+        image_folder = args.image_folder
     stain_image_folder = os.path.join(image_folder, args.stain)
     if not os.path.exists(image_folder):
         print(f"Error: image folder '{image_folder}' does not exist.")
