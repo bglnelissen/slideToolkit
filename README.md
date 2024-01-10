@@ -35,5 +35,5 @@ Detailed instructions on using **slideToolKit** can be found in the [wiki](https
 #### Licence
 The MIT License (MIT): <http://opensource.org/licenses/MIT>.
 
-Copyright (c) 2014-2021, [Bas G.L. Nelissen](https://github.com/bglnelissen) & [Sander W. van der Laan](https://github.com/swvanderlaan), UMC Utrecht, Utrecht, the Netherlands.
+Copyright (c) 2014-2024, [Bas G.L. Nelissen](https://github.com/bglnelissen) & [Sander W. van der Laan](https://github.com/swvanderlaan), UMC Utrecht, Utrecht, the Netherlands.
 
