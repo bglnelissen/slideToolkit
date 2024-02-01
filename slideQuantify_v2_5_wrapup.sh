@@ -114,11 +114,13 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # ERROR MESSAGE
-	echoerror "- Argument #1  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
-	echoerror "- Argument #2  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
-	echoerror "- Argument #3  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20'."
+	echoerror "- Argument #1  -- Study number of slide being processed, e.g. AE21."
+	echoerror "- Argument #2  -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #3  -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #4  -- SlideToolkit directory."
+	echoerror "- Argument #  -- Tiles directory."
 	echoerror ""
-	echoerror "An example command would be: slideQuantify_wrapup [arg1: STAIN] [arg2: Image.csv] [arg3: RANDOM_SAMPLE] "
+	echoerror "An example command would be: slideQuantify_wrapup [args: AE21] [arg2: STAIN] [arg3: Image.csv] [arg4: /path/to/dir] [arg5: /path/to/dir] "
 	echoerror ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -129,7 +131,7 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "                           slideQuantify: Wrap Up"
 echo ""
 echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
-echoitalic "                Yipei Song"
+echoitalic "                Yipei Song, Tim Peters"
 echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
 echoitalic "* Last update : 2023-02-09"
 echoitalic "* Version     : 2.2.0"
@@ -141,18 +143,24 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo ""
 ### REQUIRED | GENERALS	
-STAIN="$1" # Depends on arg1
-OUTPUTFILENAME="$2" # Depends on arg2
+STUDY_NUM="$1" # Depends on arg1
+STAIN="$2" # Depends on arg2
+OUTPUTFILENAME="$3" # Depends on arg3
+SLIDETOOLKITDIR="$4" # Depends on arg5
+TILESDIR="$5" # Depends on arg6
 
-### OPTIONAL | GENERALS	 
-### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
-RANDOM_SAMPLE=${3-50} # Depends on arg11
+### Loading the CellProfiler-Anaconda3.8 environment
+### You need to also have the conda init lines in your .bash_profile/.bashrc file
+echo "..... > loading required anaconda environment containing the CellProfiler installation..."
+eval "$(conda shell.bash hook)"
+conda activate cp4
+echo Loaded conda environment: $CONDA_PREFIX
+echo ""
 
-# Set slideToolKit DIRECTORY
-SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
+cd ./slideToolkit
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 3 ]]; then 
+if [[ $# -lt 5 ]]; then 
 	echo "Oh, computer says no! Number of arguments found \"$#\"."
 	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify_wrapup ***!"
 		
@@ -165,26 +173,35 @@ else
 	
 	# Collecting all the data
 	echo "..... Creating [ results.txt ] and collecting data."
-	echo 'SampleID Slide_number Stain STAIN_count_or_area_per_Total_Tissue_area STAIN_count_or_area Tota_Tissue_area' > results.txt;
+	if [ ! -f ./results.csv ]
+	then
+		# echo ${STAIN}
+		# echo "test: CD68"
+		if [ ${STAIN} == HE ]; then
+			# echo 'Study_number, Stain, STAIN_count_or_area_per_Total_Tissue_area, STAIN_count_or_area, Total_Tissue_area' > results.csv;
+			tee results.csv <<< 'Study_number, Stain, STAIN_count_or_area_per_Total_Tissue_area, STAIN_count_or_area, Total_Tissue_area'
+		elif [ ${STAIN} == CD68 ]; then
+			# echo 'Study_number, Stain, Total_DAB_object_area, Total_DAB_nuclei_area, Total_HE_object_area, Total_HE_nuclei_area, Total_Tissue_area' > results.csv;
+			tee results.csv <<< 'Study_number, Stain, Total_DAB_object_area, Total_DAB_nuclei_area, Total_HE_object_area, Total_HE_nuclei_area, Total_Tissue_area'
+		else
+			# echo 'Study_number, Stain STAIN_count_or_area_per_Total_Tissue_area, STAIN_count_or_area, Total_Tissue_area' > results.csv;
+			tee results.csv <<< 'Study_number, Stain STAIN_count_or_area_per_Total_Tissue_area, STAIN_count_or_area, Total_Tissue_area'
+		fi
+	fi
 	
 	# Moving into the cellprofiler output directory for the given $SLIDE_NUM
-	cd cp_output;
+	cd ./cp_output/${STUDY_NUM}/
 
-	### parsing SLIDE_NUM "$PWD"
-	### cut on . (period), output is 1
-	SLIDE_NUM=$(basename "$PWD")
-	SAMPLE_NUM=$(basename "$PWD") | cut -d'.' -f1
 	### DEBUG
-	echo "Original slide number: $SLIDE_NUM"
-	echo "Sample number: $SAMPLE_NUM"
+	echo "Original study number: $STUDY_NUM"
 	SCRIPT_NAME="Colsums_${STAIN}.R"
 	
-	echo $SAMPLE_NUM $SLIDE_NUM $STAIN $(Rscript $SLIDETOOLKITDIR/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../results.txt;
-	head ../results.txt
-	cat ../results.txt | wc -l
+	# echo $STUDY_NUM, $STAIN, $(Rscript ${SLIDETOOLKITDIR}/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME) >> ../../results.csv
+	tee -a ../../results.csv <<< "$STUDY_NUM, $STAIN, $(Rscript ${SLIDETOOLKITDIR}/utilities/$SCRIPT_NAME $STAIN $OUTPUTFILENAME)"
+	# cat ../../results.txt | wc -l
 	
-	# moving up to the $SLIDE_NUM directory again
-	cd ..
+	# moving up to the PROJECT directory again
+	cd ../../
 
 	### OLD - we may want to keep tiles as these are most time consuming to create
 	### echo "..... Removing overlay images:"
@@ -205,12 +222,17 @@ else
 	### 	### rm -v *x20*.png; 
 	### fi;
 
-	echo "..... Gzipping list of files to process.";
-	gzip -v files2cp.txt;
+
+	### OLD - These files are each a couple KB big, so gzipping doesnt really make sense
+	# echo "..... Gzipping list of files to process.";
+	# gzip -v $TILESDIR/${STUDY_NUM}*/files2cp.txt;
+	# gzip -d $TILESDIR/${STUDY_NUM}*/files2cp.txt.gz;
 	
-	echo "..... Gzipping result files.";
-	gzip -vf cp_output/${STAIN}*.gct;
-	gzip -vf cp_output/${STAIN}*.csv;
+	# echo "..... Gzipping result files.";
+	# gzip -vf cp_output/${STUDY_NUM}*/$STAIN*.gct;
+	# gzip -d cp_output/${STUDY_NUM}*/$STAIN*.gct.gz;
+	# gzip -vf cp_output/${STUDY_NUM}*/$STAIN*.csv;
+	# gzip -d cp_output/${STUDY_NUM}*/$STAIN*.csv.gz;
 	
 	echo "..... Wrapping up this slideToolKit run successfully finished."
 	

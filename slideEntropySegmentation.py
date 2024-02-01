@@ -1,3 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+slideEntropySegmentation
+(https://github.com/CirculatoryHealth/EntropyMasker)
+
+This script makes use of EntropyMasker to create a mask for the given sample image.
+The resulting mask is saved in the given masking directory.
+
+Usage:
+python slideEntropySegmentation.py --input_img path/to/image.ndpi --masks_dir path/to/masks/dir/
+
+Options:
+    --input_img         Specify the path to the input image (_ndpi or _tif). Required.
+    --masks_dir         Specify the path to the masking directory. Required.
+"""
+
+# Version information
+VERSION_NAME = 'slideEntropySegmentation'
+VERSION = '1.0.0'
+VERSION_DATE = '2024-01-019'
+COPYRIGHT = 'Copyright 1979-2023. Tim S. Peters & Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
+COPYRIGHT_TEXT = f'\nThe MIT License (MIT). \n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and \nassociated documentation files (the "Software"), to deal in the Software without restriction, \nincluding without limitation the rights to use, copy, modify, merge, publish, distribute, \nsublicense, and/or sell copies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions: \n\nThe above copyright notice and this permission notice shall be included in all copies \nor substantial portions of the Software. \n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, \nINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR \nPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS \nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, \nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE \nOR OTHER DEALINGS IN THE SOFTWARE. \n\nReference: http://opensource.org.'
+
+# Import required packages
 from copy import deepcopy
 import openslide
 import argparse
@@ -10,7 +35,24 @@ import cv2
 import os
 import sys
 
-parser = argparse.ArgumentParser('entropyMasker')
+# parser = argparse.ArgumentParser('entropyMasker')
+parser = argparse.ArgumentParser(description=f'''
++ {VERSION_NAME} v{VERSION} +
+
+This script makes use of EntropyMasker to create a mask for the given sample image.
+
+"EntropyMasker is a fully automated approach for separating foreground (tissue) and background 
+in bright-field microscopic whole-slide images of (immuno)histologically stained samples. This 
+method is unaffected by changes in scanning or image processing conditions, by using a measure 
+of local entropy and generating corresponding binary tissue masks."
+- https://github.com/CirculatoryHealth/EntropyMasker
+
+Example usage:
+python slideEntropySegmentation.py --input_img path/to/image.ndpi --masks_dir path/to/masks/dir/
+        ''',
+        epilog=f'''
++ {VERSION_NAME} v{VERSION}. {COPYRIGHT} \n{COPYRIGHT_TEXT}+''', 
+        formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--input_img', help='path to WSI image', type=str, required=True)
 parser.add_argument('--masks_dir', help='path to directory to save mask image', type=str, required=True)
 args = parser.parse_args()
@@ -85,3 +127,8 @@ if __name__ == '__main__':
     t = time.time()
     entropyMasker()
     print('Tissue segmentation done (%.2f)' % (time.time() - t))
+
+# Print the version number
+print(f"\n+ {VERSION_NAME} v{VERSION} ({VERSION_DATE}). {COPYRIGHT} +")
+print(f"{COPYRIGHT_TEXT}")
+# End of file

@@ -153,6 +153,9 @@ conda activate cp4
 echo Loaded conda environment: $CONDA_PREFIX
 echo ""
 
+### Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/Rocky8/dhl_ec/software/slideToolKit"
+
 OUT_DIR="${1}/slideToolkit/_tiles"
 DATA_DIR="${1}"
 MASK_DIR="${2}"
@@ -179,10 +182,16 @@ then
 else
 	if [ -f $DATA_DIR/_ndpi/$NR.*.ndpi ]; then
     	echo "NDPI of $NR found."
-		python3 ./extract_tiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_ndpi/$NR.*.ndpi --mask $MASK_DIR/$NR.*.jpg --out $SAVE_DIR/
+		python3 $SLIDETOOLKITDIR/slideExtractTiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_ndpi/$NR.*.ndpi --mask $MASK_DIR/_ndpi/$NR.*.jpg --out $SAVE_DIR/
 	elif [ -f $DATA_DIR/_tif/$NR.*.TIF ]; then
 		echo "TIF of $NR found."
-		python3 ./extract_tiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_tif/$NR.*.TIF --mask $MASK_DIR/$NR.*.jpg --out $SAVE_DIR/
+		python3 $SLIDETOOLKITDIR/slideExtractTiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_tif/$NR.*.TIF --mask $MASK_DIR/_tif/$NR.*.jpg --out $SAVE_DIR/
+	elif [ -f $DATA_DIR/_images_dropzone/$NR.*.ndpi ]; then
+		echo "[CUSTOM (_images_dropzone)] NDPI of $NR found."
+		python3 $SLIDETOOLKITDIR/slideExtractTiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_images_dropzone/$NR.*.ndpi --mask $MASK_DIR/CD68/$NR.*.jpg --out $SAVE_DIR/
+	elif [ -f $DATA_DIR/_images_dropzone/$NR.*.TIF ]; then
+		echo "[CUSTOM (_images_dropzone)] TIF of $NR found."
+		python3 $SLIDETOOLKITDIR/slideExtractTiles.py --layer $LAYER --tile_size $TILESIZE --file $DATA_DIR/_images_dropzone/$NR.*.TIF --mask $MASK_DIR/CD68/$NR.*.jpg --out $SAVE_DIR/
 	else
 		echo "No NDPI or TIF of $NR found."
 	fi

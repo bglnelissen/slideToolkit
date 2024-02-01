@@ -151,6 +151,9 @@ conda activate cp4
 echo Loaded conda environment: $CONDA_PREFIX
 echo ""
 
+### Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/Rocky8/dhl_ec/software/slideToolKit"
+
 DATA_DIR="${1}"
 MASK_DIR="${2}"
 NR="${3}"
@@ -166,10 +169,10 @@ then
 else
 	if [ -f $DATA_DIR/_ndpi/$NR.*.ndpi ]; then
     	echo "NDPI of $NR found."
-		python3 ./entropy_segmentation.py --input_img $DATA_DIR/_ndpi/$NR.*.ndpi --masks_dir $MASK_DIR
+		python3 $SLIDETOOLKITDIR/slideEntropySegmentation.py --input_img $DATA_DIR/_ndpi/$NR.*.ndpi --masks_dir $MASK_DIR
 	elif [ -f $DATA_DIR/_tif/$NR.*.TIF ]; then
 		echo "TIF of $NR found."
-		python3 ./entropy_segmentation.py --input_img $DATA_DIR/_tif/$NR.*.TIF --masks_dir $MASK_DIR
+		python3 $SLIDETOOLKITDIR/slideEntropySegmentation.py --input_img $DATA_DIR/_tif/$NR.*.TIF --masks_dir $MASK_DIR
 	else
 		echo "No NDPI or TIF of $NR found."
 	fi
