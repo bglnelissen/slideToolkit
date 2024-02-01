@@ -3,8 +3,9 @@
 """
     slideLookup
     This script is designed to perform a whole-slide image (WSI) sample lookup (`--samples`) in a directory or 
-    a set of directories (`--dir`) containing WSI. By default, the script will look for the following 
-    directories: [ "CD3", "CD34", "CD66b", "CD68", "EVG", "FIBRIN", "GLYCC", "HE", "SMA", "SR", "SR_POLARIZED" ]. 
+    a set of directories (`--dir`) containing WSI for a given `--study_type` (AE or AAA). By default, the script 
+    will look for the following directories: 
+    [ "CD3", "CD34", "CD66b", "CD68", "EVG", "FIBRIN", "GLYCC", "HE", "SMA", "SR", "SR_POLARIZED" ]. 
     These can be changed with the `--dir` flag. By default a log file is written to the current working directory 
     and is of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. 
 
@@ -34,9 +35,9 @@
 
 # Version information
 VERSION_NAME = 'slideLookup'
-VERSION = '1.0.0'
-VERSION_DATE = '2023-01-05'
-COPYRIGHT = 'Copyright 1979-2023. Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
+VERSION = '1.0.2'
+VERSION_DATE = '2024-02-01'
+COPYRIGHT = 'Copyright 1979-2024. Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
 COPYRIGHT_TEXT = f'\nThe MIT License (MIT). \n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and \nassociated documentation files (the "Software"), to deal in the Software without restriction, \nincluding without limitation the rights to use, copy, modify, merge, publish, distribute, \nsublicense, and/or sell copies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions: \n\nThe above copyright notice and this permission notice shall be included in all copies \nor substantial portions of the Software. \n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, \nINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR \nPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS \nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, \nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE \nOR OTHER DEALINGS IN THE SOFTWARE. \n\nReference: http://opensource.org.'
 
 # Import required packages
@@ -166,9 +167,11 @@ def main():
 + {VERSION_NAME} v{VERSION} +
 
 This script is designed to perform a whole-slide image (WSI) sample lookup (`--samples`) in a directory or 
-a set of directories (`--dir`) containing WSI. By default, the script will look for the following 
-directories: [ {DEFAULT_DIRECTORIES} ]. These can be changed with the `--dir` flag. By default a log file 
-is written to the current working directory and is of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. 
+a set of directories (`--dir`) containing WSI for a given `--study_type` (AE or AAA). By default, the script 
+will look for the following directories: 
+[ {DEFAULT_DIRECTORIES} ]. 
+These can be changed with the `--dir` flag. By default a log file is written to the current working directory 
+and is of the form [`todays_date`.`study_type`.slideLookup.`log`.log]. 
 
 Optionally, the found files can be copied (`--copy`) to another directory (`--copy-dir`). By default, the
 files will be copied to the following directory: [ {DEFAULT_COPY_DIRECTORY} ].  The `--log` flag will change the 
@@ -214,7 +217,7 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
     # Set how we handle the copy directory
     if args.copy:
         if args.copy_dir:
-            COPY_DIRECTORY = os.path.join(DEFAULT_COPY_DIRECTORY, args.study_type + '_' + formatted_today + '_' + args.copy_dir)
+            COPY_DIRECTORY = os.path.join(args.copy_dir + args.study_type + '_' + formatted_today + '_slideLookup')
             log_folder = os.path.join(COPY_DIRECTORY)
             print(f"\nNotice: You set to copy WSI files and specified a directory to copy the files to; setting it to ({COPY_DIRECTORY}).")
         else:
@@ -223,7 +226,7 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
             print(f"\nNotice: You set to copy WSI files, but did not specify a directory to copy the files to; setting it to default ({COPY_DIRECTORY}).")
     else:
         COPY_DIRECTORY = None
-        log_folder = os.getcwd() # os.path.join(os.getcwd(), args.study_type + '_' + formatted_today + '_slideLookup')
+        log_folder = os.path.join(os.getcwd(), args.study_type + '_' + formatted_today + '_slideLookup') # os.getcwd() 
         print(f"\nNotice: You did not specify the copy argument. So we are only performing the lookup without copying.")
         if args.verbose:
             print(f">>> Directory was not set ({COPY_DIRECTORY}) <<<\n")
