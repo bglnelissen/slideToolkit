@@ -218,10 +218,12 @@ python slideLookup.py --samples AE4211 AE3422  --dir CD14 CD3 [options: --copy -
     if args.copy:
         if args.copy_dir:
             COPY_DIRECTORY = os.path.join(args.copy_dir + args.study_type + '_' + formatted_today + '_slideLookup')
+            create_copy_directory(COPY_DIRECTORY, args.verbose)
             log_folder = os.path.join(COPY_DIRECTORY)
             print(f"\nNotice: You set to copy WSI files and specified a directory to copy the files to; setting it to ({COPY_DIRECTORY}).")
         else:
             COPY_DIRECTORY = os.path.join(DEFAULT_COPY_DIRECTORY, args.study_type + '_' + formatted_today + '_slideLookup')
+            create_copy_directory(COPY_DIRECTORY, args.verbose)
             log_folder = os.path.join(COPY_DIRECTORY)
             print(f"\nNotice: You set to copy WSI files, but did not specify a directory to copy the files to; setting it to default ({COPY_DIRECTORY}).")
     else:
