@@ -1,0 +1,480 @@
+Key,Value
+CellProfiler_Version,4.1.3
+ChannelType_Original,Color
+ImageSet_Zip_Dictionary,b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48T01FIHhtbG5zPSJodHRwOi8vd3d3Lm9wZW5taWNyb3Njb3B5Lm9yZy9TY2hlbWFzL09NRS8yMDE2LTA2Ij48SW1hZ2UgSUQ9Ik9yaWdpbmFsIj48UGl4ZWxzIERpbWVuc2lvbk9yZGVyPSJYWUNaVCIgSUQ9IlBpeGVsczpPcmlnaW5hbCIgU2l6ZUM9IjEiIFNpemVUPSIxIiBTaXplWD0iMSIgU2l6ZVk9IjEiPjxUaWZmRGF0YSBGaXJzdEM9IjAiIEZpcnN0VD0iMCIgRmlyc3RaPSIwIiBJRkQ9IjAiIFBsYW5lQ291bnQ9IjEiPjxVVUlEIEZpbGVOYW1lPSJmaWxlOi9ocGMvZGhsX2VjL1ZpcnR1YWxTbGlkZXMvQ0Q2NmIvX25kcGlfdGlsZXMvQUUxNTMxLlVNQy5DRDY2Yi4yMDE3MDExOS90aWxlcy9BRTE1MzEuVU1DLkNENjZiLjIwMTcwMTE5LlgxMDAwLlkwMDA+PGZhdGUgVGhlQz0iMCIgVGhlVD0iMCJaPSIwIElvOi8vcm9lcmdpbWF0bm5vdGF0aW9uLzIwMTQtMDQxN0NoYW5uZWwvLTIiLz48L2U+PC9QeHM+PC9kTG9uZ0Fubm90YXRpb24gSUQ9ImluZm86Ly9jZWxscHJvZmlsZXIub3JnL2ltYWdlc2V0L2Fubm90YXRpb24vMjAxNC0wNC0xNy9DaGFubmVsLy0yImNyaGFubkRlc2NyaXB0aW9uPlZhbHVlPjxWZT48L3Rpb24+PFN0cnVjdHVyZWRBbm5vdGF0aW9ucz48Tzw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04Ij8+PE9NRSB4bWxucz0iaHR0cDovL3d3dy5vcGVubWljcm9zY29weS5vcmcvU2NoZW1hcy9PTUUvMjAxNi0wNiI+PEltYWdlIElEPSJPcmlnaW5hbCI+PFBpeGVscyBEaW1lbnNpb25PcmRlcj0iWFlDWlQiIElEPSJQaXhlbHM6T3JpZ2luYWwiIFNpemVDPSIxIiBTaXplVD0iMSIgU2l6ZVg9IjEiIFNpemVZPSIxIj48VGlmZkRhdGEgRmlyc3RDPSIwIiBGaXJzdFQ9IjAiIEZpcnN0Wj0iMCIgSUZEPSIwIiBQbGFuZUNvdW50PSIxIj48VVVJRCBGaWxlTmFtZT0iZmlsZTovaHBjL2RobF9lYy9WaXJ0dWFsU2xpZGVzL0NENjZiL19uZHBpX3RpbGVzL0FFMTUzMS5VTUMuQ0Q2NmIuMjAxNzAxMTkvdGlsZXMvQUUxNTMxLlVNQy5DRDY2Yi4yMDE3MDExOS5YMDAwLnhtbHJzaW9uMS4wImVuY29uZ0Y4P09NRW5zcDovd3cub3BzYy5vcmcvU20vT01FMTYtNiI+PEltYWdlIElEPSJyaWluYWw+PFBpeGVscyBPcmRlVCIgSU9yaWdpbmFsIiBTaXplQz0iMSIgU2l6ZT0iMSJZPSIxIj48VGlmZkRhdGEgRmlyc3RDPSIwIiBGaXJzdFQ9IjAiIGlyWj0iMCJEPSJhbmU9IjFVSUQgRmlOYW1lPSJmaWxlOmNfYy90dWVzL0NpdGllcy9BNTNNQ0NENjZiMDF0aWxlcy9BRTE1MzEuVU1DLkNENjZiLjIwMTcwMTE5'
+Pipeline_Pipeline,"CellProfiler Pipeline: http://www.cellprofiler.org
+Version:5
+DateRevision:413
+GitHash:
+ModuleCount:26
+HasImagePlaneDetails:False
+
+Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.', '']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    :
+    Filter images?:Custom
+    Select the rule criteria:or (file does contain "".tile.png"")
+
+Metadata:[module_num:2|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.', '']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Extract metadata?:Yes
+    Metadata data type:Text
+    Metadata types:{}
+    Extraction method count:1
+    Metadata extraction method:Extract from file/folder names
+    Metadata source:File name
+    Regular expression to extract from file name:^(?P<NR>AE\d{1,4}).?(?P<T_NUMBER>(UMC|T.*?))?.(?P<STAIN>CD66b|CD66b_x\d+\_z\d+).?(?P<Date>[0-9]{4}[0-9]{2}[0-9]{2})?.(?P<X>X\d+).(?P<Y>Y\d+).*$
+    Regular expression to extract from folder name:(?P<Date>[0-9]{4}_[0-9]{2}_[0-9]{2})$
+    Extract metadata from:Images matching a rule
+    Select the filtering criteria:and (file doesnot contain "".counted"") (file does contain "".tile.png"")
+    Metadata file location:Elsewhere...|
+    Match file and image metadata:[]
+    Use case insensitive matching?:No
+    Metadata file name:
+    Does cached metadata exist?:No
+
+NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|show_window:False|notes:['The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.', '']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Assign a name to:All images
+    Select the image type:Color image
+    Name to assign these images:Original
+    Match metadata:[{'Original': 'Y'}, {'Original': 'X'}, {'Original': 'NR'}, {'Original': 'STAIN'}]
+    Image set matching method:Metadata
+    Set intensity range from:Image metadata
+    Assignments count:2
+    Single images count:0
+    Maximum intensity:255.0
+    Process as 3D?:No
+    Relative pixel spacing in X:1.0
+    Relative pixel spacing in Y:1.0
+    Relative pixel spacing in Z:1.0
+    Select the rule criteria:or (file doesnot contain "".counted"") (file does contain "".tile.tissue.png"")
+    Name to assign these images:Original
+    Name to assign these objects:Cell
+    Select the image type:Color image
+    Set intensity range from:Image bit-depth
+    Maximum intensity:255.0
+    Select the rule criteria:or (file doesnot contain "".counted"") (file does contain "".tile.tissue.png"")
+    Name to assign these images:Original
+    Name to assign these objects:Cell
+    Select the image type:Color image
+    Set intensity range from:Image metadata
+    Maximum intensity:255.0
+
+Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.', '']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Do you want to group your images?:No
+    grouping metadata count:1
+    Metadata category:STAIN
+
+ColorToGray:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Create gray channel, this is used to find tissue (green)', 'Red is ussually a good channel for tissue.', 'RGB should also be fine.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Original
+    Conversion method:Combine
+    Image type:Channels
+    Name the output image:OriginalGray
+    Relative weight of the red channel:1
+    Relative weight of the green channel:1
+    Relative weight of the blue channel:1
+    Convert red to gray?:Yes
+    Name the output image:OrigRed
+    Convert green to gray?:No
+    Name the output image:OrigGreen
+    Convert blue to gray?:No
+    Name the output image:OrigBlue
+    Convert hue to gray?:Yes
+    Name the output image:OrigHue
+    Convert saturation to gray?:Yes
+    Name the output image:OrigSaturation
+    Convert value to gray?:Yes
+    Name the output image:OrigValue
+    Channel count:1
+    Channel number:1
+    Relative weight of the channel:1
+    Image name:Channel1
+
+Smooth:[module_num:6|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Smooth away the dust using a Gaussian Filter. This is used to find Tissue (green).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:OriginalGray
+    Name the output image:ImageAfterSmooth
+    Select smoothing method:Gaussian Filter
+    Calculate artifact diameter automatically?:No
+    Typical artifact diameter:20.0
+    Edge intensity difference:0.1
+    Clip intensities to 0 and 1?:Yes
+
+ImageMath:[module_num:7|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Invert the gray image, black becomes white, white becomes black.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Operation:Invert
+    Raise the power of the result by:1.0
+    Multiply the result by:1.0
+    Add to result:0.0
+    Set values less than 0 equal to 0?:Yes
+    Set values greater than 1 equal to 1?:Yes
+    Replace invalid values with 0?:Yes
+    Ignore the image masks?:No
+    Name the output image:Tissue_object
+    Image or measurement?:Image
+    Select the image:ImageAfterSmooth
+    Multiply the image by:1.0
+    Measurement:
+    Image or measurement?:Image
+    Select the image:None
+    Multiply the image by:1.0
+    Measurement:
+
+IdentifyPrimaryObjects:[module_num:8|svn_version:'Unknown'|variable_revision_number:14|show_window:False|notes:['Identify total tissue area (green).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Tissue_object
+    Name the primary objects to be identified:Tissue
+    Typical diameter of objects, in pixel units (Min,Max):50,10000
+    Discard objects outside the diameter range?:Yes
+    Discard objects touching the border of the image?:No
+    Method to distinguish clumped objects:None
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:10
+    Suppress local maxima that are closer than this minimum allowed distance:7.0
+    Speed up by using lower-resolution image to find local maxima?:Yes
+    Fill holes in identified objects?:After both thresholding and declumping
+    Automatically calculate size of smoothing filter for declumping?:Yes
+    Automatically calculate minimum allowed distance between local maxima?:Yes
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Display accepted local maxima?:No
+    Select maxima color:Blue
+    Use advanced settings?:Yes
+    Threshold setting version:12
+    Threshold strategy:Global
+    Thresholding method:Manual
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:1.0
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.19
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Log transform before thresholding?:No
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Minimum Cross-Entropy
+
+OverlayObjects:[module_num:9|svn_version:'Unknown'|variable_revision_number:1|show_window:False|notes:['Overlay tissue over original image']|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Input:Original
+    Name the output image:OverlayTissue
+    Objects:Tissue
+    Opacity:0.3
+
+UnmixColors:[module_num:10|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['Unmix the colors. Hematoxylin (blueish for nuclei) and Eosin (pinkish for tissue).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Stain count:2
+    Select the input color image:Original
+    Name the output image:DAB
+    Stain:DAB
+    Red absorbance:0.05
+    Green absorbance:0.7
+    Blue absorbance:0.7
+    Name the output image:Hematoxylin
+    Stain:Hematoxylin
+    Red absorbance:0.3
+    Green absorbance:0.2
+    Blue absorbance:0.5
+
+ColorToGray:[module_num:11|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Extract red channel from original image']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Original
+    Conversion method:Split
+    Image type:RGB
+    Name the output image:Origred
+    Relative weight of the red channel:0
+    Relative weight of the green channel:1
+    Relative weight of the blue channel:1
+    Convert red to gray?:Yes
+    Name the output image:OriginalRed
+    Convert green to gray?:No
+    Name the output image:OrigGreen
+    Convert blue to gray?:No
+    Name the output image:OrigBlue
+    Convert hue to gray?:Yes
+    Name the output image:OrigHue
+    Convert saturation to gray?:Yes
+    Name the output image:OrigSaturation
+    Convert value to gray?:Yes
+    Name the output image:OrigValue
+    Channel count:1
+    Channel number:1
+    Relative weight of the channel:1.0
+    Image name:Channel1
+
+ImageMath:[module_num:12|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Invert red channel']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Operation:Invert
+    Raise the power of the result by:1.0
+    Multiply the result by:1.0
+    Add to result:0.0
+    Set values less than 0 equal to 0?:Yes
+    Set values greater than 1 equal to 1?:Yes
+    Replace invalid values with 0?:Yes
+    Ignore the image masks?:No
+    Name the output image:Original_inverted
+    Image or measurement?:Image
+    Select the image:OriginalRed
+    Multiply the image by:1.0
+    Measurement:
+    Image or measurement?:Image
+    Select the image:None
+    Multiply the image by:1.0
+    Measurement:
+
+ImageMath:[module_num:13|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Multiple DAB staining with red channel to amplify outstanding brown spots']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Operation:Multiply
+    Raise the power of the result by:1.0
+    Multiply the result by:1.0
+    Add to result:0.0
+    Set values less than 0 equal to 0?:Yes
+    Set values greater than 1 equal to 1?:Yes
+    Replace invalid values with 0?:Yes
+    Ignore the image masks?:No
+    Name the output image:Cell_objects
+    Image or measurement?:Image
+    Select the image:DAB
+    Multiply the image by:1.0
+    Measurement:
+    Image or measurement?:Image
+    Select the image:Original_inverted
+    Multiply the image by:1.0
+    Measurement:
+
+IdentifyPrimaryObjects:[module_num:14|svn_version:'Unknown'|variable_revision_number:14|show_window:False|notes:['Identify total CD66b stained area (brown).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+    Select the input image:Cell_objects
+    Name the primary objects to be identified:DAB_object
+    Typical diameter of objects, in pixel units (Min,Max):13,50
+    Discard objects outside the diameter range?:Yes
+    Discard objects touching the border of the image?:No
+    Method to distinguish clumped objects:None
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:10
+    Suppress local maxima that are closer than this minimum allowed distance:7.0
+    Speed up by using lower-resolution image to find local maxima?:Yes
+    Fill holes in identified objects?:After both thresholding and declumping
+    Automatically calculate size of smoothing filter for declumping?:Yes
+    Automatically calculate minimum allowed distance between local maxima?:Yes
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Display accepted local maxima?:No
+    Select maxima color:Blue
+    Use advanced settings?:Yes
+    Threshold setting version:12
+    Threshold strategy:Global
+    Thresholding method:Robust Background
+    Threshold smoothing scale:1.3448
+    Threshold correction factor:1
+    Lower and upper bounds on threshold:0.59,0.8
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Three classes
+    Log transform before thresholding?:Yes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2
+    Thresholding method:Minimum Cross-Entropy
+
+MaskImage:[module_num:15|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Mask the HE staining image to the CD66b found area']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Hematoxylin
+    Name the output image:Hematoxylin_DAB_object_masked
+    Use objects or an image as a mask?:Objects
+    Select object for mask:DAB_object
+    Select image for mask:None
+    Invert the mask?:No
+
+Threshold:[module_num:16|svn_version:'Unknown'|variable_revision_number:12|show_window:False|notes:['Problem: Upper threshold for IdentifyPrimaryObjects does not work', '', 'Solution: Add threshold and mask the image to the invert of the threshold']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Hematoxylin_DAB_object_masked
+    Name the output image:Hematoxylin_Threshold
+    Threshold strategy:Global
+    Thresholding method:Otsu
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:1.0
+    Lower and upper bounds on threshold:0.835,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Three classes
+    Log transform before thresholding?:No
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Minimum Cross-Entropy
+
+MaskImage:[module_num:17|svn_version:'Unknown'|variable_revision_number:3|show_window:False|notes:['Problem: Upper threshold for IdentifyPrimaryObjects does not work', '', 'Solution: Add threshold and mask the image to the invert of the threshold']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Hematoxylin_DAB_object_masked
+    Name the output image:Mask_DAB_Objects
+    Use objects or an image as a mask?:Image
+    Select object for mask:None
+    Select image for mask:Hematoxylin_Threshold
+    Invert the mask?:Yes
+
+IdentifyPrimaryObjects:[module_num:18|svn_version:'Unknown'|variable_revision_number:14|show_window:False|notes:['Identify total CD66b stained nuclei area (blue).']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:Mask_DAB_Objects
+    Name the primary objects to be identified:DAB_Nuclei_object
+    Typical diameter of objects, in pixel units (Min,Max):2,22
+    Discard objects outside the diameter range?:Yes
+    Discard objects touching the border of the image?:No
+    Method to distinguish clumped objects:None
+    Method to draw dividing lines between clumped objects:Intensity
+    Size of smoothing filter:10
+    Suppress local maxima that are closer than this minimum allowed distance:7.0
+    Speed up by using lower-resolution image to find local maxima?:Yes
+    Fill holes in identified objects?:After both thresholding and declumping
+    Automatically calculate size of smoothing filter for declumping?:Yes
+    Automatically calculate minimum allowed distance between local maxima?:Yes
+    Handling of objects if excessive number of objects identified:Continue
+    Maximum number of objects:500
+    Display accepted local maxima?:No
+    Select maxima color:Blue
+    Use advanced settings?:Yes
+    Threshold setting version:12
+    Threshold strategy:Global
+    Thresholding method:Otsu
+    Threshold smoothing scale:1.3488
+    Threshold correction factor:1
+    Lower and upper bounds on threshold:0.805,0.9
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Three classes
+    Log transform before thresholding?:Yes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.1
+    Thresholding method:Minimum Cross-Entropy
+
+RelateObjects:[module_num:19|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:['Determine Nuclei object children for found CD66b stained cells']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Parent objects:DAB_object
+    Child objects:DAB_Nuclei_object
+    Calculate child-parent distances?:None
+    Calculate per-parent means for all child measurements?:No
+    Calculate distances to other parents?:No
+    Do you want to save the children with parents as a new object set?:No
+    Name the output object:RelateObjects
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+    Parent name:None
+
+FilterObjects:[module_num:20|svn_version:'Unknown'|variable_revision_number:8|show_window:False|notes:['Only keep CD66b cells that contain nuclei opbjects']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the objects to filter:DAB_object
+    Name the output objects:FilterObjects
+    Select the filtering mode:Measurements
+    Select the filtering method:Limits
+    Select the objects that contain the filtered objects:None
+    Select the location of the rules or classifier file:Elsewhere...|
+    Rules or classifier file name:rules.txt
+    Class number:1
+    Measurement count:1
+    Additional object count:0
+    Assign overlapping child to:Both parents
+    Select the measurement to filter by:Children_DAB_Nuclei_object_Count
+    Filter using a minimum measurement value?:Yes
+    Minimum value:1
+    Filter using a maximum measurement value?:No
+    Maximum value:1.0
+
+OverlayObjects:[module_num:21|svn_version:'Unknown'|variable_revision_number:1|show_window:False|notes:['Overlay CD66b areas with nuclei on orignal image']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Input:Original
+    Name the output image:OverlayObjects
+    Objects:FilterObjects
+    Opacity:0.4
+
+SaveImages:[module_num:22|svn_version:'Unknown'|variable_revision_number:15|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:OverlayObjects
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Original
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:.overlay
+    Saved file format:png
+    Output file location:Default Output Folder|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
+
+OverlayOutlines:[module_num:23|svn_version:'Unknown'|variable_revision_number:4|show_window:False|notes:['Overlay outlines for all objects']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Display outlines on a blank image?:No
+    Select image on which to display outlines:Original
+    Name the output image:OrigOverlay
+    Outline display mode:Color
+    Select method to determine brightness of outlines:Max of image
+    How to outline:Inner
+    Select outline color:#FF0000
+    Select objects to display:Tissue
+    Select outline color:Green
+    Select objects to display:FilterObjects
+    Select outline color:Blue
+    Select objects to display:DAB_Nuclei_object
+
+SaveImages:[module_num:24|svn_version:'Unknown'|variable_revision_number:15|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:OrigOverlay
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:Original
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:.counted
+    Saved file format:png
+    Output file location:Default Output Folder|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
+
+MeasureImageAreaOccupied:[module_num:25|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+    Measure the area occupied by:Objects
+    Select binary images to measure:
+    Select object sets to measure:DAB_Nuclei_object, DAB_object, FilterObjects, Tissue
+
+ExportToSpreadsheet:[module_num:26|svn_version:'Unknown'|variable_revision_number:13|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the column delimiter:Comma ("","")
+    Add image metadata columns to your object data file?:Yes
+    Add image file and folder names to your object data file?:No
+    Select the measurements to export:No
+    Calculate the per-image mean values for object measurements?:Yes
+    Calculate the per-image median values for object measurements?:Yes
+    Calculate the per-image standard deviation values for object measurements?:Yes
+    Output file location:Default Output Folder|
+    Create a GenePattern GCT file?:Yes
+    Select source of sample row name:Metadata
+    Select the image to use as the identifier:None
+    Select the metadata to use as the identifier:FileName_Original
+    Export all measurement types?:Yes
+    Press button to select measurements:
+    Representation of Nan/Inf:NaN
+    Add a prefix to file names?:Yes
+    Filename prefix:CD66b_
+    Overwrite existing files without warning?:Yes
+    Data to export:Do not use
+    Combine these object measurements with those of the previous object?:No
+    File name:DATA.csv
+    Use the object name for the file name?:Yes
+"
+Run_Timestamp,2023-01-26T16:11:13.668276

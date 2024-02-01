@@ -1,0 +1,6 @@
+Objects or Image,Area Occupied,Perimeter,Total Area
+DAB_object,872135,43760.0,4000000
+HE_object,3979213,12381.0,4000000
+Tissue_object,394572,73179.0,4000000
+nuclei_DAB,20302,5724.0,872135
+nuclei_HE,172315,68078.0,3979213

@@ -1,0 +1,312 @@
+#!/bin/bash
+
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+OPAQUE='\033[2m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
+
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+### Regarding changing the 'type' of the things printed with 'echo'
+### Refer to: 
+### - http://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
+### - http://misc.flogisoft.com/bash/tip_colors_and_formatting
+### - http://unix.stackexchange.com/questions/37260/change-font-in-echo-command
+
+### echo -e "\033[1mbold\033[0m"
+### echo -e "\033[3mitalic\033[0m" ### THIS DOESN'T WORK ON MAC!
+### echo -e "\033[4munderline\033[0m"
+### echo -e "\033[9mstrikethrough\033[0m"
+### echo -e "\033[31mHello World\033[0m"
+### echo -e "\x1B[31mHello World\033[0m"
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echocyan { 
+    echo -e "${CYAN}${1}${NONE}" 
+}
+
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
+
+# errors
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+
+# errors no option
+function echoerrornooption { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
+}
+
+### MESSAGE FUNCTIONS
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2016-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
+script_arguments_error() {
+	echoerror "$1" # ERROR MESSAGE
+	echoerror "- Argument #1   -- name of the stain as it appears in the filenames, e.g. FIBRIN."
+	echoerror "- Argument #2   -- path_to CellProfiler pipeline, e.g. FIBRIN.cppipe."
+	echoerror "- Argument #3   -- path_to working directory, i.e. where all the image-subdirectories are."
+	echoerror "- Argument #4   -- starting letters/characters of the image-subdirectories, e.g. IMG or AE or AAA."
+	echoerror "- Argument #5   -- output filename where the CellProfiler results are stored, e.g. Image.csv (delimiter is assumed '_')."
+	echoerror "- Argument #6   -- email address to send aborted/error jobs too, e.g. y.name@umcutrecht.nl."
+	echoerror "- Argument #7   -- by default emails are send when jobs are aborted/error, you can change that here, e.g. you can choose: BEGIN=begin of job; END=end of job; FAIL=abort of job; ALL=all message job; NONE=no mail is send."
+	echoerror "- Argument #8   -- Content threshold. The percentage of tissue that should be present at the minimum in a given tile, e.g. 0.5 (5%). [default: 0.5]"
+	echoerror "- Argument #9   -- Patch size. Size of the tiles in pixels, e.g. 512 indicates a tile of 512x512; slideToolKit was tested using patches of 2000x2000. [default: 2000]"
+	echoerror "- Argument #10  -- Down-sampling. Down-sampling number, to indicate the magnification to use, e.g. with a maximum magnification of 40x, a 2 indicates a downsample to 20x. [default: 2]"
+	echoerror "- Argument #11  -- Masking method to apply. Options are otsu, adaptive, or graph (segmentation based). [default: adaptive]"
+	echoerror "- Argument #12  -- Unique label. A string-number combination (no spaces) for reference to the analysis run. [OPTIONAL]"
+	echoerror "- Argument #13  -- Batch size. A number to indicate the batch size, e.g. '5000'. This enables running only few samples for testing or debugging purposes. [OPTIONAL]"
+	echoerror "- Argument #14  -- Random sample. A number to indicate the number of overlay-images after analysis to keep, e.g. '20', by default set at '50'. [OPTIONAL]"
+	echoerror ""
+	echoerror "An example command would be: slideQuantify [arg1: STAIN] [arg2: path_to_cellprofiler_pipeline] [arg3: path_to_working_directory] [arg4: IMG or AE or AAA] [arg5: Image.csv] [arg6: y.name@umcutrecht.nl] [arg7: FAIL] [arg8: 5] [arg9: 2000] [arg10: 2] [arg11: adaptive] [OPTIONAL] [arg12: V1] [arg13: 5000] [arg14: 50] "
+	echoerror ""
+	echoerror "Please note that this command should be run within the working directory (Argument #3)."
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+  	exit 1
+}
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                               slideQuantify"
+echo ""
+echoitalic "* Written by  : Sander W. van der Laan; Tim Bezemer; Tim van de Kerkhof"
+echoitalic "                Yipei Song"
+echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
+echoitalic "* Last update : 2024-01-10"
+echoitalic "* Version     : 2.1.4"
+echo ""
+echoitalic "* Description : This script will start the quantification for a given stain"
+echoitalic "                in a given project directory. "
+echoitalic "                This is SLURM based."
+echo ""
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+echo ""
+### REQUIRED | GENERALS	
+STAIN="${1}" # Depends on arg1
+PIPELINE="${2}" # Depends on arg2
+PROJECTDIR="${3}" # Depends on arg3
+FILESTART="${4}" # Depends on arg4
+OUTPUTFILENAME="${5}" # Depends on arg5
+EMAIL="${6}" # Depends on arg6
+MAILSETTING="${7}" # Depends on arg7
+
+# EMASKTHRESHOLD="$8" # Depends on arg8
+
+CONTENTTHRESHOLD="${8}" # Depends on arg8
+PATCHSIZE="${9}" # Depends on arg9
+OUTPUTDOWN="${10}" # Depends on arg10
+MASKMETHOD="${11}" # Depends on arg11
+
+### OPTIONAL | GENERALS	 
+### https://stackoverflow.com/questions/9332802/how-to-write-a-bash-script-that-takes-optional-input-arguments
+UNIQUE_LABEL=${12-V1} # Depends on arg12
+BATCH_SIZE=${13-5000} # Depends on arg13
+RANDOM_SAMPLE=${14-50} # Depends on arg14
+
+QJOB_MEM_SLIDEMASK="8G"
+QJOB_TIME_SLIDEMASK="00:15:00"
+
+QJOB_MEM_SLIDE2TILES="12G"
+QJOB_TIME_SLIDE2TILES="00:20:00" # emperical evidence shows ±20 minutes
+
+QJOB_MEM_SLIDENORM="8G"
+QJOB_TIME_SLIDENORM="00:15:00"
+
+QJOB_MEM_CP="12G"
+QJOB_TIME_CP="13:00:00"
+
+QJOB_MEM_WRAP="8G"
+QJOB_TIME_WRAP="00:15:00"
+
+# Set slideToolKit DIRECTORY
+SLIDETOOLKITDIR="/hpc/local/CentOS7/dhl_ec/software/slideToolKit"
+
+# Set ExpressHIST DIRECTORY
+EXPRESSHIST="/hpc/local/CentOS7/dhl_ec/software/ExpressHIST"
+
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 11 ]]; then 
+	echo "Oh, computer says no! Number of arguments found \"$#\"."
+	script_arguments_error "You must supply correct (number of) arguments when running *** slideQuantify ***!"
+		
+else
+	echobold "Cleaning up house, first."
+	mkdir -pv "$PROJECTDIR"/logs
+	mkdir -pv "$PROJECTDIR"/errors
+	rm -rfv "$FILESTART"*/magick-tmp
+
+	ENTROPY_THRESHOLD="$EMASKTHRESHOLD" 
+	HOLD_JIDS=()
+	INDEX=0
+	
+	cd $PROJECTDIR
+	pwd
+	### FOR DEBUG
+	### echocyan "Debug mode - processing debug-images."
+	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT"
+	### DEBUGLIST="AE1088.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT"
+	### for SLIDE_NUM in $DEBUGLIST; do
+	### AE1088.UMC.CD3_CD56_NKT AE1165.UMC.CD3_CD56_NKT AE1249.UMC.CD3_CD56_NKT AE1462.UMC.CD3_CD56_NKT AE1468.UMC.CD3_CD56_NKT AE1495.UMC.CD3_CD56_NKT AE1548.UMC.CD3_CD56_NKT AE1550.UMC.CD3_CD56_NKT AE1701.UMC.CD3_CD56_NKT AE1707.CD3_CD56_NKT.v2 AE1710.UMC.CD3_CD56_NKT AE1713.UMC.CD3_CD56_NKT AE1722.UMC.CD3_CD56_NKT AE1731.UMC.CD3_CD56_NKT AE1732.UMC.CD3_CD56_NKT AE1737.UMC.CD3_CD56_NKT AE1750.UMC.CD3_CD56_NKT AE1771.UMC.CD3_CD56_NKT AE1780.UMC.CD3_CD56_NKT AE1781.UMC.CD3_CD56_NKT AE1857.UMC.CD3_CD56_NKT.2 AE1858.UMC.CD3_CD56_NKT AE1872.UMC.CD3_CD56_NKT AE1878.UMC.CD3_CD56_NKT AE1897.UMC.CD3_CD56_NKT AE1969.UMC.CD3_CD56_NKT AE2107.UMC.CD3_CD56_NKT AE2131.UMC.CD3_CD56_NKT AE2138.CD45CD3.v2goed AE2139.UMC.CD3_CD56_NKT.2 AE2157.CD3_CD56_NKT.v2 AE2160.UMC.CD3_CD56_NKT AE2163.UMC.CD3_CD56_NKT.2 AE2170.UMC.CD3_CD56_NKT AE2176.UMC.CD3_CD56_NKT AE2183.UMC.CD3_CD56_NKT AE2188.UMC.CD3_CD56_NKT AE2197.CD3_CD56_NKT.v2 AE21A.UMC.CD3_CD56_NKT.2 AE21B.UMC.CD3_CD56_NKT.2 AE2200.CD3_CD56_NKT.v2 AE2211.UMC.CD3_CD56_NKT AE2227.UMC.CD3_CD56_NKT AE2254.UMC.CD3_CD56_NKT AE2255.UMC.CD3_CD56_NKT AE2259.UMC.CD3_CD56_NKT AE2270.UMC.CD3_CD56_NKT.2 AE2281.UMC.CD3_CD56_NKT AE2292.UMC.CD3_CD56_NKT AE2293.UMC.CD3_CD56_NKT AE2295.UMC.CD3_CD56_NKT AE2296.CD3_CD56_NKT.v2 AE2296.UMC.CD3_CD56_NKT.2 AE2364.UMC.CD3_CD56_NKT AE2376.UMC.CD3_CD56_NKT AE2385.UMC.CD3_CD56_NKT AE2427.UMC.CD3_CD56_NKT.2 AE2433.UMC.CD3_CD56_NKT.2 AE2539.UMC.CD3_CD56_NKT AE2601.CD3_CD56_NKT.v2 AE2601.UMC.CD3_CD56_NKT.2 AE2613.UMC.CD3_CD56_NKT AE2637.UMC.CD3_CD56_NKT AE2649.UMC.CD3_CD56_NKT.2 AE2658.UMC.CD3_CD56_NKT AE2659.UMC.CD3_CD56_NKT AE2682.UMC.CD3_CD56_NKT AE2684.UMC.CD3_CD56_NKT AE2753.UMC.CD3_CD56_NKT AE2754.CD3_CD56_NKT.v2 AE2754.UMC.CD3_CD56_NKT.2 AE2757.UMC.CD3_CD56_NKT AE2759.UMC.CD3_CD56_NKT AE276.UMC.CD3_CD56_NKT AE285.UMC.CD3_CD56_NKT AE2953.CD3_CD56_NKT.v2 AE2953.UMC.CD3_CD56_NKT.2 AE2963.CD3_CD56_NKT.v2 AE2963.UMC.CD3_CD56_NKT.2 AE296.UMC.CD3_CD56_NKT AE2973.UMC.CD3_CD56_NKT.2 AE2990.UMC.CD3_CD56_NKT.2 AE3023.CD3_CD56_NKT.v2 AE3023.UMC.CD3_CD56_NKT.2 AE3136.UMC.CD3_CD56_NKT.2 AE3148.CD3_CD56_NKT.v2 AE3148.UMC.CD3_CD56_NKT.2 AE3251.CD3_CD56_NKT.v2 AE3251.UMC.CD3_CD56_NKT.2 AE3255.CD3_CD56_NKT.v2 AE3255.UMC.CD3_CD56_NKT.2 AE3305.UMC.CD3_CD56_NKT AE3348.UMC.CD3_CD56_NKT.2 AE3350.UMC.CD3_CD56_NKT.2 AE3680.UMC.CD3_CD56_NKT AE3690.UMC.CD3_CD56_NKT.2 AE3691.UMC.CD3_CD56_NKT.2 AE3762.UMC.CD3_CD56_NKT.2 AE3763.UMC.CD3_CD56_NKT.2 AE3764.UMC.CD3_CD56_NKT.2 AE3769.UMC.CD3_CD56_NKT.2 AE3777.UMC.CD3_CD56_NKT AE3795.UMC.CD3_CD56_NKT AE3796.UMC.CD3_CD56_NKT AE3886.UMC.CD3_CD56_NKT AE3892.UMC.CD3_CD56_NKT AE410.UMC.CD3_CD56_NKT AE424.UMC.CD3_CD56_NKT AE460.UMC.CD3_CD56_NKT AE488.UMC.CD3_CD56_NKT AE737.UMC.CD3_CD56_NKT AE815.UMC.CD3_CD56_NKT AE826.UMC.CD3_CD56_NKT AE838.UMC.CD3_CD56_NKT AE861.UMC.CD3_CD56_NKT
+	### for SLIDE_NUM in AE3795.UMC.CD3_CD56_NKT; do
+	### for SLIDE_NUM in AE3910.UMC.HE; do
+# 	for SLIDE_NUM in AE3910.SMA AE185.T03-07096.SMA.20140818 AE1191.SMA AE2181.SMA AE3660.SMA AE3727.T14-03194.SMA AE3763.SMA AE4780.SMA AE2.T02-5684.SMA.20141128 AE22.T02-8722.SMA.20141128 AE1468.SMA AE3687.UMC.SMA.20141216; do
+# 	for SLIDE_NUM in AE1430.T06-20288.CD68.20140818.TIF AE146.CD68.TIF AE1505.UMC.CD68.TIF AE1710.CD68.2610.TIF AE3353.T12-17515.CD68.20140818.TIF; do
+	for SLIDE_NUM in "$FILESTART"*; do
+		sleep 1
+		THIS_SLIDE=${SLIDE_NUM/\//}
+		### Masks are made in the slide2Tiles step
+		### THIS_SLIDEMASK=${THIS_SLIDE}_slideMask_${UNIQUE_LABEL}
+		THIS_SLIDE2TILES=${THIS_SLIDE}_slide2Tiles_${UNIQUE_LABEL}
+		THIS_SLIDENORMALIZE=${THIS_SLIDE}_slideNormalize_${UNIQUE_LABEL}
+		THIS_CELLPROFILER=${THIS_SLIDE}_CellProfiler_${UNIQUE_LABEL}
+		THIS_WRAPUP=${THIS_SLIDE}_WrapUp_${UNIQUE_LABEL}
+
+		HOLD_JID_INDEX=$(expr ${INDEX} % ${BATCH_SIZE})
+
+		# process batches in smaller chunks
+		if [ "$INDEX" -lt "$BATCH_SIZE" ]; then
+			HOLD_JID_STRING=""
+		else
+			HOLD_JID_STRING="-hold_jid ${HOLD_JIDS[$HOLD_JID_INDEX]}"
+		fi
+		HOLD_JIDS[$HOLD_JID_INDEX]=$THIS_CELLPROFILER
+
+		echobold "Processing images of file [ ${SLIDE_NUM} ] in directory [ ${PROJECTDIR} ] for staining [ ${STAIN} ] -- at index [ ${INDEX} ] with total batch size [ ${BATCH_SIZE} ]."
+		cd "$SLIDE_NUM" || exit
+		echo ""
+		pwd
+		
+		# Checking if an analysis was done before
+		if [[ -s cp_output/"$STAIN"_Image.csv.gz ]]; then 
+			echoitalic "Checking if this file was processed before; cp_output/${STAIN}_Image.csv.gz should be present ....."
+			ls -lh cp_output/*.gz
+			cd .. ; 
+			INDEX=$((INDEX+1)); 
+			echo "..... Analysis was already done!"; 
+			continue; 
+		fi
+		
+		echo "..... Processing file for the first time. Submitting job for: "
+		
+		rm -rfv "$PROJECTDIR"/logs/"$SLIDE_NUM"*
+		rm -rfv "$PROJECTDIR"/errors/"$SLIDE_NUM"*
+
+		### OBSOLETE -- slideMasking & Tiling is done in go with ExpressHist
+		### slideMasking and slideTiling
+		### echo ""
+		### echoitalic "* slideMask to mask images using adaptive, otsu or graph segmentation based thresholding. [ $THIS_SLIDEMASK ]"
+		### 
+		### JOB_ID_THIS_SLIDEMASK=$(sbatch -J ${THIS_SLIDEMASK} -e ${PROJECTDIR}/errors/slideMask.${THIS_SLIDEMASK}.errors -o ${PROJECTDIR}/logs/slideMask.${THIS_SLIDEMASK}.log ${HOLD_JID_STRING} --mem=${QJOB_MEM_SLIDEMASK} --time=${QJOB_TIME_SLIDEMASK} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_v1_1_expresshist_mask.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+	
+		### FOR DEBUG
+		### echocyan "Debug mode - listing slide number and job-id."
+		### echo $THIS_SLIDEMASK
+		### echo $HOLD_JID_STRING
+
+		### slide2Tiles
+		echo ""
+		echoitalic "* slide2Tiles to create tiles from images and make mask images using adaptive, otsu or graph segmentation based thresholding. [ $THIS_SLIDE2TILES ]"
+		
+		### OBSOLETE -- slideMasking & Tiling is done in go with ExpressHist
+		### JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDEMASK --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+
+		JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_v1_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+		### FOR DEBUG
+		### JOB_ID_THIS_SLIDE2TILES=$(sbatch -J ${THIS_SLIDE2TILES} -e ${PROJECTDIR}/errors/slide2tiles.${THIS_SLIDE2TILES}.errors -o ${PROJECTDIR}/logs/slide2tiles.${THIS_SLIDE2TILES}.log --mem=${QJOB_MEM_SLIDE2TILES} --time=${QJOB_TIME_SLIDE2TILES} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_2_expresshist_tile.sh ${EXPRESSHIST} ${CONTENTTHRESHOLD} ${PATCHSIZE} ${OUTPUTDOWN} ${MASKMETHOD} )
+
+		### slideNormalize
+		echo ""
+		echoitalic "* slideNormalize for normalization of images. [ $THIS_SLIDENORMALIZE ]"
+	
+		JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDE2TILES --parsable ${SLIDETOOLKITDIR}/slideQuantify_v1_3_tile_normalizing.sh )
+		### FOR DEBUG
+		### JOB_ID_THIS_SLIDENORMALIZE=$(sbatch -J ${THIS_SLIDENORMALIZE} -e ${PROJECTDIR}/errors/slidenormalize.${THIS_SLIDENORMALIZE}.errors -o ${PROJECTDIR}/logs/slidenormalize.${THIS_SLIDENORMALIZE}.log  --mem=${QJOB_MEM_SLIDENORM} --time=${QJOB_TIME_SLIDENORM} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_3_tile_normalizing.sh )
+
+		### CellProfiler
+		echo ""
+		echoitalic "* CellProfiler to analyze images. [ $THIS_CELLPROFILER ]"
+	
+		JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --depend=afterany:$JOB_ID_THIS_SLIDENORMALIZE --parsable ${SLIDETOOLKITDIR}/slideQuantify_v1_4_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
+		### FOR DEBUG
+		### JOB_ID_THIS_CELLPROFILER=$(sbatch -J ${THIS_CELLPROFILER} -e ${PROJECTDIR}/errors/slidecellprofiler.${THIS_CELLPROFILER}.errors -o ${PROJECTDIR}/logs/slidecellprofiler.${THIS_CELLPROFILER}.log --mem=${QJOB_MEM_CP} --time=${QJOB_TIME_CP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_cellprofiler.sh ${PIPELINE} ${STAIN} ${SLIDE_NUM} )
+	
+		### Wrap Up
+		echo ""
+		echoitalic "* WrapUp the work we have done, and clean house. [ $THIS_WRAPUP ]"
+	
+		JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mem=${QJOB_MEM_WRAP} --time=${QJOB_TIME_WRAP} --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable --depend=afterany:$JOB_ID_THIS_CELLPROFILER ${SLIDETOOLKITDIR}/slideQuantify_v1_5_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
+		### FOR DEBUG
+		### JOB_ID_THIS_WRAPUP=$(sbatch -J ${THIS_WRAPUP} -e ${PROJECTDIR}/errors/slidewrapup.${THIS_WRAPUP}.errors -o ${PROJECTDIR}/logs/slidewrapup.${THIS_WRAPUP}.log --mail-type=${MAILSETTING} --mail-user=${EMAIL} --parsable ${SLIDETOOLKITDIR}/slideQuantify_wrapup.sh ${STAIN} ${OUTPUTFILENAME} ${RANDOM_SAMPLE} )
+
+		echo ""
+		echo "* Moving back to the project directory [$PROJECTDIR]"
+		cd $PROJECTDIR
+	
+		### REMOVE THIS BREAK FOR PRODUCTION!
+		### When this break is active, only the first item 
+		### in the list of items to be processed will be processed.
+		###
+		### OLD CODE
+		### INDEX=$((INDEX+1))
+		### break;	
+	
+		### NEW CODE
+		INDEX=$((INDEX+1))
+		if [ "$INDEX" -eq "$BATCH_SIZE" ]; then 
+			break; 
+		fi
+	
+	# END OF for-loop
+	done
+
+
+### END of if-else statement for the number of command-line arguments passed ###
+fi
+
+script_copyright_message
+
+

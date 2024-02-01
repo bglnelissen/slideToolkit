@@ -1,0 +1,56 @@
+# run: mamba env create -f mamba3_8_cp4.v1.yml
+# run: mamba env update -f mamba3_8_cp4.v1.yml
+# run: mamba env remove -n cp4
+name: cp4
+
+channels:
+- defaults
+- bioconda
+
+dependencies:
+- python==3.8
+- pip
+- numpy
+- matplotlib
+- pandas
+- polars
+- openjdk
+- scikit-learn
+- mahotas
+- gtk2
+- Jinja2
+- inflect
+- wxpython
+- mysqlclient
+- sentry-sdk
+- centrosome
+- gensim
+- FuzzyTM
+- xarray
+- python-javabridge
+- bftools
+- cairo
+- freetype
+- gettext
+- giflib
+- imagemagick
+- java-jdk
+- jpeg
+- wmctrl
+- zbar
+- tclap
+- openslide-python
+- pip:
+    - cellprofiler
+    - arrow
+    - pathlib
+    - opencv-contrib-python
+    
+# you could automatically provide the prefix, or just do it via the prompt
+# prefix: ~/mambaforge/envs/cp4
+
+# prefix: /Users/[username]/mambaforge/envs/cp4
+
+# Manual install:
+# mamba install --channel bioconda pip numpy matplotlib pandas openjdk scikit-learn mahotas gtk2 Jinja2 inflect wxpython mysqlclient sentry-sdk centrosome gensim FuzzyTM xarray python-javabridge bftools cairo freetype gettext giflib imagemagick java-jdk jpeg wmctrl zbar tclap openslide-python
+# pip install cellprofiler arrow pathlib opencv-contrib-python

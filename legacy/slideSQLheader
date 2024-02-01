@@ -1,0 +1,237 @@
+#!/bin/bash
+#
+# Description: Extract SQL-file column headers created by cellprofiler
+#
+# The MIT License (MIT)
+# Copyright (c) 2014-2021, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+#Variables
+SCRIPTNAME=$(basename $0)
+DESCRIPTIONSHORT="Extract SQL-file column names created by cellprofiler"
+DEPENDENCIES=("perl")
+SUFFIX=".head"
+
+# usage message
+usage() {
+cat <<- EOF
+$SCRIPTNAME --help for more information.
+EOF
+}
+
+# version info
+version() {
+cat << EOF
+slideToolKit v1.2
+($SCRIPTNAME is part of the slideToolKit)
+
+The MIT License (MIT) <http://opensource.org/licenses/MIT>
+Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
+EOF
+}
+
+
+# Errors go to stderr
+err() {
+  echo "${SCRIPTNAME} ERROR: $@" >&2
+}
+
+#help message
+helpMessage() {
+cat <<- EOF
+${SCRIPTNAME}: ${DESCRIPTIONSHORT}
+
+usage:
+  $SCRIPTNAME [options] -f <filename>
+
+options:
+  -f, --file <filename>     "SQL_SETUP.SQL" file 
+  
+  [--add-head] <filename>   "file.csv" file 
+  [--ignore-dependencies]   ignores all dependencies, but gives warning
+
+  --help                    display this help
+  --version                 display version and license information
+
+
+examples:
+  $SCRIPTNAME "SQL_SETUP.SQL"
+  $SCRIPTNAME  --file="SQL_SETUP.SQL" --add-head="file.csv"
+
+dependencies: ${DEPENDENCIES[@]}
+
+Extract SQL-file column names created by cellprofiler. These headers
+can be added to a .csv file using the --add-head option, a copy
+(.head.csv) will be created
+
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2021, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan-2 [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
+
+Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
+EOF
+}
+#Menu
+#Empty variables
+FILE=""
+ADDHEAD=""
+#illegal option
+illegalOption() {
+cat <<- EOF
+$SCRIPTNAME: illegal option $1
+$(usage)
+EOF
+exit 1
+}
+#loop through options
+while :
+do
+  case $1 in
+    -h)
+      usage
+      exit 0 ;;
+    --help | -\?)
+      helpMessage
+      exit 0 ;;
+    --version )
+      version
+      exit 0 ;;
+    -f | --file)
+      FILE=$2
+      shift 2 ;;
+    --file=*)
+      FILE=${1#*=}
+      shift ;;
+    --add-head)
+      ADDHEAD=$2
+      shift 2 ;;
+    --add-head=*)
+      ADDHEAD=${1#*=}
+      shift ;;
+     --ignore-dependencies)
+      IGNOREDEPENDENCIES=TRUE
+      shift ;;
+    --) # End of all options
+      shift
+      break ;;
+    -*)
+      illegalOption "$1"
+      shift ;;
+    *)  # no more options. Stop while loop
+      break ;;
+  esac
+done
+#DEFAULTS
+#set FILE
+if [ "$FILE" != "" ]; then
+  FILE="$FILE"
+else
+  FILE="$1"
+fi
+# set IGNOREDEPENDENCIES
+if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
+  IGNOREDEPENDENCIES=true
+else
+  IGNOREDEPENDENCIES=false
+fi
+
+#requirements
+checkRequirements() {
+  if ! [[ -f "$FILE" ]] ; then
+    err "No such file: $FILE">&2;
+    usage
+    exit 1
+  fi
+  if ! [[ -z "$ADDHEAD" ]]; then
+    if ! [[ -f "$ADDHEAD" ]] ; then
+      err "No such file: $ADDHEAD">&2;
+      usage
+      exit 1
+    fi  
+  fi
+}
+
+# Dependencies
+checkDependencies(){
+  DEPS=""
+  DEPS_FAIL="0"
+  for DEP in ${DEPENDENCIES[@]}; do
+    if [[ 0 != "$(command -v "$DEP" >/dev/null ;echo "$?")" ]]; then
+       err "Missing dependency: $DEP"
+       DEPS_FAIL=$(($DEPS_FAIL + 1))
+    fi
+  done
+  if [[ "$DEPS_FAIL" > 0 ]]; then
+    # only warning when --ignore-dependencies is set.
+    if [[ "$IGNOREDEPENDENCIES" == "true" ]]; then
+      err "Ignoring missing dependencies (${DEPS_FAIL}), continue..."
+    else
+      err "Fix missing dependencies (${DEPS_FAIL}), exit."
+      usage
+      exit 1
+    fi
+  fi
+}
+
+# actual program
+programOutput(){
+  # Find line with "CREATE TABLE Per_Image (" and print this and '9999' lines after)
+  # Find line with "PRIMARY KEY (ImageNumber) )" and print this and '9999' lines before)
+  # Remove First and last line, fetch 1st column only, replace newlines with comma's.
+  # Remove trailing comma
+  HEAD=$(cat "$FILE" | \
+      grep -A 9999 -w "CREATE TABLE Per_Image (" | \
+      grep -B 9999 -w "PRIMARY KEY (ImageNumber) )" | \
+      tail -n+2 | head -n-1 | awk '{print $1}' | tr '\n' ',' | \
+      perl -p -e 's/^(.*).$/\1/')
+  # add head, yes -> do it, no -> echo head to stdout
+  if ! [[ -z "$ADDHEAD" ]]; then
+    echo "$(echo $HEAD; cat $ADDHEAD)" > "${ADDHEAD%.*}${SUFFIX}.${ADDHEAD##*.}"
+  else
+    echo "$HEAD"
+  fi
+}
+#all check?
+checkRequirements
+checkDependencies
+
+#lets go!
+programOutput

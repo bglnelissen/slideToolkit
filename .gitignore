@@ -37,3 +37,40 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+_gsdata_/*
+
+# UPGRADE STUDY #
+#################
+# We want to exclude *input* and *output* images (i.e. tiles, NDPI, TIFs); 
+# these are 1) personal data, and 2) too large.
+upgrade_study/_temp/*
+upgrade_study/CD14/*/*.ndpi
+upgrade_study/CD14/*/*.TIF
+upgrade_study/CD3/*/*.ndpi
+upgrade_study/CD3/*/*.TIF
+upgrade_study/CD34/*/*.ndpi
+upgrade_study/CD34/*/*.TIF
+upgrade_study/CD66b/*/*.ndpi
+upgrade_study/CD66b/*/*.TIF
+upgrade_study/CD68/*/*.ndpi
+upgrade_study/CD68/*/*.TIF
+upgrade_study/EVG/*/*.ndpi
+upgrade_study/EVG/*/*.TIF
+upgrade_study/FIBRIN/*/*.ndpi
+upgrade_study/FIBRIN/*/*.TIF
+upgrade_study/GLYCC/*/*.ndpi
+upgrade_study/GLYCC/*/*.TIF
+upgrade_study/GLYCC/AE1468.GLYCC/*
+upgrade_study/HE/*/*.ndpi
+upgrade_study/HE/*/*.TIF
+upgrade_study/HE/AE3910.UMC.HE/*
+upgrade_study/SMA/*/*.ndpi
+upgrade_study/SMA/*/*.TIF
+upgrade_study/SMA/AE4780.SMA/*
+upgrade_study/SR/*/*.ndpi
+upgrade_study/SR/*/*.TIF
+
+# SLIDES FOLDER #
+#################
+# We want to exclude some AE-SLIDES images
+AE-SLIDES/**

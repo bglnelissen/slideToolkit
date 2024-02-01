@@ -3,7 +3,8 @@
 # Description: Create slide thumbnail, including label
 # 
 # The MIT License (MIT)
-# Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+# Copyright (c) 2014-2024, Bas G.L. Nelissen, Sander W. van der Laan, 
+# UMC Utrecht, Utrecht, the Netherlands.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -34,6 +35,8 @@ DEFAULT_OUTPUT_SUFFIX=".thumb"
 DEFAULT_OUTPUT_EXTENSION="png"
 DEFAULT_OUTPUT_DIRECTORY="." # Relative to input file
 DEFAULT_RESIZE="1024x1024"
+DEFAULT_IM_ARGS="" # convert arguments # -verbose
+DEFAULT_SLURMARGS="--time 00:15:00 --mem=8G" # Maximum values: rt=runtime HH:MM:SS vmem=GB
 # sort arrays
 DEPENDENCIES=( $( for el in "${DEPENDENCIES[@]}"; do echo "$el"; done | sort) )
 SUPPORTED_FORMATS=( $( for el in "${SUPPORTED_FORMATS[@]}"; do echo "$el"; done | sort) )
@@ -53,11 +56,11 @@ EOF
 # version info
 version() {
 cat << EOF
-slideToolkit 0.1 beta
-($SCRIPTNAME is part of the slideToolkit)
+slideToolKit v1.2
+($SCRIPTNAME is part of the slideToolKit)
 
 The MIT License (MIT) <http://opensource.org/licenses/MIT>
-Copyright (c) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
+Copyright (c) 2014-2024, Bas G.L. Nelissen & Sander W. van der Laan, UMC Utrecht, Utrecht, the Netherlands.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -73,6 +76,8 @@ in all copies or substantial portions of the Software.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Bas G.L. Nelissen | https://github.com/bglnelissen.
+Edits by Sander W. van der Laan | https://github.com/swvanderlaan.
+
 EOF
 }
 
@@ -93,6 +98,7 @@ options:
   [--extension] <text>        thumbnail output extension ["$DEFAULT_OUTPUT_EXTENSION"]
   [--output-dir] <path>       path to output directory
   [--resize] <widthxheight>   maximum output dimentions ["$DEFAULT_RESIZE"]
+  [--convert-args]='<arguments>'  convert arguments ('=' sign and 'quotes' required)
   [--ignore-dependencies]     ignores all dependencies, but gives warning
   
   --help                      display this help
@@ -109,7 +115,7 @@ print a job list:
 print a job list for 'qsub':
   for i in \$(find ./ -iname "*tif"); do
     j="\$(echo "\$(cd "\$(dirname "\$i")"; pwd)"/"\$(basename "\$i")")"; \\
-    echo "qsub" -pe threaded 1 -q veryshort \\
+    echo "sbatch $DEFAULT_SLURMARGS" \\
     "$(command -v "$SCRIPTNAME")" --file="\${j}"
   done
 
@@ -125,10 +131,12 @@ directory can be set with --output-dir (path can be a relative path or
 absolute path, if the location does not exist it will be created). Pipe
 the 'job list' output in 'parallel' for parallel processing.
 
-The slideToolkit and all its tools are released under the terms of the MIT license.
-The slideToolkit (C) 2014-2016, Bas G.L. Nelissen, UMC Utrecht, the Netherlands.
-Report issues at https://github.com/bglnelissen/slideToolkit/issues.
+The slideToolKit and all its tools are released under the terms of the MIT license.
+The slideToolKit (C) 2014-2024, Bas G.L. Nelissen, UMC Utrecht, the Netherlands;
+Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com, UMC Utrecht, 
+the Netherlands.
 
+Report issues at https://github.com/swvanderlaan/slideToolKit/issues.
 EOF
 }
 
@@ -196,7 +204,10 @@ do
     --output-dir=*)
       OUTPUT_DIRECTORY=${1#*=}
       shift ;;
-     --ignore-dependencies)
+    --convert-args=*) # Equal sign and quotes are required for this option. If not, the convert arguments are seen as slideRename options.
+      IM_ARGS=${1#*=}
+      shift ;;
+    --ignore-dependencies)
       IGNOREDEPENDENCIES=TRUE
       shift ;;
     --) # End of all options
@@ -241,6 +252,12 @@ if [ "$RESIZE" != "" ]; then
 else
   RESIZE="$DEFAULT_RESIZE"
 fi
+# set IM_ARGS default
+if [ "$IM_ARGS" != "" ]; then
+  IM_ARGS="$IM_ARGS"
+else
+  IM_ARGS="$DEFAULT_IM_ARGS"
+fi
 # set IGNOREDEPENDENCIES  (this if statement does nothing, as it is set to set in Menu)
 if [[ "$IGNOREDEPENDENCIES" =~ (true|TRUE|YES|yes) ]] ; then
   IGNOREDEPENDENCIES=true
@@ -282,11 +299,11 @@ checkDependencies(){
 getThumb(){
   # get thumb by layer id
   LAYER="$LAYER"
-  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbiScanHT(){
   LAYER=0
-  convert "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert $IM_ARGS  "$FILEFULL[$LAYER]" -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbAperio(){
   # the last 2 layers contain thumb and the tissue (couning starts at 0)
@@ -294,19 +311,19 @@ getThumbAperio(){
   N_LABEL="$(($NR_LAYERS - 2))"
   N_TISSUE="$(($NR_LAYERS - 1))"
   # get label, get tissue, rotate one and resize both, then append and do a final resize
-  convert "$FILEFULL[$N_LABEL]" -resize 1024x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize 1024x \)-append -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert $IM_ARGS  "$FILEFULL[$N_LABEL]" -resize 1024x \( "$FILEFULL[$N_TISSUE]" -rotate 90 -resize 1024x \)-append -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbLeica(){
   LAYER=1 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert $IM_ARGS  "$FILEFULL"[$LAYER] -rotate 180 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbHamamatsu(){
-  LAYER=10 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
+  LAYER=6 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
+  convert $IM_ARGS  "$FILEFULL"[$LAYER] -rotate 90 -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 getThumbiScan(){
   LAYER=0 # determined from example file (http://openslide.cs.cmu.edu/download/openslide-testdata/)
-  convert "$FILEFULL"[$LAYER] -resize "$RESIZE" "$OUTPUTFILENAME"
+  convert $IM_ARGS  "$FILEFULL"[$LAYER] -resize "$RESIZE" "$OUTPUTFILENAME"
 }
 programOutput(){
   # set variables

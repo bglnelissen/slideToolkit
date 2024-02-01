@@ -1,7 +1,7 @@
-[Examples](http://bglnelissen.github.io/slideToolkit)
+[Examples](http://swvanderlaan.github.io/slideToolkit)
 ============
 
-An example pipeline made with CellProfiler is provided.
+A couple of example pipelines made with CellProfiler are provided.
 
 -----------------------------------------------
 > Installation instructions can be found in [guides](guides).
