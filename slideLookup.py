@@ -117,7 +117,7 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
                         # Copy the file to the copy directory
                         if copy_dir:
                             # set the source to the file path
-                            source_path = os.path.join(root, file)
+                            source_path = os.path.join(lookup_directory_walk, file)
                             # Check if the file has already been copied
                             if file not in copied_files:
                                 copy_file_to_directory(source_path, copy_dir, verbose)
