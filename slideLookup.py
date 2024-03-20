@@ -35,8 +35,8 @@
 
 # Version information
 VERSION_NAME = 'slideLookup'
-VERSION = '1.0.2'
-VERSION_DATE = '2024-02-01'
+VERSION = '1.0.3'
+VERSION_DATE = '2024-03-20'
 COPYRIGHT = 'Copyright 1979-2024. Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | https://vanderlaanand.science.'
 COPYRIGHT_TEXT = f'\nThe MIT License (MIT). \n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and \nassociated documentation files (the "Software"), to deal in the Software without restriction, \nincluding without limitation the rights to use, copy, modify, merge, publish, distribute, \nsublicense, and/or sell copies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions: \n\nThe above copyright notice and this permission notice shall be included in all copies \nor substantial portions of the Software. \n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, \nINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR \nPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS \nBE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, \nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE \nOR OTHER DEALINGS IN THE SOFTWARE. \n\nReference: http://opensource.org.'
 
@@ -108,9 +108,10 @@ def find_samples_in_directories(samples, study_type, directories, verbose, copy_
 
                 # Loop over the samples
                 for sample in samples:
-
+                    # Check if the file matches exactly the sample name
+                    if file.startswith(sample) and file[len(sample):].startswith('.') and sample + '.' in file:
                     # Check if the sample is in the file
-                    if sample in file:
+                    #if sample in file:
                         if verbose:
                             print(f"Found {sample} in {directory} as {file}.")
                         
