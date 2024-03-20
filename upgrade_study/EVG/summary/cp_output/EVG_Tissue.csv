@@ -1,0 +1,3 @@
+ImageNumber,ObjectNumber,Metadata_Date,Metadata_FileLocation,Metadata_Frame,Metadata_NR,Metadata_STAIN,Metadata_Series,Metadata_T_NUMBER,Metadata_Xcoord,Metadata_Ycoord,Location_Center_X,Location_Center_Y,Location_Center_Z,Number_Object_Number
+1,1,nan,file:/Users/tpeters4/Desktop/CellProfiler%20upgrade_study/EVG/summary/AE9.T02-7170.EVG.X8000.Y24000.normalized.tile.tissue.png,0,AE9,EVG,0,T02-7170,X8000,Y24000,594.9475434910916,1358.9770903572035,0,1
+1,2,nan,file:/Users/tpeters4/Desktop/CellProfiler%20upgrade_study/EVG/summary/AE9.T02-7170.EVG.X8000.Y24000.normalized.tile.tissue.png,0,AE9,EVG,0,T02-7170,X8000,Y24000,1557.909812638933,1601.1819171619109,0,2
